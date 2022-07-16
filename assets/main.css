@@ -1,0 +1,22 @@
+*{
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+html {
+    overflow-y: hidden !important;
+}
+:root {
+    --cor1: #3A6496;
+    --cor2: #47669E;
+    --cor3: #263A81;
+    --corAzul: #0d1258;
+    --cor4: #393275;
+    --cor5: #C64165;
+    --cor6: #A83468;
+    --cor7: #011031;
+    --corMenu: #011031b4;
+    --cor8: #D94B67;
+    --cor9: #E75464;
+    --background: linear-gradient(var(--corAzul), var(--cor5));
+}
