@@ -123,6 +123,7 @@ export default {
         background-color: var(--cor2);
         height: 8px;
         position: relative;
+        cursor: pointer;
     }
     .progress-bar {
         height: 100%;
@@ -131,6 +132,7 @@ export default {
         background-color: var(--cor4);
         z-index: 2;
         pointer-events: none;
+        cursor: pointer;
     }
     .container-btns {
         width: 100%;

@@ -32,7 +32,7 @@
                             <form class="btn-form">
                                 <textarea class="textarealol" @keydown="sendByEnter">
                                 </textarea>
-                                <input id="send" type="submit" value="enviar" @click="sendMSG">
+                                <input id="send" type="submit" value="Enviar" @click="sendMSG">
                             </form>
                         </div>
                     </div>
@@ -112,8 +112,9 @@ export default {
                 room: this.room,
                 text: msgValue
             }
+           msg.selectionStart = 0
+           msg.value = ''
            this.socket.emit('newMSG', dates)
-           msgValue = ''
         },
         sendMSG(e){
             e.preventDefault()
@@ -215,13 +216,14 @@ export default {
     .textarealol {
         width: calc(100% - 30px);
         height: 99%;
-        background-color: aliceblue;
         font-family: cursive;
         padding: 3px 5px;
+        resize: none;
+        border: 1px solid var(--cor7);
+        outline: none
     }
     .msg-container {
         width: 100%;
-        max-height: 120px;
         margin: 5px 0px;
         padding: 0px 5px;
     }
@@ -263,8 +265,9 @@ export default {
         word-break: break-all;
     }
     #send {
-        background-color: var(--cor1);
+        background-color: var(--background);
         padding: 10px 10px;
+        color: var(--cor7);
         border-radius: 24px;
     }
 

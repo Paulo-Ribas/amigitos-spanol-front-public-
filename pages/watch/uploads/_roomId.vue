@@ -1,16 +1,17 @@
 <template>
     <div class="container-app">
         <div class="video-container">
-            <video @timeupdate="GaloFilhoDaPuta()" tabindex="1"  @click="showObject(), PlayPauseVideo()" @keydown="keysEvents"  id="video" >
+            <video @timeupdate="GaloFilhoDaPuta()" tabindex="1" @dblclick="fullScreamToggle()" @click="showObject(), emitPlayPause()" @keydown="emitKeysEvents($event)" id="video" >
                 <source src="/videoplayback.mp4">
             </video>
             <ControlsPlayerLive
-            @PlayPauseVideo="emitPlay($event)"
+            @PlayPauseVideo="emitPlayPause($event)"
             @mouseSegura="mouseSegura"
             @setVolume="setVolume"
-            @aprenderMatematica="aprenderMatematica($event)"
-            @keysEvents="keysEvents($event)"
-            @fullScream="fullScream($event)"
+            @aprenderMatematica="emitAprenderMatematica($event)"
+            @keysEvents="emitKeysEvents($event)"
+            @fullScreamToggle="fullScreamToggle($event)"
+            @muteUnmute="muteUnmute()"
             />
         </div>
         <ChatVideoVue/>
@@ -53,22 +54,30 @@ export default {
             userName: undefined,
             userImg: undefined,
             userId: undefined,
-            room: this.$route.params.roomId
+            room: this.$route.params.roomId,
+            oldVolume: 1,
         }
     },
+    middleware: ['auth'],
     components: {
         ChatVideoVue,
         ControlsPlayer
     },
     methods: {
         connectionServer(){
-           this.socket = io.connect('http://localhost:3333/')
+           this.socket = io.connect('http://localhost:3333/',{ rememberTransport: false, transports: ['websocket', 'polling', 'Flash Socket', 'AJAX long-polling']})
            this.socket.on('msg', data => {
             this.renderMSG(data)
            })
            this.socket.on('PlayPause', data => {
             console.log('foi dado play')
             this.PlayPauseVideo()
+           })
+           this.socket.on('keysEvents', key => {
+            this.keysEvents(key)
+           })
+           this.socket.on('aprenderMatematica', data => {
+            this.aprenderMatematica(data)
            })
         },
         JoinRoom(){
@@ -78,27 +87,40 @@ export default {
             const video = document.getElementById('video')
             video.classList.add('focus')
         },
-        emitPlay($event){
+        emitPlayPause($event){
             this.socket.emit('playPause', {event: $event, room: this.room})
 
         },
         PlayPauseVideo(){
             const video = document.getElementById('video')
             console.log(video.duration, video.currentTime)
+            const play = document.querySelector('.play-pause-icon')
+            console.log(play)
             if (video.paused) {
                 video.play()
+                play.src = '/svg/botao_pause.svg'
             }
             else {
                 video.pause()
+                play.src = '/svg/botao_play_.svg'
             }
         },
         showObject($event){
             console.log($event)
         },
+
         GaloFilhoDaPuta(){
             const video = document.getElementById('video')
             const barra = document.querySelector('.progress-bar')
             barra.style.width = `${video.currentTime / video.duration * 100}%`
+        },
+        emitKeysEvents($event){
+            const eventEmit = {
+                code: $event.code
+            }
+            console.log(eventEmit)
+            this.socket.emit('keysEvents', {event: eventEmit, room: this.room})
+
         },
         keysEvents(key){
             const video = document.getElementById('video')
@@ -118,6 +140,7 @@ export default {
             const video = document.getElementById('video')
             const volumeValue = parseInt(document.querySelector('.volume').value)
             video.volume = (volumeValue / 100)
+            this.oldVolume = (volumeValue / 100)
         },
         skip5Seconds(){
             const video = document.getElementById('video')
@@ -129,8 +152,18 @@ export default {
 
             video.currentTime = video.currentTime - 5
         },
+        emitAprenderMatematica($event){
+            const eventEmit = {
+                offsetX: $event.offsetX,
+                target: {
+                    offsetWidth: $event.target.offsetWidth
+                }
+            }
+            this.socket.emit('aprenderMatematica', {room: this.room, event: eventEmit})
+        },
         aprenderMatematica($event){
             const video = document.getElementById('video')
+            console.log($event)
             let position = ($event.offsetX / $event.target.offsetWidth) * video.duration
             video.currentTime = position
             
@@ -152,9 +185,33 @@ export default {
                 
             }
         },
-        fullScream() {
+        fullScreamToggle() {
             const video = document.querySelector('.video-container')
-            video.requestFullscreen()
+            const fullscreenIcon = document.querySelector('.fullScreem-icon')
+            if (!document.fullscreenElement) {
+                fullscreenIcon.src = '/svg/sair_da_tela_cheia_.svg'
+                video.requestFullscreen()
+            }
+            else {
+                fullscreenIcon.src = '/svg/tela_cheia.svg'
+                document.exitFullscreen()
+            }
+        },
+        muteUnmute(){
+            const video = document.getElementById('video')
+            const volumeValue = document.querySelector('.volume')
+            const volumeIcon = document.querySelector('.volume-icon')
+            if (video.volume > 0) {
+                video.volume = 0
+                volumeValue.value = 0
+                volumeIcon.src = '/svg/sem_som.svg'    
+            }
+            else {
+                console.log(this.oldVolume)
+                video.volume = this.oldVolume
+                volumeValue.value = this.oldVolume * 100
+                volumeIcon.src = '/svg/com_som.svg'    
+            }
         }
         
     }

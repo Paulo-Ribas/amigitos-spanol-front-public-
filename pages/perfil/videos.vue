@@ -1,5 +1,5 @@
 <template>
-  <div id="videos">
+  <div id="videos" v-if="!loanding">
     <h2>Videos</h2>
     <div class="tabble">
       <table>
@@ -12,7 +12,7 @@
         </tbody>
       </table>
     </div>
-    <div class="progress-bar">
+    <div class="progress-bar" v-if="uploading">
       <span>enviando arquivo</span>
       <span class="porcent">0%</span>
       <div class="progress"></div>
@@ -39,10 +39,15 @@ export default {
         console.log(res);
       });
   },
+  mounted() {
+    this.loanding = false
+  },
   data() {
     return {
       videos: [],
       token: undefined,
+      loanding: true,
+      uploading: false
     };
   },
   methods: {
@@ -54,6 +59,7 @@ export default {
       const Form = new FormData();
       let file = document.getElementById("file");
       Form.append("video", file.files[0]);
+      this.uploading = true
       let config = {
         headers: { authorization: "bearer " + this.token },
         onUploadProgress(event){

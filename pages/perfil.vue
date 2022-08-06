@@ -1,6 +1,6 @@
 <template>
   <div class="perfil" @teste="console.log('tese')">
-    <div class="areYouSure" v-if="showAlgo" @ask="showAlgo = true">
+    <div class="areYouSure" v-if="showAlgo" @ask="showAlgo = true" @click="close">
       <div class="warn-container">
         <h2>Tem Certeza?</h2>
         <div class="btn-container">
@@ -328,6 +328,7 @@ export default {
     width: 100%;
     display: flex;
     justify-content: space-around;
+    pointer-events: none;
 }
 .yes{
     padding: 10px 30px;

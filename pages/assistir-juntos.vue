@@ -2,23 +2,17 @@
   <div id="watch">
     <div class="box-container">
         <div class="room-container">
-            <div class="room-box1">
-                <div class="img-own">
-                    <fa :icon="['fab', 'youtube']"></fa>
-                </div>
-                <NuxtLink to="/room/create" class="roomCreate"></NuxtLink>
+            <NuxtLink to="/room/create" class="room-box1">
+                <fa :icon="['fab', 'youtube']"></fa>
                 <h2>Assistir Videos Youtube</h2>
-            </div>
-            <div class="room-box2">
-                <div class="img-youtube">
-                    <img src="/default.png">
-                </div>
+            </NuxtLink>
+            <NuxtLink to="/room/create" class="room-box2">
+                 <fa icon="upload"></fa>
                 <h2>Assistir Videos Enviados</h2>
-                <NuxtLink to="/watch" class="roomCreate"></NuxtLink>
-            </div>
+            </NuxtLink>
         </div>
         <div class="room">
-            <LinkSpecialVue UrlProps="/rooms" btnProps="Ver Salas Criadas"/>
+            <LinkSpecialVue UrlProps="/room" btnProps="Ver Salas Criadas"/>
         </div>
     </div>
   </div>
@@ -75,23 +69,25 @@ export default {
         border-radius: 50px;
         font-family: cursive;
         transition: 0.1s;
+        text-decoration: none;
     }
     svg {
         font-size: 9em;
+        color: white;
         transition: 0.2s;
     }
-    .room-box1:hover {
+    .room-box1:hover, .room-box2:hover {
         box-shadow: 1px 1px 3px;
 
     }
     h2 {
         color: white;
     }
-    .room-box1:hover  svg {
+    .room-box1:hover svg, .room-box2:hover svg{
         transform: scale(1.05);
         color: var(--cor4);
     }
-    .room-box1:hover h2 {
+    .room-box1:hover h2, .room-box2:hover h2 {
         color: var(--cor1);
     }
     .roomCreate {

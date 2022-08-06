@@ -18,6 +18,9 @@ export default {
       { rel: 'icon', type: 'image/x-icon', href: '/favicon.ico' }
     ]
   },
+  publicRuntimeConfig: {
+    dev_url: process.env.DEV_URL
+  },
 
   // Global CSS: https://go.nuxtjs.dev/config-css
   css: [
@@ -45,7 +48,7 @@ export default {
   fontawesome: {
     component: 'fa',
     icons: {
-      solid: ['faHome', 'faEnvelope', 'faUser'],
+      solid: ['faHome', 'faEnvelope', 'faUser', 'faUsers', 'faChalkboard', 'faUpload'],
       brands: ['faYoutube']
     }
   },

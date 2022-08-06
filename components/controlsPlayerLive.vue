@@ -5,11 +5,14 @@
     </div>
     <div class="container-btns">
       <div class="btn-primary">
-        <button @click="PlayPauseVideo">Play/Pause</button>
-        <input type="range" value="100" max="100" min="0" class="volume" @change="setVolume"/>
+        <img src="/svg/botao_play_.svg" class="play-pause-icon" @click="PlayPauseVideo">
+        <div class="volume-container">
+            <img src="/svg/com_som.svg" @click="emitMuteUnmute()" class="volume-icon">
+            <input type="range" value="100" max="100" min="0" class="volume" @change="setVolume"/>
+        </div>
       </div>
       <div class="btn-fudno">
-        <button @click="fullScream">Tela Cheia</button>
+        <img src="/svg/tela_cheia.svg" class="fullScreem-icon" @click="fullScreamToggle">
       </div>
     </div>
   </div>
@@ -40,9 +43,12 @@ export default {
         keysEvents($event){
             this.$emit('keysEvents', $event)
         },
-        fullScream($event){
-            this.$emit('fullScream', $event)
+        fullScreamToggle($event){
+            this.$emit('fullScreamToggle', $event)
         },
+        emitMuteUnmute(){
+            this.$emit('muteUnmute')
+        }
 
     }
 }
@@ -51,19 +57,21 @@ export default {
 <style>
     .controls {
         width: 100%;
-        height: 38px;
+        height: 44px;
         z-index: 2;
         color: white;
         position: absolute;
         bottom: 0;
         display: flex;
         flex-direction: column;
+        background-color: rgba(0, 0, 0, 0.342);
     }
     .progress {
         width: 100%;
         background-color: var(--cor2);
         height: 8px;
         position: relative;
+        cursor: pointer;
     }
     .progress-bar {
         height: 100%;
@@ -72,11 +80,38 @@ export default {
         background-color: var(--cor4);
         z-index: 2;
         pointer-events: none;
+        cursor: pointer;
     }
     .container-btns {
         width: 100%;
+        height: calc(100% - 8px);
         display: flex;
         justify-content: space-between;
+        align-items: center;
+    }
+    .btn-primary {
+        display: flex;
+        align-items: center;
+        margin-left: 6px;
+    
+    }
+    .btn-primary img {
+        margin: 0px 2px;
+    }
+    img {
+        height: 24px;
+        width: 24px;
+        cursor: pointer;
+    }
+    .volume-container {
+        display: flex;
+    }
+    .play-pause-icon {
+        height: 20px;
+    }
+    .fullScreem-icon {
+        width: 45px;
+        height: 45px;
     }
 
 </style>
