@@ -2,13 +2,20 @@
   <div id="rooms-container">
     <div class="room-box-container">
         <div class="box-room" v-for="room in rooms" :key="room._id">
-            <h2>{{room.roomName}}</h2>
-            <span>Membros: {{room.members.length}} / {{room.MaxMembers}}</span>
-            <span v-if="room.pass">Privada</span>
-            <LinkSpecial btnProps="Entrar" UrlProps="/"></LinkSpecial>
+            <div class="icon-container">
+                <fa :icon="['fab','youtube']"/>
+            </div>
+            <div class="room-datas">
+                <h2>{{room.roomName}}</h2>
+                    <LinkSpecial btnProps="Entrar" UrlProps="/"></LinkSpecial>
+                <div class="SEM-CRIATIVIDADE-CONTAINER">
+                    <span>{{room.members.length}} / {{room.maxMembers}}</span>
+                    <span v-if="room.pass">Privada</span>
+                </div>
+            </div>
         </div>
     </div>
-    <LinkSpecial btnProps="Criar Sala" UrlProps="/"></LinkSpecial>
+    <!-- <LinkSpecial btnProps="Criar Sala" UrlProps="/"></LinkSpecial> -->
 
   </div>
 </template>
@@ -52,12 +59,36 @@ export default {
         overflow-y: scroll;
     }
     .box-room {
-        width: 300px;
-        height: 300px;
+        width: 100%;
+        max-width: 510px;
+        height: 200px;
         margin: 5px;
         border: 1px solid var(--cor3);
+        display: flex;
     }
-
-</style>>
-
+    .icon-container {
+        width: 40%;
+        height: 100%;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+    .icon-container svg {
+        font-size: 9.3em;
+        color: var(--cor4);
+    }
+    .room-datas{
+        width: 60%;
+        height: 100%;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-evenly;
+        align-items: center;
+    }
+    .SEM-CRIATIVIDADE-CONTAINER {
+        display: flex;
+        width: 100%;
+        justify-content: space-between;
+        padding: 0px 10px;
+    }
 </style>

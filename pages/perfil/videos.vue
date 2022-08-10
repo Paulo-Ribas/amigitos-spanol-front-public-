@@ -68,6 +68,19 @@ export default {
             let progressPorcent = document.querySelector('.porcent')
             progressBar.style.width = `${progress}%`
             progressPorcent.innerHTML = `${progress}%` //inner para matar as saudades
+            if(progress === 100) {
+              this.token = localStorage.getItem("token");
+    axios.get("http://localhost:3333/videos", {
+        headers: { authorization: "bearer " + this.token },
+      }).then((res) => {
+        let videosArray = res.data.videos;
+        this.videos = videosArray;
+        console.log(res, 'cade a resposta')
+      })
+      .catch((res) => {
+        console.log(res);
+      });
+            }
             
         }
       }

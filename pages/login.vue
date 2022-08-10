@@ -1,8 +1,6 @@
 <template>
     <div class="login">
-        <div class="erro" v-if="erro != ''">
-            {{erro}}
-        </div>
+        <Erro :erroProps="erro" v-if="erro != ''"></Erro>
         <form @submit="sendUser">
             <h2>Login</h2>
             <label>Nome</label>
@@ -19,6 +17,7 @@
 
 <script>
 import axios from "axios";
+import Erro from "../components/erro.vue";
 export default {
     name: 'qe',
     data(){
@@ -28,6 +27,9 @@ export default {
             password: '',
             erro: ''
         }
+    },
+    components: {
+        Erro
     },
     methods: {
         sendUser($event) {
@@ -93,21 +95,6 @@ export default {
         color: white;
     }
 
-    .erro {
-        width: 99%;
-        max-width: 800px;    
-        background-color: var(--cor5);
-        position: absolute;
-        border-radius: 50px;
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        top: 5%;
-        height: 40px;
-        color: white;
-        font-size: 1.2em;
-        font-family:'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    }
 h2 {
     position: absolute;
     font-family: cursive;

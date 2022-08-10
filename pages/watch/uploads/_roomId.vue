@@ -2,7 +2,7 @@
     <div class="container-app">
         <div class="video-container">
             <video @timeupdate="GaloFilhoDaPuta()" tabindex="1" @dblclick="fullScreamToggle()" @click="showObject(), emitPlayPause()" @keydown="emitKeysEvents($event)" id="video" >
-                <source src="/videoplayback.mp4">
+                <source src="/cronometro.mp4">
             </video>
             <ControlsPlayerLive
             @PlayPauseVideo="emitPlayPause($event)"
@@ -58,7 +58,7 @@ export default {
             oldVolume: 1,
         }
     },
-    middleware: ['auth'],
+    middleware: ['auth', 'roomPass'],
     components: {
         ChatVideoVue,
         ControlsPlayer
