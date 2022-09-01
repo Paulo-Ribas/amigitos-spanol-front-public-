@@ -60,7 +60,6 @@
 
 <script>
 export default {
-    name: 'header-aside',
     data(){
         return {
             show: false,

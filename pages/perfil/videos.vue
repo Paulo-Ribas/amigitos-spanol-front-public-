@@ -1,19 +1,12 @@
 <template>
   <div id="videos" v-if="!loanding">
     <h2>Videos</h2>
-    <div class="tabble">
-      <table>
-        <tbody>
-          <tr v-for="video in videos" :key="video.name">
-            <td><img src="/default.png" /></td>
-            <td colspan="1">{{ video.fileName }}</td>
-            <td class="delete" @click="areYouSure">Deletar</td>
-          </tr>
-        </tbody>
-      </table>
-    </div>
+      <TabbleVideosList :btnProps="'deletar'" :videosProps="user.videos" @selected="areYouSure($event)"></TabbleVideosList>
     <div class="progress-bar" v-if="uploading">
-      <span>enviando arquivo</span>
+      <span class="completed" v-if="completed">completo</span>
+      <span class="status" v-if="uploading">enviando arquivo</span>
+      <span class="processing" v-if="prossesing">processando</span>
+      <span class="erro_video" v-if="videoErr">{{videoErr}}</span>
       <span class="porcent">0%</span>
       <div class="progress"></div>
     </div>
@@ -23,34 +16,46 @@
 </template>
 
 <script>
-import axios from "axios";
+import {mapState, mapActions, mapMutations} from 'vuex'
 export default {
   name: "qeqw",
+  async asyncData(context){
+    let videos = await context.app.store.dispatch('user/getSetVideos', context.$cookies.get('token'))
+    context.app.store.commit('user/SET_VIDEOS', videos)
+    return {
+      videos: videos
+    }
+  },
+  async fetch(){
+    let user = await this.$store.dispatch('user/validateUser', this.$cookies.get('token'))
+     this.$store.commit('user/SET_USER_INFO',user)
+     
+  },
   beforeMount() {
-    this.token = localStorage.getItem("token");
-    axios.get("http://localhost:3333/videos", {
-        headers: { authorization: "bearer " + this.token },
-      }).then((res) => {
-        let videosArray = res.data.videos;
-        this.videos = videosArray;
-        console.log(res, 'cade a resposta')
-      })
-      .catch((res) => {
-        console.log(res);
-      });
+    console.log(this.$store.state.user.token)
   },
   mounted() {
     this.loanding = false
   },
+  fetchOnServer: false,
   data() {
     return {
-      videos: [],
       token: undefined,
       loanding: true,
-      uploading: false
+      uploading: false,
+      prossesing: false,
+      completed: false,
+      videoErr: undefined
     };
   },
+  computed: {
+    ...mapState({
+      user: state => state.user
+    })
+  },
   methods: {
+    ...mapActions({postVideo: 'user/postVideo', getSetVideos: 'user/getSetVideos'}),
+    ...mapMutations({SET_VIDEOS: 'user/SET_VIDEOS'}),
     clickInput() {
       let input = document.getElementById("file");
       input.click();
@@ -59,40 +64,46 @@ export default {
       const Form = new FormData();
       let file = document.getElementById("file");
       Form.append("video", file.files[0]);
+      this.completed = false
       this.uploading = true
-      let config = {
-        headers: { authorization: "bearer " + this.token },
-        onUploadProgress(event){
-            let progress = Math.round((event.loaded * 100) / event.total)
-            let progressBar = document.querySelector('.progress')
-            let progressPorcent = document.querySelector('.porcent')
-            progressBar.style.width = `${progress}%`
-            progressPorcent.innerHTML = `${progress}%` //inner para matar as saudades
-            if(progress === 100) {
-              this.token = localStorage.getItem("token");
-    axios.get("http://localhost:3333/videos", {
-        headers: { authorization: "bearer " + this.token },
-      }).then((res) => {
-        let videosArray = res.data.videos;
-        this.videos = videosArray;
-        console.log(res, 'cade a resposta')
-      })
-      .catch((res) => {
-        console.log(res);
-      });
-            }
-            
+      let axiosInfos = {
+        file: Form,
+        getprogressAndSetHeaders:{
+          onUploadProgress(event){
+              let progress = Math.round((event.loaded * 100) / event.total)
+              let progressBar = document.querySelector('.progress')
+              let progressPorcent = document.querySelector('.porcent')
+              let status = document.querySelector('.status')
+              progressBar.style.width = `${progress}%`
+              progressPorcent.innerHTML = `${progress}%` //inner para matar as saudades
+              if (progress === 100) {
+                progressPorcent.innerHTML = ''
+                status.innerHTML = 'processando'
+              }
+          },
+          headers: { authorization: this.$cookies.get('token')}
         }
       }
-      axios.post("http://localhost:3333/video", Form, config).then((res) => {
-          console.log(res);
+      this.postVideo(axiosInfos).then(res => {
+        console.log('chegou no postar ao menos')
+        this.getSetVideos(this.$cookies.get('token')).then(videos => {
+          this.uploading = false
+          this.completed = true
+        }).catch(erro => {
+          console.log('talvez n esteja sendo atualizado por causa desse erro', erro)
         })
-        .catch((res) => {
-          console.log(res);
-        });
+      }).catch(err =>{
+        console.log(err)
+        this.uploading = false,
+        console.log(err.response.data)
+        this.videoErr = err.response.data.err
+        console.log(this.videoErr)
+      })
+
+
     },
-    areYouSure(){
-      this.$emit('question')
+    areYouSure($event){
+      this.$emit('question', $event)
     },
     deleteVideo(){
       console.log('deletei kkkk')
@@ -126,13 +137,6 @@ export default {
 }
 *>>> table {
   width: 100%;
-}
-*>>> .tabble {
-  overflow-y: scroll;
-  width: 100%;
-  padding: 0px 5px;
-  font-family: cursive;
-  max-height: 230px;
 }
 *>>> .add-videos {
   width: 100%;

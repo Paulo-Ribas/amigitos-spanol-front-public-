@@ -3,16 +3,15 @@
         <div class="youtube-VideoPlayer">
             <iframe width="853" height="480" src="https://www.youtube.com/embed/gqK_69OJczc" controls="0" title="Doctor Who: The Majestic Tale (Of a Madman in a Box) - The Day of the Doctor Update" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
         </div>
-            <ChatVideoVue/>
+            <ChatVideo/>
     </div>
 </template>
 
 <script>
-import ChatVideoVue from '../../../components/chatVideo.vue'
+
 
 export default {
     components: {
-        ChatVideoVue
     }
 }
 </script>

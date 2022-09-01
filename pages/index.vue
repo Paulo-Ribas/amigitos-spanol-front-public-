@@ -18,7 +18,7 @@
             <div class="sigin-container">
               <h3>Cadastre-se</h3>
              <div class="link-container">
-                <NuxtLink to="/login">
+                <NuxtLink to="/sing-in">
                    Ou Também Assista O Próprio Video
                  </NuxtLink>
              </div>

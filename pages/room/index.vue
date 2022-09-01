@@ -1,13 +1,13 @@
 <template>
   <div id="rooms-container">
     <div class="room-box-container">
-        <div class="box-room" v-for="room in rooms" :key="room._id">
+        <div class="box-room" v-for="room in roomFinal" :key="room._id">
             <div class="icon-container">
                 <fa :icon="['fab','youtube']"/>
             </div>
             <div class="room-datas">
                 <h2>{{room.roomName}}</h2>
-                    <LinkSpecial btnProps="Entrar" UrlProps="/"></LinkSpecial>
+                    <LinkSpecial btnProps="Entrar" :UrlProps="'/watch/uploads/' + room.url"></LinkSpecial>
                 <div class="SEM-CRIATIVIDADE-CONTAINER">
                     <span>{{room.members.length}} / {{room.maxMembers}}</span>
                     <span v-if="room.pass">Privada</span>
@@ -22,23 +22,49 @@
 
 <script>
 import axios from 'axios'
-import LinkSpecial from '../../components/LinkSpecial.vue'
+import io from 'socket.io-client'
 export default {
     name: '',
     layout: 'default',
+    middleware:['auth'],
+    async asyncData(context){
+       let rooms = await context.$axios.$get(`${context.$config.dev_url}rooms`)
+       return {
+        rooms: rooms.rooms
+       }
+
+    },
     created(){
-        axios.get(`${this.$config.dev_url}rooms`).then(room => {
-            this.rooms = room.data.rooms
-            console.log(this.rooms)
-        }).catch(console.log)
+        this.connectionServer()
+        this.checkRooms()
+        this.socket.emit('deleteRoomsWith0Members')
     },
     data(){
         return {
-            rooms: []
+            socket: null,
         }
     },
-    components: {
-        LinkSpecial
+    computed:{ 
+        roomFinal(){
+            return this.rooms
+        }
+    },
+    methods: {
+        connectionServer(){
+            this.socket = io.connect('http://localhost:3333/')
+            this.socket.on('roomRefresh', data => {
+                this.socket.emit('deleteRoomsWith0Members')
+            })
+            this.socket.on('updateRoomPage', data => {
+                this.rooms = data
+            })
+              
+        },
+        checkRooms(){
+            setInterval(() => {
+                this.socket.emit('deleteRoomsWith0Members')
+            }, 10000);
+        }
     }
 }
 </script>

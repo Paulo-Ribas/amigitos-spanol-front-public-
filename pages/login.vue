@@ -17,9 +17,7 @@
 
 <script>
 import axios from "axios";
-import Erro from "../components/erro.vue";
 export default {
-    name: 'qe',
     data(){
         return {
             name: '',
@@ -29,22 +27,23 @@ export default {
         }
     },
     components: {
-        Erro
     },
     methods: {
         sendUser($event) {
             $event.preventDefault()
-            const {name, email, password} = this
+            const {name, email, password} = this.$data
             axios.post('http://localhost:3333/login',{username: name, email, password}).then(sucefful => {
                 let token = sucefful.data.token
-                localStorage.setItem('token', token)
-                axios.post('http://localhost:3333/validate', {}, {headers:{authorization:'bearer ' + token }}).then(doi => {
-                    let id = doi.data.dates.id
+                console.log('sucefful', token)
+                this.$store.commit('user/SET_TOKEN', 'bearer ' + token)
+                this.$store.dispatch('user/validateUser', 'bearer ' + token).then(res => {
+                    let id = res.id
                     this.$router.push({name: 'users-userId', params:{userId: id}})
                 }).catch(err => {
-                    this.erro = err.response.data.err
+                    console.log(err)
                 })
             }).catch(err => {
+                console.log(err)
                 this.erro = err.response.data.err
             })
             

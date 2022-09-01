@@ -1,10 +1,10 @@
 <template>
   <div id="creating">
     <Erro :erroProps="erro" v-if="erro != ''"></Erro>
-    <div class="container-box-poop" v-if="showAlgo">
+    <div class="container-box-poop" v-show="showAlgo">
       <div class="warn-container">
         <h2>Selecione Os Videos</h2>
-            <TabbleContainer btnProps="Selecionar" :videosProps="videos" @selected="addOrRemoveVideo($event)"/>
+            <TabbleVideosList btnProps="Selecionar" :videosProps="videos" @selected="addOrRemoveVideo($event)"/>
         <div class="btn-container">
             <button class="yes" @click="yes">Pronto</button>
             <button class="no" @click="close">Cancelar</button>
@@ -43,25 +43,18 @@
 </template>
 
 <script>
-import ButtonSpecial from '../../components/buttonSpecial.vue'
-import TabbleContainer from '../../components/tabbleVideosList.vue'
-import axios from "axios"
-import Erro from '../../components/erro.vue'
+import { mapActions } from 'vuex'
 export default {
     name: '',
+    async asyncData(context){
+    let videos = await context.app.store.dispatch('user/getSetVideos', context.$cookies.get('token'))
+    return {
+      videos: videos
+    }
+  },
+    middleware:['auth'],
     beforeMount(){
-        let token = localStorage.getItem('token')
-        axios.post(`${this.$config.dev_url}validate`, {}, {headers:{authorization:'bearer ' + token}}).then(res => {
-            axios.get(`${this.$config.dev_url}videos`,{headers:{authorization:'bearer ' + token}}).then(res => {
-                this.videos = res.data.videos
-                console.log(this.videos)
-            }).catch(err => {
-                console.log(err)
-            })
-
-        }).catch(err => {
-            console.log(err)
-        })
+        this.loanding = true
     },
     data() {
         return {
@@ -70,16 +63,14 @@ export default {
             passChoice: false,
             inBetween10And20: false,
             password: '',
-            videos: [],
+            videos: this.$store.state.user.videos,
             videosAdded: [],
             showAlgo: false,
             erro: '',
+            loanding: false,
         }
     },
     components: { 
-        ButtonSpecial,
-        TabbleContainer,
-        Erro
     },
     watch:{
         name(value, payload){
@@ -102,6 +93,7 @@ export default {
         }
     },
     methods: {
+        ...mapActions({postRoom: 'user/postRoom'}),
         preventSubmit(e) {
             e.preventDefault()
         },
@@ -142,22 +134,25 @@ export default {
             return found
         },
         sendRoomData(){
-            let token = localStorage.getItem('token')
+            let token = this.$cookies.get('token')
             this.erro = ""
-            axios.post('http://localhost:3333/room', { 
-                password: this.password,
-                passChoice: this.passChoice, 
-                roomName:this.name, 
-                filesVideos: this.videosAdded, 
-                maxMembers: this.qtd, 
-                type: 'upload'
-                }, {headers:{authorization: 'bearer ' + token}})
-                .then(res => {
-                    let URL = res.data.param.url
-                    this.$router.push({name:'watch-uploads-roomId', params: {roomId: URL}})
-                }).catch(err => {
-                    this.erro = err.response.data.err
-                })
+            let axiosConfig = {
+                token: token,
+                roomData: {
+                    password: this.password,
+                    passChoice: this.passChoice, 
+                    roomName:this.name, 
+                    filesVideos: this.videosAdded, 
+                    maxMembers: this.qtd,
+                    type: 'upload', 
+                } 
+            }
+            this.postRoom(axiosConfig).then(res => {
+                console.log(res)
+                this.$router.push({name: 'watch-uploads-roomId', params:{ roomId: res.url}})
+            }).catch(err => {
+                console.log(err)
+            })
         }
     },
 }

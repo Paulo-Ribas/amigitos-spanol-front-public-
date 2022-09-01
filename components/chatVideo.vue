@@ -1,20 +1,29 @@
 <template>
         <div class="video-menu-container">
             <div class="btn-container" @click="JoinRoom">
-                <ButtonSpecialVue btnProps="Escolher Video"/>
+                <ButtonSpecial @clicked="emitClick" btnProps="Escolher Video"/>
             </div>
             <div class="chatMembers-container">
                 <div class="container-chat">
                     <div class="members">
-                        <div class="member1">
+                        <div class="member" v-for="(member, index) in membersReactive" :key="index">
                             <div class="member-container">
-                                <img  :src="userImg">
+                                <img  :src="member.profileimg">
+                            <!-- <div class="options">
+                                <ul>
+                                    <li> <nuxt-link :to="'/users/' + user.id">Perfil</nuxt-link></li>
+                                    <li v-if="user.id === room.userAdm">Remover Da Sala</li>
+                                    <li v-if="user.id === room.userAdm">Mutar</li>
+                                    <li v-if="user.id === room.userAdm">Banir</li>
+                                    <li v-if="user.id === room.userAdm">Permitir Escolher Videos</li>
+                                </ul>
+                            </div> -->
                             </div>
                         </div>
                     </div>
                     <div class="chat-container">
-                        <div class="chat-screen">
-                            <div class="msg-container" v-for="msg in msgs" :key="msg.id">
+                        <div class="chat-screen" @click="setScroll">
+                            <div class="msg-container" v-for="(msg , index) in msgs" :key="index">
                                 <div class="name-img-container">
                                     <div class="img-container">
                                         <img :src="msg.userImg">
@@ -42,49 +51,44 @@
 </template>
 
 <script>
-import ButtonSpecialVue from './buttonSpecial.vue'
 import io from 'socket.io-client'
 import axios from 'axios'
+import {mapState} from 'vuex'
 export default {
-    name:'Chat',
-    created(){
-         this.connectionServer()
+      fetch(){
+        console.log('tokennnnnnnnn', this.$cookies.get('token'))
+         this.$store.dispatch('user/validateUser', this.$cookies.get('token')).then(res => {
+            this.$store.commit('user/SET_USER_INFO', res)
+            console.log('agr virou promise com then', res)
+         }).catch(err => {
+            console.log('console do erro por virar primisse com then', err)
+         })
     },
-    beforeMount(){
-        const token = localStorage.getItem('token')
-        axios.post('http://localhost:3333/validate',{},{headers:{authorization:`bearer ${token}`}})
-        .then(response => {
-            const id = response.data.dates.id
-            this.userId = id
-            axios.get("http://localhost:3333/user/" + id).then(res => {
-                console.log(res, ' ta indo?')
-                const {username, profileimg} = res.data.user[0]
-                this.userImg = profileimg
-                this.userName = username
-            }).catch(err => {
-                console.log(err)
-            })
-        }).catch(err => {
-            console.log(err)
-        })
-    },
+    fetchOnServer: false,
     mounted(){
+        this.connectionServer()
     },
         data(){
             return {
                 room: this.$route.params.roomId,
                 socket: null,
-                userName: '',
-                userImg: '',
-                userId: '',
                 msgs: [],
                 members: [],
     
             }
         },
-    components: {
-        ButtonSpecialVue,
+    computed:{
+        ...mapState({user: state => state.user}),
+        membersReactive(){
+            return this.members
 
+        }
+    },
+    watch: {
+        members(value, payload){
+            this.setScroll(value[this.msgs.length])
+
+        }
     },
     methods:{
         connectionServer(){
@@ -92,37 +96,39 @@ export default {
            this.socket.on('msg', data => {
             this.renderMSG(data)
            })
-           this.socket.on('memberJoined', data => {
+           this.socket.on('listMembersUpdate', data => {
             console.log('entrou', data)
-            this.joinMember(data)
+            this.updateMember(data)
            })
            this.JoinRoom()
         },
          JoinRoom(){
-            let user = {userName: this.userName, userImg: this.userImg, room: this.room, id: this.userId}
-            this.socket.emit('joinRoom',user)
+            let user = this.user
+            let room = this.room
+            this.socket.emit('joinRoom',{user,room})
         },
         emitMsg() {
             let msg = document.querySelector('textarea')
             let msgValue = msg.value
             let dates = {
-                userName: this.userName,
-                userImg: this.userImg,
-                userId: this.userId,
+                userName: this.user.userName,
+                userImg: this.user.profileimg,
+                userId: this.user.id,
                 room: this.room,
                 text: msgValue
             }
-           msg.selectionStart = 0
-           msg.value = ''
+           msg.value = null
            this.socket.emit('newMSG', dates)
+           let scroll = document.querySelector('.chat-screen')
+            scroll.scrollTop = scroll.scrollHeight
         },
         sendMSG(e){
             e.preventDefault()
             this.emitMsg()
         },
         sendByEnter(key) {
-            console.log(key.code)
-            if (key.code === "Enter") {
+            if (key.code === "Enter" && !key.shiftKey) {
+                key.preventDefault()
                 this.emitMsg()
             }
         },
@@ -135,18 +141,27 @@ export default {
             }
             console.log(msg)
            this.msgs.push(mensagem)
+          
         },
-        joinMember(member){
-            let memberJoinded = {
-                userName: member.userName,
-                userImg: member.userImg,
-                id: member.userId
+        setScroll(msg){
+            let scroll = document.querySelector('.chat-screen')
+            let user = msg.userId
+            console.log(scroll.scrollHeight, scroll.scrollTop, (scroll.scrollHeight - scroll.scrollTop))
+            if((scroll.scrollHeight - scroll.scrollTop) <= 260 && user != this.user.id) {
+                scroll.scrollTop = scroll.scrollHeight
+
             }
-            this.members.push(memberJoinded)
+            
+        },
+        updateMember(member){
+            this.members = member
         },
         teste(){
             console.log('teste lol')
         },
+        emitClick(){
+            this.$emit('clicked')
+        }
     }
     
 }
@@ -170,16 +185,24 @@ export default {
         overflow: hidden;
         border-radius: 5px;
     }
+    .chatMembers-container {
+        height: 308px;
+    }
     .container-chat {
-        height: 290px;
+        height: 100%;
         background-color: var(--corMenu);
         
     }
+    .member {
+        position: relative;
+    }
     .members {
-        height: 50px;
+        height: 63px;
         width: 100%;
         overflow-x: auto;
         display: flex;
+        overflow-x: auto;
+        overflow-y: none;
     }
     .member-container {
         height: 50px;
@@ -194,12 +217,25 @@ export default {
         border-radius: 20px;
         cursor: pointer;
     }
+    .options {
+        position: absolute;
+        width: 80px;
+        height: 80px;
+        background-color: white;
+        border-radius: 6px;
+        z-index: 2;
+    }
+    .options ul {
+        width: 100%;
+        height: 100%;
+        position: absolute;
+    }
     .chat-container {
         height: calc(100% - 50px);
     }
     .chat-screen {
         width: 100%;
-        height: calc(100% - 45px);
+        height: calc(100% - 58px);
         overflow-y: auto;
     }
     .text-area-container {

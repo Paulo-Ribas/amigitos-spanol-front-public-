@@ -14,7 +14,6 @@
 
 <script>
 export default {
-    name: 'qe',
     data(){
         return {
             videos: this.$props.videosProps,

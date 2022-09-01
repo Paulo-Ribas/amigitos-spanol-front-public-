@@ -4,7 +4,6 @@
 
 <script>
 export default {
-    name:'speciaLink',
     data(){
         return {
             btnValue: this.$props.btnProps,

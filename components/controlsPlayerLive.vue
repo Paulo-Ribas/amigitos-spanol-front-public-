@@ -20,7 +20,6 @@
 
 <script>
 export default {
-    name:"controls-Live",
     data(){
         return {
 

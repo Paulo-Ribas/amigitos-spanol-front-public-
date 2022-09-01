@@ -1,8 +1,11 @@
 <template>
     <div class="container-app">
-        <div class="video-container">
-            <video @timeupdate="GaloFilhoDaPuta()" tabindex="1" @dblclick="fullScreamToggle()" @click="showObject(), emitPlayPause()" @keydown="emitKeysEvents($event)" id="video" >
-                <source src="/cronometro.mp4">
+        <button @click="JoinRoom()" v-if="!joined">clique aqui para começar a assistir</button>
+        <PickVideo :videosProps="filesVideos" v-if="showVideos" @ChangeVideo="choiced($event)" @cancel="showVideos = false" />
+        <div class="video-container" v-if="joined">
+            <video @timeupdate="GaloFilhoDaPuta()" tabindex="1" @dblclick="fullScreamToggle()" 
+            @click="showObject(), emitPlayPause()" @keydown="emitKeysEvents($event)" id="video">
+                <source src="/videoplayback.mp4" type="video/mp4">
             </video>
             <ControlsPlayerLive
             @PlayPauseVideo="emitPlayPause($event)"
@@ -14,55 +17,55 @@
             @muteUnmute="muteUnmute()"
             />
         </div>
-        <ChatVideoVue/>
+        <ChatVideo  v-if="joined" @clicked="showVideos = !showVideos"/>
     </div>
 
 </template>
 <script>
-import ChatVideoVue from '../../../components/chatVideo.vue'
 import io from 'socket.io-client'
-import ControlsPlayer from "../../../components/controlsPlayerLive.vue";
-import axios from "axios"
+import {mapState, mapActions, mapMutations} from 'vuex'
+import ButtonSpecial from '../../../components/ButtonSpecial.vue'
+
 export default {
+  components: { ButtonSpecial },
     name: 'dwV',
     layout: 'defualt',
-    created(){
-        this.connectionServer()
+    async asyncData(context){
+        let res = await context.store.dispatch('user/getRoom',context.params.roomId)
+        console.log(res, 'a room')
+        return {
+            filesVideos: res.room.filesVideos
+        }
     },
-     beforeMount(){
-        const token = localStorage.getItem('token')
-        axios.post('http://localhost:3333/validate',{},{headers:{authorization:`bearer ${token}`}})
-        .then(response => {
-            const id = response.data.dates.id
-            this.userId = id
-            axios.get("http://localhost:3333/user/" + id).then(res => {
-                console.log(res)
-                const {username, profileimg} = res.data.user[0]
-                this.userImg = profileimg
-                this.userName = username
-            }).catch(err => {
-                console.log(err)
-            })
-            this.JoinRoom()
-        }).catch(err => {
-            console.log(err)
-        })
+    fetch(){
+        console.log('videos', this.filesVideos)
+         this.$store.dispatch('user/validateUser', this.$cookies.get('token')).then(res => {
+            this.$store.commit('user/SET_USER_INFO', res)
+            console.log('agr virou promise com then', res)
+         }).catch(err => {
+            console.log('console do erro por virar primisse com then', err)
+         })
+    },
+    fetchOnServer: false,
+    mounted(){
+        window.addEventListener('beforeunload', this.emitUserDisconected)
+    },
+    beforeDestroy(){
+        this.emitUserDisconected()
     },
     data(){
         return {
+            joined: false,
             socket: null,
-            userName: undefined,
-            userImg: undefined,
-            userId: undefined,
             room: this.$route.params.roomId,
             oldVolume: 1,
+            showVideos: false
         }
     },
-    middleware: ['auth', 'roomPass'],
-    components: {
-        ChatVideoVue,
-        ControlsPlayer
+    computed:{
+        ...mapState({user: state => state.user})
     },
+    middleware: ['auth', 'roomPass'],
     methods: {
         connectionServer(){
            this.socket = io.connect('http://localhost:3333/',{ rememberTransport: false, transports: ['websocket', 'polling', 'Flash Socket', 'AJAX long-polling']})
@@ -79,9 +82,21 @@ export default {
            this.socket.on('aprenderMatematica', data => {
             this.aprenderMatematica(data)
            })
+           this.socket.on('changeVideo', data => {
+            this.changeSrc(data)
+           })
+           this.socket.on('disconnect', q => {
+            this.socket.emit('desconectado', q)
+           })
         },
         JoinRoom(){
-            this.socket.emit('joinRoom', {userName: this.userName, userImg: this.userImg, room: this.room})
+            this.connectionServer()
+            console.log(this.user.state, 'user')
+            this.socket.emit('joinRoom', {user: this.user, room: this.room})
+            this.joined = true
+        },
+        disconnectRoom(user){
+            this.socket.emit('desconectado', {user: user})
         },
         addFocus(){
             const video = document.getElementById('video')
@@ -105,10 +120,19 @@ export default {
                 play.src = '/svg/botao_play_.svg'
             }
         },
-        showObject($event){
-            console.log($event)
+        showObject(event){
+            console.log(event)
         },
-
+        choiced(video){
+            console.log(video, 'esse é o video enviado')
+            this.showVideos = false
+            this.socket.emit('changeVideoToAll', {video: video, room: this.room})
+        },
+        changeSrc(src){
+            let video = document.querySelector('video')
+            document.querySelector('source').src = src.location
+            video.load()
+        },
         GaloFilhoDaPuta(){
             const video = document.getElementById('video')
             const barra = document.querySelector('.progress-bar')
@@ -212,6 +236,9 @@ export default {
                 volumeValue.value = this.oldVolume * 100
                 volumeIcon.src = '/svg/com_som.svg'    
             }
+        },
+        emitUserDisconected(){
+            this.socket.emit('desconectado', {user: this.user, room: this.room})
         }
         
     }

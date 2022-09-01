@@ -4,7 +4,20 @@
     box-sizing: border-box;
 }
 html {
-    overflow-y: hidden !important;
+    overflow-y: auto !important;
+}
+::-webkit-scrollbar {
+    width: 8px;
+    height: 10px;
+    
+}
+::-webkit-scrollbar-track {
+    background: var(--corMenu);
+    border-radius: 4px;
+}
+::-webkit-scrollbar-thumb {
+    background: var(--scrollColor);
+    border-radius: 10px;
 }
 :root {
     --cor1: #3A6496;
@@ -13,10 +26,12 @@ html {
     --corAzul: #0d1258;
     --cor4: #393275;
     --cor5: #C64165;
-    --cor6: #A83468;
+    --scrollButton: #c64164e0;
+    --cor6: #9e3766;
     --cor7: #011031;
     --corMenu: #011031b4;
     --cor8: #D94B67;
     --cor9: #E75464;
     --background: linear-gradient(var(--corAzul), var(--cor5));
+    --scrollColor: linear-gradient(var(--scrollButton), var(--cor4));
 }

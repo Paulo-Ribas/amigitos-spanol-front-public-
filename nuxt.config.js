@@ -42,13 +42,18 @@ export default {
   ],
 
   // Modules: https://go.nuxtjs.dev/config-modules
+    ssr: true,
+  target: 'server',
   modules: [
-    '@nuxtjs/axios'
+    '@nuxtjs/axios',
+    ['nuxt-vuex-localstorage'],
+     'cookie-universal-nuxt'
   ],
   fontawesome: {
     component: 'fa',
     icons: {
-      solid: ['faHome', 'faEnvelope', 'faUser', 'faUsers', 'faChalkboard', 'faUpload'],
+      solid: ['faHome', 'faEnvelope', 'faUser', 'faUsers', 'faChalkboard',
+             'faUpload', 'faPenToSquare', 'faCheck', 'faXmark','faArrowRightFromBracket'],
       brands: ['faYoutube']
     }
   },

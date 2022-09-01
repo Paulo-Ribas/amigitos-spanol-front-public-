@@ -1,10 +1,9 @@
 <template>
-  <button class="btn-special"> {{btnValue}}</button>
+  <button class="btn-special" @click="clicked"> {{btnValue}}</button>
 </template>
 
 <script>
 export default {
-    name:'specialBtn',
     data(){
         return {
             btnValue: this.$props.btnProps
