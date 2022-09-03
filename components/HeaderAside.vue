@@ -1,5 +1,5 @@
 <template>
-  <header :class="{header:'header'}" @mouseenter="toggleShow" @mouseleave="toggleShow">
+  <header :class="{header:'header'}" id="header-menu" @mouseover="showTrue" @mouseleave="showOff">
     <nav>
         <ul>
             <li>
@@ -68,9 +68,16 @@ export default {
     },
     methods:{
         toggleShow(){
-             this.show ? this.show = false : this.show = true
-                
+            this.show ? this.show = false : this.show = true
+            this.bugCorretion()
           
+        },
+        showTrue(){
+                this.show = true
+        },
+        showOff(){
+            this.show = false
+
         }
     }
     

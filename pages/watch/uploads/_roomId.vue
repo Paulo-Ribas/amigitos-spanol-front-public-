@@ -1,6 +1,9 @@
 <template>
     <div class="container-app">
-        <button @click="JoinRoom()" v-if="!joined">clique aqui para começar a assistir</button>
+        <JoinRoomBtn btnProps="clique aqui para começar a assistir" v-if="!joined && !pass" @clicked="JoinRoom()"></JoinRoomBtn>
+        <JoinRoomForm labelPassProps="Digite A Senha" inputPlaceholderProps="senha..." inputSubmitProps="Pronto"
+            v-if="!joined && pass" @submitEmited="roomPassVerify($event)"
+        />
         <PickVideo :videosProps="filesVideos" v-if="showVideos" @ChangeVideo="choiced($event)" @cancel="showVideos = false" />
         <div class="video-container" v-if="joined">
             <video @timeupdate="GaloFilhoDaPuta()" tabindex="1" @dblclick="fullScreamToggle()" 
@@ -34,7 +37,9 @@ export default {
         let res = await context.store.dispatch('user/getRoom',context.params.roomId)
         console.log(res, 'a room')
         return {
-            filesVideos: res.room.filesVideos
+            filesVideos: res.room.filesVideos,
+            pass: res.room.pass,
+            roomAdm:[{userAdm: res.room.userAdm}]
         }
     },
     fetch(){
@@ -59,7 +64,8 @@ export default {
             socket: null,
             room: this.$route.params.roomId,
             oldVolume: 1,
-            showVideos: false
+            showVideos: false,
+            connected: false
         }
     },
     computed:{
@@ -89,14 +95,31 @@ export default {
             this.socket.emit('desconectado', q)
            })
         },
+        ...mapActions({joinByPass: 'user/joinRoomByPassword'}),
         JoinRoom(){
             this.connectionServer()
             console.log(this.user.state, 'user')
             this.socket.emit('joinRoom', {user: this.user, room: this.room})
             this.joined = true
         },
+        roomPassVerify(event){
+            this.joinByPass({password: event.password,roomUrl: this.room, token: this.$cookies.get('token')}).then(correct => {
+                console.log('correto?', correct)
+                if(correct.correct === true) {
+                    this.JoinRoom()
+                }
+            }).catch(err => {
+                console.log(err, 'erro lol')
+            })
+
+        },
         disconnectRoom(user){
-            this.socket.emit('desconectado', {user: user})
+            this.joined = false
+            if(this.socket){
+                this.PlayPauseVideo()
+                this.socket.emit('desconectado', {user: user})
+                this.socket.disconnect(true)
+            }
         },
         addFocus(){
             const video = document.getElementById('video')
@@ -136,7 +159,9 @@ export default {
         GaloFilhoDaPuta(){
             const video = document.getElementById('video')
             const barra = document.querySelector('.progress-bar')
-            barra.style.width = `${video.currentTime / video.duration * 100}%`
+            if(barra){
+                barra.style.width = `${video.currentTime / video.duration * 100}%`
+            }
         },
         emitKeysEvents($event){
             const eventEmit = {
@@ -238,7 +263,9 @@ export default {
             }
         },
         emitUserDisconected(){
-            this.socket.emit('desconectado', {user: this.user, room: this.room})
+            if (this.socket) {
+                this.socket.emit('desconectado', {user: this.user, room: this.room})
+            }
         }
         
     }

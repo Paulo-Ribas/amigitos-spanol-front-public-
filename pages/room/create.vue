@@ -151,7 +151,8 @@ export default {
                 console.log(res)
                 this.$router.push({name: 'watch-uploads-roomId', params:{ roomId: res.url}})
             }).catch(err => {
-                console.log(err)
+                console.log(err, 'o erro')
+                this.erro = err
             })
         }
     },

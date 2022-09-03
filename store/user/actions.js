@@ -132,8 +132,8 @@ export default {
             let room = await this.$axios.$post(`${this.$config.dev_url}room`,dates,config)
             return room.param
             
-        } catch (error) {
-            throw new Error(error)
+        } catch (Error) {
+            throw new Error({ name: 'axioslol', message: 'error.response.data' })
         }
     },
     async getRoom(context, payload) {
@@ -145,6 +145,14 @@ export default {
         } catch (error) {
             throw new Error(error)
         }
+    },
+    async joinRoomByPassword(context, payload){
+        let {password, roomUrl} = payload
+        let config = {headers:{
+            authorization: payload.token
+        }}
+        let isCorrect = await this.$axios.$post(this.$config.dev_url + 'joinRoom', {password, roomUrl}, config)
+        return isCorrect
     },
     async deleteVideo(context, payload){
         let token = payload.token

@@ -73,7 +73,7 @@
             <NuxtLink class="videos-btn" to="/perfil/videos">Seus Videos</NuxtLink>
         </div>
         <div class="special-btns">
-            <LinkSpecial :UrlProps="'/users/'+ id" :btnProps="'Ver Perfil Publico'"></LinkSpecial>
+            <LinkSpecial :UrlProps="'/users/'+ userIdReactive" :btnProps="'Ver Perfil Publico'"></LinkSpecial>
             <div class="button-sign-out-container" @mouseenter="showIcon = true" @mouseleave="showIcon = false">
                 <button class="button-sign-out" @click="REMOVE_TOKEN(), signOut()">
                     <Transition name="leave">
@@ -99,9 +99,7 @@ export default {
         console.log('tokennnnnnnnn', this.$cookies.get('token'))
          this.$store.dispatch('user/validateUser', this.$cookies.get('token')).then(res => {
             console.log('o user', res)
-            this.$store.commit('user/SET_USER_INFO', res)
-             this.id.newProperty = res.id 
-             
+            this.$store.commit('user/SET_USER_INFO', res)             
             console.log('agr virou promise com then', res)
          }).catch(err => {
             console.log('console do erro por virar primisse com then', err)
@@ -154,7 +152,7 @@ export default {
     middleware: ['auth'],
     data(){
         return {
-            id: undefined,
+            id: this.$store.state.user.id,
             SrcImg: '',
             changing: false,
             password: '************',
@@ -180,7 +178,10 @@ export default {
     computed:{
         ...mapState({
             user: state => state.user
-        })
+        }),
+        userIdReactive() {
+            return this.id
+        }
     },
     watch:{
         newUserName(value, payload){
