@@ -1,5 +1,6 @@
 <template>
     <div class="container-app">
+        <Erro :erroProps="err" v-if="err != ''"></Erro>
         <JoinRoomBtn btnProps="clique aqui para começar a assistir" v-if="!joined && !pass" @clicked="JoinRoom()"></JoinRoomBtn>
         <JoinRoomForm labelPassProps="Digite A Senha" inputPlaceholderProps="senha..." inputSubmitProps="Pronto"
             v-if="!joined && pass" @submitEmited="roomPassVerify($event)"
@@ -65,7 +66,8 @@ export default {
             room: this.$route.params.roomId,
             oldVolume: 1,
             showVideos: false,
-            connected: false
+            connected: false,
+            err: '',
         }
     },
     computed:{
@@ -107,9 +109,11 @@ export default {
                 console.log('correto?', correct)
                 if(correct.correct === true) {
                     this.JoinRoom()
+                    this.err = ''
                 }
             }).catch(err => {
-                console.log(err, 'erro lol')
+                console.log(err)
+                this.err = err.response.data.err
             })
 
         },

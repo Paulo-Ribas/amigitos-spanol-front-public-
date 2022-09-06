@@ -133,7 +133,7 @@ export default {
             return room.param
             
         } catch (Error) {
-            throw new Error({ name: 'axioslol', message: 'error.response.data' })
+            throw Error.response.data.err
         }
     },
     async getRoom(context, payload) {
