@@ -37,10 +37,18 @@ export default {
     async asyncData(context){
         let res = await context.store.dispatch('user/getRoom',context.params.roomId)
         console.log(res, 'a room')
-        return {
-            filesVideos: res.room.filesVideos,
-            pass: res.room.pass,
-            roomAdm:[{userAdm: res.room.userAdm}]
+        if (res.room) {
+            return {
+                roomVideos: res.room.filesVideos,
+                roomMembers: res.room.members,
+                pass: res.room.pass,
+                roomAdm:[{userAdm: res.room.userAdm}]
+            }
+        }
+        else {
+            return {
+                roomVideos: undefined,
+            }
         }
     },
     fetch(){
@@ -71,14 +79,41 @@ export default {
         }
     },
     computed:{
-        ...mapState({user: state => state.user})
+        ...mapState({user: state => state.user}),
+        filesVideos(){
+            if (this.roomVideos) {
+                return this.roomVideos
+                
+            }
+            else {
+                return []
+            }
+        }
     },
     middleware: ['auth', 'roomPass'],
     methods: {
         connectionServer(){
            this.socket = io.connect('http://localhost:3333/',{ rememberTransport: false, transports: ['websocket', 'polling', 'Flash Socket', 'AJAX long-polling']})
+           this.socket.on('synchronizeRequest', data => {
+            let source = document.querySelector('source')
+            let video = document.getElementById('video')
+            let newData = {
+                url: source.src,
+                paused: video.paused,
+                currentTime: video.currentTime,
+                room: data.room,
+                userId: data.userId
+            }
+            this.socket.emit('synchronize', newData)
+           })
+           this.socket.on('sendRequestForSynchronize', data => {
+            this.sendRequestForSynchronize()
+           })
+           this.socket.on('synchronize', data => {
+            this.setVideoStatus(data)
+           })
            this.socket.on('msg', data => {
-            this.renderMSG(data)
+               this.renderMSG(data)
            })
            this.socket.on('PlayPause', data => {
             console.log('foi dado play')
@@ -103,6 +138,27 @@ export default {
             console.log(this.user.state, 'user')
             this.socket.emit('joinRoom', {user: this.user, room: this.room})
             this.joined = true
+        },
+        sendRequestForSynchronize(){
+            console.log('oléo')
+            if (this.roomMembers.length >= 1) {
+                let dates = {
+                    room: this.room, 
+                    userId: this.user.id,
+                }
+                this.socket.emit('askForSynchronize',dates)
+            }          
+        },
+        setVideoStatus(data){
+            let source = document.querySelector('source')
+            let video = document.getElementById('video')
+            console.log('foi aqui?', data.userId, this.user.id)
+            if(data.userId === this.user.id){
+                source.setAttribute('src', data.url)
+                video.load()
+                data.paused ? video.pause() : video.play()
+                video.currentTime = data.currentTime
+            }
         },
         roomPassVerify(event){
             this.joinByPass({password: event.password,roomUrl: this.room, token: this.$cookies.get('token')}).then(correct => {

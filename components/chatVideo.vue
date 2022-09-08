@@ -31,8 +31,10 @@
                                     <span class="user-name-chat">{{msg.userName}}</span>
                                 </div>
                                 <div class="msg-text">
-                                    <p>
-                                    {{msg.text}}
+                                    <p v-html="msg.text" v-if="msg.emoji">
+                                    </p>
+                                    <p v-else>
+                                        {{msg.text}}
                                     </p>
                                 </div>
                             </div>
@@ -85,10 +87,7 @@ export default {
         }
     },
     watch: {
-        members(value, payload){
-            this.setScroll(value[this.msgs.length])
-
-        }
+       
     },
     methods:{
         connectionServer(){
@@ -133,10 +132,20 @@ export default {
             }
         },
         renderMSG(msg) {
+            let msgText = msg.text
+            let emojiVerify = msg.text.split('|')
+            let emoji
+            if (emojiVerify[0]==="(-emoji#)") {
+                emoji = true
+                console.log(emojiVerify, 'meoju')
+                let newMsgFormat = emojiVerify[1]
+                msgText = newMsgFormat
+            }
             let mensagem = {
                 userName: msg.userName,
                 userImg: msg.userImg,
-                text:msg.text,
+                text:msgText,
+                emoji: emoji,
                 id: msg.userId
             }
             console.log(msg)

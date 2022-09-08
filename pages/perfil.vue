@@ -73,7 +73,7 @@
             <NuxtLink class="videos-btn" to="/perfil/videos">Seus Videos</NuxtLink>
         </div>
         <div class="special-btns">
-            <LinkSpecial :UrlProps="'/users/'+ userIdReactive" :btnProps="'Ver Perfil Publico'"></LinkSpecial>
+            <LinkSpecial :UrlProps="userIdReactive" :btnProps="'Ver Perfil Publico'" v-if="!loanding"></LinkSpecial>
             <div class="button-sign-out-container" @mouseenter="showIcon = true" @mouseleave="showIcon = false">
                 <button class="button-sign-out" @click="REMOVE_TOKEN(), signOut()">
                     <Transition name="leave">
@@ -180,7 +180,7 @@ export default {
             user: state => state.user
         }),
         userIdReactive() {
-            return this.id
+            return '/users/' + this.user.id
         }
     },
     watch:{

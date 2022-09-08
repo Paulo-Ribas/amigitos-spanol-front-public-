@@ -11,7 +11,7 @@
         </div>
       </div>
     </div>
-    <div class="container" v-if="!showAlgo">
+    <div class="container" v-show="!showAlgo">
         <form @submit="preventSubmit($event), sendRoomData()">
             <div class="container-1">
                 <div class="name">
