@@ -1,6 +1,6 @@
 <template>
         <div class="video-menu-container">
-            <div class="btn-container" @click="JoinRoom">
+            <div class="btn-container">
                 <ButtonSpecial @clicked="emitClick" btnProps="Escolher Video"/>
             </div>
             <div class="chatMembers-container">
@@ -69,6 +69,7 @@ export default {
     fetchOnServer: false,
     mounted(){
         this.connectionServer()
+        this.JoinRoom()
     },
         data(){
             return {

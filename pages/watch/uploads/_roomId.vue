@@ -94,20 +94,11 @@ export default {
     methods: {
         connectionServer(){
            this.socket = io.connect('http://localhost:3333/',{ rememberTransport: false, transports: ['websocket', 'polling', 'Flash Socket', 'AJAX long-polling']})
-           this.socket.on('synchronizeRequest', data => {
-            let source = document.querySelector('source')
-            let video = document.getElementById('video')
-            let newData = {
-                url: source.src,
-                paused: video.paused,
-                currentTime: video.currentTime,
-                room: data.room,
-                userId: data.userId
-            }
-            this.socket.emit('synchronize', newData)
+           this.socket.on('sendRequestForSynchronization', data => {
+            this.sendVideoUrl(data)
            })
-           this.socket.on('sendRequestForSynchronize', data => {
-            this.sendRequestForSynchronize()
+           this.socket.on('setVideoUrl', data => {
+            this.setVideoUrl(data)
            })
            this.socket.on('synchronize', data => {
             this.setVideoStatus(data)
@@ -128,36 +119,100 @@ export default {
            this.socket.on('changeVideo', data => {
             this.changeSrc(data)
            })
+           this.socket.on('userAskingForSyncronization', data => {
+            this.sendCurrentTime(data.user)
+           })
+           this.socket.on('currentTimeRecived', data => {
+            this.setCurrentTime(data)
+           })
            this.socket.on('disconnect', q => {
             this.socket.emit('desconectado', q)
            })
         },
         ...mapActions({joinByPass: 'user/joinRoomByPassword'}),
         JoinRoom(){
-            this.connectionServer()
-            console.log(this.user.state, 'user')
-            this.socket.emit('joinRoom', {user: this.user, room: this.room})
-            this.joined = true
+            if (!this.joined) {
+                this.connectionServer()
+                console.log(this.user.state, 'user')
+                this.socket.emit('joinRoom', {user: this.user, room: this.room})
+                this.joined = true
+            }
         },
-        sendRequestForSynchronize(){
-            console.log('oléo')
-            if (this.roomMembers.length >= 1) {
+        sendVideoUrl(id){ 
+            let Url = document.querySelector('source').src
                 let dates = {
                     room: this.room, 
-                    userId: this.user.id,
+                    userId: id.id,
+                    Url
                 }
-                this.socket.emit('askForSynchronize',dates)
-            }          
+                this.socket.emit('UrlSent',dates)       
         },
-        setVideoStatus(data){
+        async setVideoUrl(data){
             let source = document.querySelector('source')
-            let video = document.getElementById('video')
-            console.log('foi aqui?', data.userId, this.user.id)
+            let video = document.getElementById('video') 
+            let dates = {
+                room: this.room,
+                userId:this.user.id
+            }
             if(data.userId === this.user.id){
-                source.setAttribute('src', data.url)
+                source.setAttribute('src', data.Url)
                 video.load()
-                data.paused ? video.pause() : video.play()
-                video.currentTime = data.currentTime
+                try {
+                    console.log('esperando o load')
+                    await this.awaitLOad()
+                    console.log('load acabado')
+                    return this.socket.emit('askForCurrentTime', dates)
+                    
+                } catch (error) {
+                    this.err = 'ocorreu um erro durante a sincronização'
+                }
+                    
+            }
+        },
+        awaitLOad(){
+            setTimeout(() => {
+                let video = document.getElementById('video')
+                let Try = 0
+                let interval = setInterval(() => {
+                    Try++
+                    if (video.buffered.length > 0) {
+                        return new Promise((resolve, reject) => {
+                            clearInterval(interval)
+                            return resolve(true)
+                        })
+                    }
+                    if (Try >= 30) {
+                        clearInterval(interval)
+                        return new Promise((resolve, reject)=> {
+                            return reject(true)
+                        })
+                    }
+                    console.log('testando se o interval será parado')
+                }, 1000);
+            }, 1000);
+        },
+        sendCurrentTime(user){
+            let video = document.getElementById('video')
+            let videoStats = {
+                room: this.room,
+                userId: user,
+                videoStats:{
+                    currentTime: video.currentTime,
+                    paused: video.paused,
+                }
+            }
+            if (this.user.id != user) {
+                return this.socket.emit('sentCurrentTime', videoStats)
+            }
+        },
+        setCurrentTime(dates){
+            let video = document.getElementById('video')
+            if (this.user.id === dates.user) {
+                video.currentTime = dates.videoStats.currentTime
+                if (!dates.videoStats.paused) {
+                    video.play()
+                }
+                
             }
         },
         roomPassVerify(event){
@@ -211,9 +266,9 @@ export default {
             this.showVideos = false
             this.socket.emit('changeVideoToAll', {video: video, room: this.room})
         },
-        changeSrc(src){
+        changeSrc(data){
             let video = document.querySelector('video')
-            document.querySelector('source').src = src.location
+            document.querySelector('source').src = data.location
             video.load()
         },
         GaloFilhoDaPuta(){

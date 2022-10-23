@@ -13,6 +13,11 @@ export default {
     },
     props: {
         erroProps: String,
+    },
+    watch:{
+        erroProps(value, payload){
+            this.erro = value
+        }
     }
 
 }

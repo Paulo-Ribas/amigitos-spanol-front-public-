@@ -24,6 +24,13 @@ export default {
         videosProps: Array,
         btnProps: String
     },
+    watch: {
+      videosProps(value, payload){
+        console.log(value, 'ta mudando')
+        this.videos = value
+
+      }
+    },
     methods:{
       areYouSure(event){
         const indexValue = event.target.attributes['data-video'].value

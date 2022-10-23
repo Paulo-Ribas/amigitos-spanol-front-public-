@@ -14,6 +14,14 @@ export default {
         btnProps: String,
         UrlProps: String,
     },
+    watch: {
+        UrlProps(value, payload){
+            this.Url = value
+        },
+        btnProps(value, payload){
+            this.btnProps = value
+        }
+    },
     methods: {
         clicked(){
             this.$emit('clicked')
