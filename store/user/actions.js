@@ -118,7 +118,7 @@ export default {
         }
         catch (error) {
             console.log("ué???????")
-            throw new Error(error.response.data); //20/08/2022, try/catch, then.catch/ throw error, tudo dominado agora.
+            throw error.response.data; //20/08/2022, try/catch, then.catch/ throw error, tudo dominado agora.
         }
     },
     async postRoom(context, payload){
@@ -143,7 +143,7 @@ export default {
             return room
             
         } catch (error) {
-            throw new Error(error)
+            throw error
         }
     },
     async joinRoomByPassword(context, payload){
@@ -170,7 +170,7 @@ export default {
             return deleted
             
         } catch (error) {
-            throw new Error(error)
+            throw error
         }
         
 

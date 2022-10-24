@@ -1,6 +1,6 @@
 <template>
   <main>
-    <div class="container-main">
+    <div class="container-main" v-if="!loanding && show">
         <div class="container-text">
           <h2>ASSISTIR AO MESMO TEMPO</h2>
           <p>Lorem ipsum dolor, sit amet consectetur adipisicing elit. Aliquam, ipsum ratione! Accusamus distinctio veritatis cumque, labore explicabo nam vitae nesciunt suscipit dolorem possimus, earum, harum cupiditate sunt inventore sit sed quidem exercitationem iure.</p>
@@ -31,7 +31,25 @@
 <script>
 export default {
   name: '',
-  layout: 'noMenu'
+  layout: 'noMenu',
+  fetch(){
+    this.$store.dispatch('user/validateUser', this.$cookies.get('token')).then(done => {
+      this.$router.push({name:'perfil'})
+    }).catch(err => {
+      this.show = true
+      console.log(err)
+    })
+  },
+  fetchOnServer: false,
+  mounted(){
+    this.loanding = false
+  },
+  data(){
+    return {
+      loanding: true,
+      show: false
+    }
+  }
 }
 </script>
 <style scoped>

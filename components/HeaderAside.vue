@@ -49,7 +49,7 @@
                     <fa class="icon" icon="chalkboard"/>
                 </div>
                 <Transition name="videosEstudando">
-                    <NuxtLink to="/" v-if="show">Videos Estudando</NuxtLink>
+                    <NuxtLink to="/videos-estudando" v-if="show">Videos Estudando</NuxtLink>
                  </Transition>
 
             </li>

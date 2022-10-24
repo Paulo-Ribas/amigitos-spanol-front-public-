@@ -157,20 +157,21 @@ export default {
             if(data.userId === this.user.id){
                 source.setAttribute('src', data.Url)
                 video.load()
-                try {
-                    console.log('esperando o load')
-                    await this.awaitLOad()
-                    console.log('load acabado')
-                    return this.socket.emit('askForCurrentTime', dates)
-                    
-                } catch (error) {
-                    this.err = 'ocorreu um erro durante a sincronização'
-                }
+                setTimeout(async () => {
+                    try {
+                        console.log('esperando o load')
+                        await this.awaitLOad()
+                        console.log('load acabado')
+                        return this.socket.emit('askForCurrentTime', dates)
+                        
+                    } catch (error) {
+                        this.err = 'ocorreu um erro durante a sincronização'
+                    }
+                }, 1000);
                     
             }
         },
         awaitLOad(){
-            setTimeout(() => {
                 let video = document.getElementById('video')
                 let Try = 0
                 let interval = setInterval(() => {
@@ -189,7 +190,6 @@ export default {
                     }
                     console.log('testando se o interval será parado')
                 }, 1000);
-            }, 1000);
         },
         sendCurrentTime(user){
             let video = document.getElementById('video')

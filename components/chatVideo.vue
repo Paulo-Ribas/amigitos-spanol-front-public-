@@ -120,7 +120,9 @@ export default {
            msg.value = null
            this.socket.emit('newMSG', dates)
            let scroll = document.querySelector('.chat-screen')
-            scroll.scrollTop = scroll.scrollHeight
+           setTimeout(() => {
+               scroll.scrollTop = scroll.scrollHeight
+            }, 100);
         },
         sendMSG(e){
             e.preventDefault()
@@ -158,7 +160,9 @@ export default {
             let user = msg.userId
             console.log(scroll.scrollHeight, scroll.scrollTop, (scroll.scrollHeight - scroll.scrollTop))
             if((scroll.scrollHeight - scroll.scrollTop) <= 260 && user != this.user.id) {
-                scroll.scrollTop = scroll.scrollHeight
+                setTimeout(() => {
+                    scroll.scrollTop = scroll.scrollHeight
+                }, 100);
 
             }
             
