@@ -10,7 +10,8 @@
             :propsSeasons='13'
             propsDescrition='seriado de ficção cientifica'
             >
-            </Serie>
+            </Serie>     
+
          </div>
       </div>
    </section>

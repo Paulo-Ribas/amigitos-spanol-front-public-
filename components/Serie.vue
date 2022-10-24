@@ -44,9 +44,10 @@ export default {
         align-items: center;
         justify-content: center;
         max-width: 390px;
-        min-width: 300px;
+        min-width: 390px;
         min-height: 400px;
         background: var(--corMenu);
+        margin: 0px 5px;
         
     }
     .link {
