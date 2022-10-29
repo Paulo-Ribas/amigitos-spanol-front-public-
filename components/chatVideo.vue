@@ -45,6 +45,9 @@
                                 </textarea>
                                 <input id="send" type="submit" value="Enviar" @click="sendMSG">
                             </form>
+                            <div class="erro-container">
+                                <Erro v-if="msgErr != ''" :erroProps="msgErr"></Erro>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -54,7 +57,6 @@
 
 <script>
 import io from 'socket.io-client'
-import axios from 'axios'
 import {mapState} from 'vuex'
 export default {
       fetch(){
@@ -67,8 +69,10 @@ export default {
          })
     },
     fetchOnServer: false,
-    mounted(){
+    created(){
         this.connectionServer()
+    },
+    mounted(){
         this.JoinRoom()
     },
         data(){
@@ -77,6 +81,8 @@ export default {
                 socket: null,
                 msgs: [],
                 members: [],
+                msgSent: 0,
+                msgErr: '',
     
             }
         },
@@ -88,6 +94,7 @@ export default {
         }
     },
     watch: {
+    
        
     },
     methods:{
@@ -104,10 +111,11 @@ export default {
         },
          JoinRoom(){
             let user = this.user
+            console.log(this.user, 'user do join room')
             let room = this.room
             this.socket.emit('joinRoom',{user,room})
         },
-        emitMsg() {
+        async emitMsg() {
             let msg = document.querySelector('textarea')
             let msgValue = msg.value
             let dates = {
@@ -117,22 +125,47 @@ export default {
                 room: this.room,
                 text: msgValue
             }
-           msg.value = null
-           this.socket.emit('newMSG', dates)
-           let scroll = document.querySelector('.chat-screen')
-           setTimeout(() => {
-               scroll.scrollTop = scroll.scrollHeight
-            }, 100);
+            try {
+                await this.verifySpam()
+                msg.value = null
+                this.socket.emit('newMSG', dates)
+                let scroll = document.querySelector('.chat-screen')
+                setTimeout(() => {
+                    scroll.scrollTop = scroll.scrollHeight
+                 }, 100);
+
+            } catch (error) {
+                return
+            }
         },
         sendMSG(e){
             e.preventDefault()
-            this.emitMsg()
         },
         sendByEnter(key) {
             if (key.code === "Enter" && !key.shiftKey) {
                 key.preventDefault()
                 this.emitMsg()
             }
+        },
+        verifySpam(){
+            this.msgSent++
+            console.log(this.msgSent)
+            return new Promise((resolve, reject) => {  
+                if (this.msgSent < 7) {
+                    return resolve()             
+                }
+                if (this.msgSent === 7) {
+                    setTimeout(() => {
+                        this.msgSent = 0
+                        this.msgErr = ''
+                    }, 6000);
+                    return resolve()
+                    }
+                if (this.msgSent > 8) {
+                    this.msgErr = 'está enviando mensagens em um intervalo muito curto'
+                    return reject()
+                }
+            })
         },
         renderMSG(msg) {
             let msgText = msg.text
@@ -193,6 +226,7 @@ export default {
         display: flex;
         flex-direction: column;
         justify-content: space-between;
+        position: relative;
     }
     .btn-container{
         margin: 10px 5px;
@@ -206,6 +240,12 @@ export default {
         height: 100%;
         background-color: var(--corMenu);
         
+    }
+    .erro-container {
+        position: absolute;
+        bottom: -5%;
+        min-width: 220px;
+        width: 310px;
     }
     .member {
         position: relative;
@@ -253,6 +293,7 @@ export default {
         overflow-y: auto;
     }
     .text-area-container {
+        position: relative;
         height: 45px;
         background-color: var(--cor4);
     }

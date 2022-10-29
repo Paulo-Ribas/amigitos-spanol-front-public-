@@ -2,8 +2,9 @@
     <div class="container-app">
         <Erro :erroProps="err" v-if="err != ''"></Erro>
         <JoinRoomBtn btnProps="clique aqui para começar a assistir" v-if="!joined && !pass" @clicked="JoinRoom()"></JoinRoomBtn>
+        <JoinRoomBtn btnProps="clique aqui para começar a assistir" v-if="!joined && owner === user.id && pass" @clicked="JoinRoom()"></JoinRoomBtn>
         <JoinRoomForm labelPassProps="Digite A Senha" inputPlaceholderProps="senha..." inputSubmitProps="Pronto"
-            v-if="!joined && pass" @submitEmited="roomPassVerify($event)"
+            v-if="!joined && pass && owner != user.id" @submitEmited="roomPassVerify($event)"
         />
         <PickVideo :videosProps="filesVideos" v-if="showVideos" @ChangeVideo="choiced($event)" @cancel="showVideos = false" />
         <div class="video-container" v-if="joined">
@@ -42,6 +43,7 @@ export default {
                 roomVideos: res.room.filesVideos,
                 roomMembers: res.room.members,
                 pass: res.room.pass,
+                owner: res.room.userAdm,
                 roomAdm:[{userAdm: res.room.userAdm}]
             }
         }
@@ -97,14 +99,14 @@ export default {
            this.socket.on('sendRequestForSynchronization', data => {
             this.sendVideoUrl(data)
            })
+           this.socket.on('msg', data => {
+               this.renderMSG(data)
+           })
            this.socket.on('setVideoUrl', data => {
             this.setVideoUrl(data)
            })
            this.socket.on('synchronize', data => {
             this.setVideoStatus(data)
-           })
-           this.socket.on('msg', data => {
-               this.renderMSG(data)
            })
            this.socket.on('PlayPause', data => {
             console.log('foi dado play')
@@ -124,6 +126,9 @@ export default {
            })
            this.socket.on('currentTimeRecived', data => {
             this.setCurrentTime(data)
+           })
+           this.socket.on('signal', data => {
+            this.socket.emit('answeredSignal', {roomUrl: this.room})
            })
            this.socket.on('disconnect', q => {
             this.socket.emit('desconectado', q)
