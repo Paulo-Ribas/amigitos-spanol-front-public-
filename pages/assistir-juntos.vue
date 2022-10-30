@@ -24,7 +24,8 @@ export default {
     name:'qqq',
     components: {
         LinkSpecialVue
-    }
+    },
+    middleware: ['auth']
 
 }
 </script>

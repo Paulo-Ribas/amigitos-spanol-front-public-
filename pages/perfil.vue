@@ -9,9 +9,7 @@
         </div>
       </div>
     </div>
-    <div class="tardis" v-if="loanding">
-        <img src="/loanding1.gif">
-    </div>
+    <TardisLoad v-if="loanding"></TardisLoad>
     <div class="user-config" v-if="!loanding">
         <div class="user-img">
             <div class="img-container">
@@ -26,10 +24,8 @@
             <button class="edit-btn" v-if="changing" @click="save">Salvar</button>
         </div>
         <div class="edit">
-            <span v-if="errName != ''">{{errName}}</span>
-            <span v-if="errEmail != ''">{{errEmail}}</span>
-            <span v-if="errPassword != ''">{{errPassword}}</span>
             <div class="name">
+                <span v-if="errName != ''">{{errName}}</span>
                 <div class="label-container">
                     <label>Nome</label>
                 </div>
@@ -43,6 +39,7 @@
                 </div>
             </div>
             <div class="email">
+                <span v-if="errEmail != ''">{{errEmail}}</span>
                 <div class="label-container">
                     <label>Email</label>
                 </div>
@@ -56,6 +53,7 @@
                  </div>
             </div>
             <div class="password">
+                <span v-if="errPassword != ''">{{errPassword}}</span>
                 <div class="label-container">
                     <label>Senha</label>
                 </div>
@@ -223,7 +221,7 @@ export default {
         choiceImg() {
             let form = new FormData()
             const file = document.getElementById('btn-file')
-            form.append('video',file.files[0])
+            form.append('imagem',file.files[0])
             this.changing = true
             this.imgUpload = file.files[0]
             if (file.files.length > 0) {
@@ -383,18 +381,6 @@ export default {
 </script>
 
 <style scoped>
-    .tardis {
-        position: absolute;
-        top: 50%;
-        left: 50%;
-        transform: translate(-50%, -50%);
-        width: 300px;
-        height: 350px;
-    }
-    .tardis img {
-        width: 300px;
-        height: 350px;
-    }
     .perfil {
         flex: 1;
         height: 100vh;
@@ -451,6 +437,12 @@ export default {
     .edit {
         width: 100%;
     }
+    .edit span {
+        position: absolute;
+        top: -10px;
+        color: var(--cor9);
+        white-space: nowrap;
+    }
     .name, .email, .password {
         width: 100%;
         display: flex;
@@ -458,6 +450,7 @@ export default {
         align-items: center;
         margin: 10px 0px;
         justify-content: space-around;
+        position: relative;
     }
     label {
         margin: 0px 5px;

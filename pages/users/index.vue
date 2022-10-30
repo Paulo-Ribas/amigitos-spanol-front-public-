@@ -1,37 +1,20 @@
 <template>
-    <div class="user">
-        <div class="user-container">
-            <div class="img-container">
-                <img :src="imgSrc">
-            </div>
-            <div class="name-container">
-                <h2>{{name}}</h2><span v-if="emoji != 'false'" v-html="emoji"></span>
-            </div>
-            <div class="friends">
-               Amigos: {{friends}}
-            </div>
-        </div>
-    </div>
+
 </template>
 
 <script>
-import axios from "axios";
+
 export default {
     name:'',
-    beforeMount(){
-        axios.get(`http://localhost:3333/users/${this.params.userId}`).then(dates => {
-            this.name = dates.data.user.username
-            this.emoji = dates.data.user.emoji
-            console.log(dates, 'teste')
-            if (dates.data.user.profileimg.split('.')[0] === 'default') {
-                this.imgSrc = '/default.png'
-            }
-            else {
-                this.imgSrc = dates.data.user.profileimg
-            }
+    fetch(){
+        this.$store.dispatch('user/validateUser', this.$cookies.get('token')).then(data => {
+            console.log(data, 'vai?')
+            this.$router.push(`/users/${data.id}`)
+        }).catch(err => {   
+            console.log(err)
         })
-        
     },
+    fetchOnServer: false,
     data(){
         return {
             name: '',

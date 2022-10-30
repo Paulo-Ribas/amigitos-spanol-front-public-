@@ -1,6 +1,6 @@
 <template>
   <div id="rooms-container">
-    <div class="room-box-container">
+    <div class="room-box-container" v-if="roomFinal.length > 0">
         <div class="box-room" v-for="room in roomFinal" :key="room._id">
             <div class="icon-container" v-if="room.type === 'youtube'">
                 <fa :icon="['fab','youtube']"/>
@@ -18,8 +18,12 @@
             </div>
         </div>
     </div>
-    <LinkSpecial btnProps="Criar Sala" UrlProps="/room"></LinkSpecial>
+    <div class="room-box-container" v-else>
+        <h2 class="vazio">Sem Salas Criadas</h2>
+    </div>
+    <LinkSpecial class="create-room" btnProps="Criar Sala" UrlProps="/assistir-juntos"></LinkSpecial>
   </div>
+
 </template>
 
 <script>
@@ -75,11 +79,12 @@ export default {
         flex: 1;
         height: 100vh;
     }
-    #rooms-container a {
+    #rooms-container .create-room {
         width: 70%;
         margin: auto;
         border-radius: 32px;
         margin-top: -2px;
+      
     }
     .room-box-container {
         width: 100%;
@@ -96,10 +101,14 @@ export default {
         max-width: 510px;
         height: 197px;
         margin: 5px;
-        border: 2px solid var(--cor3);
+        border: 2px solid var(--cor5);
         display: flex;
         border-radius: 10px;
         overflow: hidden;
+    }
+    .vazio {
+        font-family: cursive;
+        color: white;
     }
     .icon-container {
         width: 40%;
@@ -107,10 +116,11 @@ export default {
         display: flex;
         justify-content: center;
         align-items: center;
+        background-color: var(--corMenu);
     }
     .icon-container svg {
         font-size: 9.3em;
-        color: var(--cor4);
+        color: white;
     }
     .room-datas{
         width: 60%;

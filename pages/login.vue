@@ -11,6 +11,7 @@
             <input type="password" v-model="password">
             <input type="submit" value="Enviar" @click="sendUser">
         </form>
+            <img src="/loanding1.gif" v-if="loanding" class="tardis-loanding">
     </div>
   
 </template>
@@ -23,7 +24,8 @@ export default {
             name: '',
             email: '',
             password: '',
-            erro: ''
+            erro: '',
+            loanding: false
         }
     },
     components: {
@@ -32,6 +34,7 @@ export default {
         sendUser($event) {
             $event.preventDefault()
             const {name, email, password} = this.$data
+            this.loanding = true
             axios.post('http://localhost:3333/login',{username: name, email, password}).then(sucefful => {
                 let token = sucefful.data.token
                 console.log('sucefful', token)
@@ -45,6 +48,7 @@ export default {
             }).catch(err => {
                 console.log(err)
                 this.erro = err.response.data.err
+                this.loanding = false
             })
             
         }
@@ -101,6 +105,12 @@ h2 {
     color: var(--cor2);
     top: 0;
     transform: translateY(-60px);
+}
+.tardis-loanding {
+    position: absolute;
+    width: 40px;
+    height: 50px;
+    bottom: 10%;
 }
 
 </style>

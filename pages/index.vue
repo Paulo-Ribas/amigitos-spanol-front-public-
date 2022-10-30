@@ -9,7 +9,7 @@
             <div class="login-container">
               <h3>Login</h3>
               <div class="link-container">
-                <img src="/svg/gusta.svg" class="tardis-icon">
+                <img src="/tardis-icon-23.png" class="tardis-icon">
                   <NuxtLink to="/login">
                    Assistir Com Youtube
                   </NuxtLink>
@@ -33,12 +33,18 @@ export default {
   name: '',
   layout: 'noMenu',
   fetch(){
-    this.$store.dispatch('user/validateUser', this.$cookies.get('token')).then(done => {
-      this.$router.push({name:'perfil'})
-    }).catch(err => {
+    let token = this.$cookies.get('token')
+    if (token) {
+      this.$store.dispatch('user/validateUser', token).then(done => {
+        this.$router.push({name:'users'})
+      }).catch(err => {
+        this.show = true
+        console.log(err)
+      })
+    }
+    else {
       this.show = true
-      console.log(err)
-    })
+    }
   },
   fetchOnServer: false,
   mounted(){
@@ -120,7 +126,7 @@ export default {
   }
   .tardis-icon {
     position: absolute;
-    width: 75px;
+    width: 50px;
     height: 75px;
     top: 50%;
     left: -9%;
@@ -131,12 +137,12 @@ export default {
   }
   .login-container .link-container a{
     display: inline-block;
-    width: 100%;
+    width: 70%;
     height: 100%;
     background-color: var(--cor7);
     border-radius: 6px;
     border-top-left-radius: 20px;
-    border-top-right-radius: 50%;
+    border-top-right-radius: 200%;
     transform: translateX(-60px);
     display: flex;
     justify-content: center;
@@ -146,12 +152,12 @@ export default {
     font-size: 1em;
     transition: 0.6s
   }
-  .login-container .link-container a:hover{
+  .login-container .link-container:hover a{
     display: inline-block;
-    width: 100%;
+    width: 70%;
     height: 100%;
     background-color: var(--cor7);
-    border-top-left-radius: 50%;
+    border-top-left-radius: 200%;
     border-top-right-radius: 20px;
     transform: translateX(0px);
     display: flex;

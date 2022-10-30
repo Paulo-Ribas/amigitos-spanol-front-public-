@@ -1,9 +1,9 @@
 <template>
     <div class="user">
-        <div class="user-container">
+    <TardisLoad v-if="loading"></TardisLoad>
+        <div class="user-container" v-if="!loading">
             <div class="img-container">
-                <img :src="imgSrc" v-if="imgSrc">
-                <img src="/default.png" v-else>
+                <img :src="imgSrc">
             </div>
             <div class="name-container">
                 <h2>{{name}}</h2><span v-if="emoji != 'false'" v-html="emoji"></span>
@@ -16,11 +16,11 @@
 </template>
 
 <script>
-import axios from "axios";
+import axios from 'axios'
 export default {
     name:'',
-    beforeMount(){
-        axios.get(`http://localhost:3333/user/${this.$route.params.userId}`).then(dates => {
+    fetch(){
+        axios.get(`${this.$config.dev_url}user/${this.$route.params.userId}`).then(dates => {
             this.name = dates.data.user[0].username
             this.emoji = dates.data.user[0].emoji
             console.log(dates, 'teste')
@@ -30,17 +30,20 @@ export default {
             else {
                 this.imgSrc = dates.data.user[0].profileimg
             }
-        }).catch()
-        
+
+        }).catch(err => console.log(err))
+    },
+    fetchOnServer: false,
+    mounted(){
+        this.loading = false
     },
     data(){
         return {
             name: '',
-            imgSrc: false,
+            imgSrc: '',
             emoji: '',
             friends: 0,
-
-
+            loading: true,
 
         }
     },

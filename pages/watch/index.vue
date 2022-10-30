@@ -2,16 +2,15 @@
    <section id="series">
       <div class="container-seasons">
          <div class="series-row">
-            <Serie 
+            <Serie propsBackGround='/doctor-who-vortex.gif'
             propsUrl='watch/Doctor-Who' 
             propsImg='/DW.jpg' 
-            propsAlt='imagem do seriado doctor whi'
+            propsAlt='imagem do seriado doctor who'
             propsName='Doctor Who'
             :propsSeasons='13'
             propsDescrition='seriado de ficção cientifica'
             >
-            </Serie>     
-
+            </Serie>
          </div>
       </div>
    </section>

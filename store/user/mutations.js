@@ -1,13 +1,15 @@
 export default {
     SET_TOKEN(state, payload){
         console.log(payload,'token diferente?')
-        this.$cookies.removeAll()
+        this.$cookies.remove('token')
         this.$cookies.set('token', payload, {
-            maxAge:  60 * 60 * 24 * 7,
+            maxAge:  60 * 60 * 24 * 4,
         })
+        console.log('token setado = ', this.$cookies.getAll('token'))
     },
     REMOVE_TOKEN(state, payload){
-        this.$cookies.removeAll()
+        console.log('apagando o token')
+        this.$cookies.remove('token')
     },
     SET_VIDEOS(state, payload){
         state.videos = payload
