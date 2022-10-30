@@ -3,13 +3,16 @@ export default {
         console.log(payload,'token diferente?')
         this.$cookies.remove('token')
         this.$cookies.set('token', payload, {
+            path: '/',
             maxAge:  60 * 60 * 24 * 4,
         })
         console.log('token setado = ', this.$cookies.getAll('token'))
     },
     REMOVE_TOKEN(state, payload){
-        console.log('apagando o token')
+        console.log('apagando o token', this.$cookies.getAll('token'))
+        this.$cookies.removeAll()
         this.$cookies.remove('token')
+        console.log(this.$cookies.get('token'), 'foram pagados?')
     },
     SET_VIDEOS(state, payload){
         state.videos = payload

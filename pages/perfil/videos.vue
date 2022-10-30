@@ -11,7 +11,7 @@
       <div class="progress"></div>
     </div>
     <button @click="clickInput" class="add-videos">Adicionar Video</button>
-    <input type="file" hidden id="file" @change="uploadVideo"/>
+    <input type="file" accept="video/mp4,video/avi,video/wmv" hidden id="file" @change="uploadVideo"/>
   </div>
 </template>
 

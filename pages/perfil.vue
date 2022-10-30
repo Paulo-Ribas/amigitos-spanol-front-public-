@@ -1,5 +1,6 @@
 <template>
-  <div class="perfil" @teste="console.log('tese')">
+  <div class="perfil" @teste="console.log('teste')">
+    <Erro v-if="errImg != ''" :erroProps="errImg"></Erro>
     <div class="areYouSure" v-if="showAlgo" @ask="showAlgo = true">
       <div class="warn-container">
         <h2>Tem Certeza?</h2>
@@ -9,17 +10,17 @@
         </div>
       </div>
     </div>
-    <TardisLoad v-if="loanding"></TardisLoad>
+    <TardisLoadBig v-if="loanding"></TardisLoadBig>
     <div class="user-config" v-if="!loanding">
         <div class="user-img">
             <div class="img-container">
                 <img v-if="imgChoiced" :src="imgChoiced">
                 <img v-else :src="user.profileimg">
-
+                <TardisLoadSmall v-if="imgUploading"></TardisLoadSmall>
             </div>
         <!--<input type="file" value="mudar imagem de perfil" v-if="!changing">-->
             <button class="edit-btn" v-if="!changing" @click="sendFile">Mudar Avatar</button>
-            <input type="file" id="btn-file" @change="choiceImg">
+            <input type="file" accept="image/png,image/jpeg,image/jpg" id="btn-file" @change="choiceImg">
             <button class="edit-btn" v-if="changing" @click="cancel">Cancelar</button>
             <button class="edit-btn" v-if="changing" @click="save">Salvar</button>
         </div>
@@ -157,11 +158,13 @@ export default {
             imgChoiced: undefined,
             imgUpload: undefined,
             newUserName: '',
+            imgUploading: false,
             newEmail: undefined,
             newPassword: undefined,
             errName: '',
             errEmail: '',
             errPassword: '',
+            errImg: '',
             loanding: true,
             showAlgo: false,
             saveUserName: false,
@@ -239,17 +242,24 @@ export default {
                     imagem: this.imgUpload,
                     email: user.email
                 }
+                this.imgUploading = true
                 this.editImg(axiosInfos).then(token => {
                     this.changing = false
                     this.SET_TOKEN('bearer ' + token)
                     this.validateUser(this.$cookies.get('token')).then(user => {
                         console.log('o usuario q estou a receber lol', user)
                         this.SET_USER_INFO(user)
+                        this.imgUploading = false
+                        this.errImg = ''
                     }).catch(res => {
                         console.log('a resposta do erro lol', res)
+                        this.imgUploading = false
+                        this.errImg = res.err
                     })
 
                 }).catch(res => {
+                    this.imgUploading = false
+                    this.errImg = res.err
                     console.log('o erro lol ', res)
                 })
 
@@ -259,6 +269,7 @@ export default {
         cancel() {
             this.imgChoiced = undefined
             this.changing = false
+            this.imgUploading = false
         },
         editInput(input){
             let inputTargeted
@@ -345,7 +356,7 @@ export default {
 
             })
         },
-        signOut(){
+        async signOut(){
             this.REMOVE_TOKEN()
             this.$router.push('/')
         },
@@ -433,6 +444,7 @@ export default {
         position: absolute;
         width: 100%;
         height: 100%;
+        object-fit: cover;
     }
     .edit {
         width: 100%;

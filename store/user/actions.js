@@ -78,7 +78,7 @@ export default {
         }
         catch (error) {
             console.log("ué???????")
-            throw new Error(error.response.data); //20/08/2022, try/catch, then.catch/ throw error, tudo dominado agora.
+            throw error.response.data; //20/08/2022, try/catch, then.catch/ throw error, tudo dominado agora.
         }
     },
     async editUserEmail(context, payload) {

@@ -1,6 +1,6 @@
 <template>
     <div class="user">
-    <TardisLoad v-if="loading"></TardisLoad>
+    <TardisLoadBig v-if="loading"></TardisLoadBig>
         <div class="user-container" v-if="!loading">
             <div class="img-container">
                 <img :src="imgSrc">
