@@ -3,24 +3,20 @@
             <div class="btn-container">
                 <ButtonSpecial @clicked="emitClick" btnProps="Escolher Video"/>
             </div>
-            <div class="chatMembers-container">
-                <div class="container-chat">
-                    <div class="members">
-                        <div class="member" v-for="(member, index) in membersReactive" :key="index">
-                            <div class="member-container">
-                                <img  :src="member.profileimg">
-                            <!-- <div class="options">
-                                <ul>
-                                    <li> <nuxt-link :to="'/users/' + user.id">Perfil</nuxt-link></li>
-                                    <li v-if="user.id === room.userAdm">Remover Da Sala</li>
-                                    <li v-if="user.id === room.userAdm">Mutar</li>
-                                    <li v-if="user.id === room.userAdm">Banir</li>
-                                    <li v-if="user.id === room.userAdm">Permitir Escolher Videos</li>
-                                </ul>
-                            </div> -->
-                            </div>
+            <div class="members-container">
+                <div :class="{members: 'members', width100}">
+                    <div class="member" v-for="(member, index) in membersReactive" :key="index">
+                        <div class="member-container">
+                            <img  :src="member.profileimg">
                         </div>
                     </div>
+                </div>
+                <div class="icon-container" @click="width100 = !width100">
+                    <fa icon="users"></fa>
+                </div>
+            </div>
+            <div class="chatMembers-container">
+                <div class="container-chat">
                     <div class="chat-container">
                         <div class="chat-screen" @click="setScroll">
                             <div class="msg-container" v-for="(msg , index) in msgs" :key="index">
@@ -69,11 +65,11 @@ export default {
          })
     },
     fetchOnServer: false,
-    created(){
+    beforeMount(){
         this.connectionServer()
     },
     mounted(){
-        this.JoinRoom()
+        this.JoinRoom(),
         this.askChat()
     },
         data(){
@@ -82,17 +78,25 @@ export default {
                 socket: null,
                 msgs: [],
                 members: [],
+                membersReactive: [],
                 msgSent: 0,
                 msgErr: '',
+                width100: false,
     
             }
         },
     computed:{
         ...mapState({user: state => state.user}),
-        membersReactive(){
-            return this.members
-
-        }
+    },
+    watch: {
+       members(value, payload){
+        console.log(value)
+        this.membersReactive = value
+       },
+       user(value, payload){
+        console.log(value,'mudou')
+        this.JoinRoom()
+       }
     },
     methods:{
         connectionServer(){
@@ -108,7 +112,7 @@ export default {
             this.sendChat(data)
            })
            this.socket.on('chatRecived', data => {
-            this.attChat(data)
+            this.attChat()
            })
            this.JoinRoom()
         },
@@ -119,7 +123,6 @@ export default {
             this.socket.emit('joinRoom',{user,room})
         },
         askChat(){
-            console.log('enviei')
             this.socket.emit('requestForChatMsgs', {user: this.user.id, room: this.room})
         },
         async emitMsg() {
@@ -191,10 +194,19 @@ export default {
                 emoji: emoji,
                 id: msg.userId
             }
-            console.log(msg)
            this.msgs.push(mensagem)
-           this.setScroll(msg)
-          
+          this.setScroll(msg)
+        },
+        sendChat(data){
+            let userRequest = data.user
+            let room = this.room
+            let chat = this.msgs
+            this.socket.emit('chatSent', {userRequest, room, chat})
+        },
+        attChat(data){
+            if (this.user.id === data.userRequest && this.msgs.length != data.chat.length) {
+                this.msgs = data.chat
+            }
         },
         setScroll(msg){
             let scroll = document.querySelector('.chat-screen')
@@ -207,21 +219,6 @@ export default {
 
             }
             
-        },
-        sendChat(data){
-            let userRequest = data.user
-            let room = this.room
-            let chat = this.msgs
-            console.log('enviando o chat')
-            this.socket.emit('chatSent', {userRequest, room, chat})
-        },
-        attChat(data){
-            console.log(data, 'att chat')
-            if (this.user.id === data.userRequest) {
-                setTimeout(() => {
-                    this.msgs = data.chat
-                }, 69)
-            }
         },
         updateMember(member){
             this.members = member
@@ -240,16 +237,14 @@ export default {
 <style scoped>
     .video-menu-container{
         background-color:var(--corMenu);
-        flex: 0.229;
-        max-width: 300px;
-        min-width: 210px;
-        height: 75vh;
-        max-height: 480px;
-        margin: 10px 20px;
+        flex: 1.5;
         display: flex;
         flex-direction: column;
         justify-content: space-between;
         position: relative;
+        width: 100%;
+        margin-top: 10px;
+        max-width: 400px;
     }
     .btn-container{
         margin: 10px 5px;
@@ -257,7 +252,7 @@ export default {
         border-radius: 5px;
     }
     .chatMembers-container {
-        height: 308px;
+        height: 340px
     }
     .container-chat {
         height: 100%;
@@ -273,19 +268,54 @@ export default {
     .member {
         position: relative;
     }
-    .members {
-        height: 63px;
+    .width100 {
+        opacity: 1;
+        width: 82% !important;
+    }
+    .members-container {
+        height: 58px;
         width: 100%;
         overflow-x: auto;
         display: flex;
         overflow-x: auto;
         overflow-y: none;
+        align-items: center;
+        position: absolute;
+        transform: translateY(50px);
+        flex-direction: row-reverse;
+        z-index: 3;
+    }
+    .members-container .icon-container {
+        color: white;
+        background: var(--background);
+        border-radius: 50%;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 40px;
+        width: 40px;
+        font-size: 1.4em;
+    }
+    .members {
+        width: 0%;
+        right: 0%;
+        height: 100%;
+        display: flex;
+        border-top-left-radius: 20px;
+        border-bottom-left-radius: 20px;
+        margin-left: 5px;
+        transition: width 1s;
+        background-color: var(--corMenu);
+        border: 1px solid var(--cor5);
+        border-right: none;
+
     }
     .member-container {
-        height: 50px;
-        width: 50px;
+        height: 49px;
+        width: 49px;
         position: relative;
         margin: 0px 5px;
+        position: absolute;
     }
     .member-container img {
         width: 100%;
@@ -308,11 +338,11 @@ export default {
         position: absolute;
     }
     .chat-container {
-        height: calc(100% - 50px);
+        height: 100%;
     }
     .chat-screen {
         width: 100%;
-        height: calc(100% - 58px);
+        height: calc(100% - 45px);
         overflow-y: auto;
     }
     .text-area-container {

@@ -47,13 +47,22 @@ export default {
   modules: [
     '@nuxtjs/axios',
     ['nuxt-vuex-localstorage'],
-     'cookie-universal-nuxt'
+     'cookie-universal-nuxt',
+     ['nuxt-mq']
   ],
+  'mq': {
+    defaultBreakpoint: 'sm',
+    breakpoints: {
+      sm: 740,
+      md: 1250,
+      lg: Infinity,
+    }
+  },
   fontawesome: {
     component: 'fa',
     icons: {
       solid: ['faHome', 'faEnvelope', 'faUser', 'faUsers', 'faChalkboard',
-             'faUpload', 'faPenToSquare', 'faCheck', 'faXmark','faArrowRightFromBracket'],
+        'faUpload', 'faPenToSquare', 'faCheck', 'faXmark', 'faArrowRightFromBracket', 'faArrowLeft'],
       brands: ['faYoutube']
     }
   },

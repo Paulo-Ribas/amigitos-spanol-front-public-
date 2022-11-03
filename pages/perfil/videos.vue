@@ -1,17 +1,24 @@
 <template>
   <div id="videos" v-if="!loanding">
-    <h2>Videos</h2>
+    <h2>Videos
+    <span class="arrow" v-if="mobile">
+      <NuxtLink to="/perfil">
+        <fa icon="arrow-left"></fa>
+      </NuxtLink>
+    </span>
+    </h2>
       <TabbleVideosList :btnProps="'deletar'" :videosProps="user.videos" @selected="areYouSure($event)"></TabbleVideosList>
-    <div class="progress-bar" v-if="uploading">
+    <div class="progress-bar" v-if="uploading && !completed && countVideo > 0 && videoErr != ''">
       <span class="completed" v-if="completed">completo</span>
       <span class="status" v-if="uploading">enviando arquivo</span>
-      <span class="processing" v-if="prossesing">processando</span>
       <span class="erro_video" v-if="videoErr">{{videoErr}}</span>
-      <span class="porcent">0%</span>
+      <span class="porcent"></span>
+      <span class="videosUploading" v-if="countVideo > 0">{{countVideo}}</span>
       <div class="progress"></div>
+      <TardisVerySmall v-if="!completed" class="hidden tardis-processing"></TardisVerySmall>
     </div>
     <button @click="clickInput" class="add-videos">Adicionar Video</button>
-    <input type="file" accept="video/mp4,video/avi,video/wmv" hidden id="file" @change="uploadVideo"/>
+    <input type="file" accept="video/mp4,video/wmv" hidden id="file" @change="uploadVideo"/>
   </div>
 </template>
 
@@ -32,10 +39,16 @@ export default {
      
   },
   beforeMount() {
-    console.log(this.$store.state.user.token)
+    this.$emit('verify')
   },
   mounted() {
     this.loanding = false
+    if (this.$route.fullPath === '/perfil/videos' && this.$mq === 'sm') {
+      this.mobile = true
+    }
+  },
+  beforeDestroy(){
+    this.$emit('toggleMobile')
   },
   fetchOnServer: false,
   data() {
@@ -45,7 +58,9 @@ export default {
       uploading: false,
       prossesing: false,
       completed: false,
-      videoErr: undefined
+      videoErr: '',
+      countVideo: 0,
+      mobile: false,
     };
   },
   computed: {
@@ -66,19 +81,26 @@ export default {
       Form.append("video", file.files[0]);
       this.completed = false
       this.uploading = true
+      this.prossesing = false
+      this.videoErr = ' '
+      this.countVideo += 1 
       let axiosInfos = {
         file: Form,
         getprogressAndSetHeaders:{
           onUploadProgress(event){
+            document.querySelector('.tardis-processing').classList.add('hidden')
               let progress = Math.round((event.loaded * 100) / event.total)
               let progressBar = document.querySelector('.progress')
               let progressPorcent = document.querySelector('.porcent')
               let status = document.querySelector('.status')
+              status.innerHTML === 'enviando arquivo' ? status.innerHTML = status.innerHTML : status.innerHTML = 'enviando arquivo'
               progressBar.style.width = `${progress}%`
               progressPorcent.innerHTML = `${progress}%` //inner para matar as saudades
               if (progress === 100) {
                 progressPorcent.innerHTML = ''
                 status.innerHTML = 'processando'
+                document.querySelector('.tardis-processing').classList.toggle('hidden')
+                
               }
           },
           headers: { authorization: this.$cookies.get('token')}
@@ -86,17 +108,26 @@ export default {
       }
       this.postVideo(axiosInfos).then(res => {
         console.log('chegou no postar ao menos')
+        this.prossesing = true
         this.getSetVideos(this.$cookies.get('token')).then(videos => {
-          this.uploading = false
+          document.querySelector('.tardis-processing').classList.toggle('hidden')
+          this.uploading = true
           this.completed = true
+          this.videoErr = ''
+          this.countVideo--
         }).catch(erro => {
           console.log('talvez n esteja sendo atualizado por causa desse erro', erro)
         })
       }).catch(err =>{
+        let status = document.querySelector('.status')
         console.log(err)
+        document.querySelector('.tardis-processing').classList.toggle('hidden')
         this.uploading = false,
+        this.completed = false
         console.log(err.response.data)
         this.videoErr = err.response.data.err
+        status.innerHTML = this.videoErr
+        this.countVideo--
         console.log(this.videoErr)
       })
 
@@ -113,6 +144,18 @@ export default {
 </script>
 
 <style scoped>
+#videos {
+  flex: 1;
+  max-width: 500px;
+  min-width: 396px;
+  margin: 100px 20px;
+  background-color: var(--corMenu);
+  min-height: 396px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  position: relative;
+}
 *>>> td {
   color: var(--cor2);
   font-family: cursive;
@@ -134,6 +177,18 @@ export default {
   display: flex;
   align-items: center;
   justify-content: center;
+  position: relative;
+}
+*>>>.arrow {
+    left: 3%;
+    top: 50%;
+    transform: translate(20%, -50%);
+}
+*>>>.arrow a {
+  color: white;
+}
+*>>>.arrow a:active {
+  color: var(--cor6)
 }
 *>>> table {
   width: 100%;
@@ -165,6 +220,11 @@ export default {
   position: absolute;
   background-color: var(--cor8);
 }
+*>>> .videosUploading {
+    left: 100%;
+    transform: translate(14px,3px);
+    color: var(--cor7);
+}
 *>>> span{
     position: absolute;
     color: white;
@@ -176,6 +236,12 @@ export default {
 }
 *>>> span.porcent {
   transform: translateY(22px);
+}
+*>>> .tardis-processing{
+  transform: translate(-50%, 38%)
+}
+*>>> .hidden {
+  display: none;
 }
 *>>> .delete {
   cursor: pointer;

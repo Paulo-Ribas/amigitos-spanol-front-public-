@@ -1,5 +1,5 @@
 <template>
-  <header :class="{header:'header'}" id="header-menu" @mouseover="showTrue" @mouseleave="showOff">
+  <header :class="{header:'header'}" id="header-menu" v-if="!mobile" @mouseover="showTrue" @mouseleave="showOff">
     <nav>
         <ul>
             <li>
@@ -56,6 +56,66 @@
         </ul>
     </nav>
   </header>
+  <header :class="{mobile:'mobile', width100}" id="header--mobile" v-else>
+    <div :class="{'tardis-icon-menu': 'tardis-icon-menu', move}" @click="toogleMobileMenu">
+        <img src="/svg/tardis.svg" :class="{spinTardis , tardisNormal}"/>
+    </div>
+    <nav>
+        <ul>
+            <li @click="toogleMobileMenu">
+                <div class="icon-container">
+                    <fa class="icon" icon="house"/>
+                </div>
+                <Transition name="inicio"> 
+                    <NuxtLink to="/" v-if="show" @click="toogleMobileMenu">Inicio</NuxtLink>
+                </Transition>
+
+            </li>
+            <li @click="toogleMobileMenu">
+                <div class="icon-container">
+                    <fa class="icon" icon="user"/>
+                </div>
+                <Transition name="perfil">
+                    <NuxtLink to="/perfil" v-if="show" @click="toogleMobileMenu">Perfil</NuxtLink>
+                 </Transition>
+            </li>
+            <!-- <li>
+                 <fa class="icon" icon="movie"/>
+                <Transition name="conversor">
+                    <NuxtLink to="/conversor" v-if="show">Conversor</NuxtLink>
+                </Transition>
+
+            </li> -->
+            <li  @click="toogleMobileMenu">
+                <div class="icon-container">
+                    <fa class="icon" icon="users" />
+                </div>
+                <Transition name="assistirJuntos">
+                    <NuxtLink to="/assistir-juntos" v-if="show">Assistir Ao Mesmo Tempo</NuxtLink>
+                 </Transition>
+
+            </li>
+            <li @click="toogleMobileMenu">
+                <div class="icon-container">
+                    <img class="icon" src="/svg/tardis.svg" />
+                </div>
+                <Transition name="assistirSolo">
+                    <NuxtLink to="/watch" v-if="show" @click="toogleMobileMenu">Assistir Séries Solo</NuxtLink>
+                 </Transition>
+
+            </li>
+            <li @click="toogleMobileMenu">
+                <div class="icon-container">
+                    <fa class="icon" icon="chalkboard"/>
+                </div>
+                <Transition name="videosEstudando">
+                    <NuxtLink to="/videos-estudando" v-if="show" @click="toogleMobileMenu">Videos Estudando</NuxtLink>
+                 </Transition>
+
+            </li>
+        </ul>
+    </nav>
+  </header>
 </template>
 
 <script>
@@ -63,13 +123,33 @@ export default {
     data(){
         return {
             show: false,
+            mobile: false,
+            width100: false,
+            spinTardis: false,
+            move: false,
+            tardisNormal: true
             
+        }
+    },
+    created(){
+        this.responsive()
+    },
+    beforeDestroy(){
+        this.responsive()
+    },
+    watch: {
+        mediaQuery(value, payload){
+            this.responsive()
+        }
+    },
+    computed: {
+        mediaQuery(){
+            return this.$mq
         }
     },
     methods:{
         toggleShow(){
             this.show ? this.show = false : this.show = true
-            this.bugCorretion()
           
         },
         showTrue(){
@@ -78,7 +158,25 @@ export default {
         showOff(){
             this.show = false
 
-        }
+        },
+        toogleMobileMenu(){
+            !this.width100 ? this.width100 = true : this.width100 = false
+            this.toggleShow()
+            !this.spinTardis ? this.spinTardis = true : this.spinTardis = false
+            !this.move ? this.move = true : this.move = false
+            !this.tardisNormal ? this.tardisNormal = true : this.tardisNormal = false
+            console.log('clicado')
+        },
+        responsive(){
+            console.log(this.$mq)
+            if (this.$mq === 'sm') {
+                this.mobile = true
+            }
+            else {
+                this.mobile = false
+            }
+        },
+
     }
     
 
@@ -91,6 +189,23 @@ export default {
     font-family: 'Secular';
     src: url('./static/fonts/SecularOne-Regular.ttf');
 }
+.tardis-icon-menu {
+    width: 45px;
+    height: 45px;
+    border-radius: 50%;
+    border: 4px solid var(--cor3);
+    box-shadow: 0px 0px 3px var(--cor2);
+    position: absolute;
+    top: 2%;
+    left: 2%;
+}
+.tardis-icon-menu img {
+    position: absolute;
+    width: 99%;
+    height: 99%;
+    transition: 1s;
+    transform: rotateY(0deg);
+}
 .header{
     background: var(--corMenu);
     height: 100vh;
@@ -98,17 +213,39 @@ export default {
     transition: width 1s;
         
 }
+.mobile {
+    background: var(--corMenuMobile);
+    height: 100vh;
+    width: 0%;
+    transition: width 1s;
+    position: absolute;
+    left: 0;
+    z-index: 2;
+        
+}
+.width100 {
+    width: 100% !important;
+}
 .header:hover{
     width: 280px;
 }
 .header nav, ul {
     width: 100%;
 }
+.mobile nav, ul {
+    width: 100%;
+    margin-top: 30px;
+}
 .header ul {
     display: flex;
     flex-direction: column;
     align-items: center;
     
+}
+.mobile ul {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
 }
 .header li {
     list-style: none;
@@ -118,6 +255,14 @@ export default {
     text-align: center;
     height: 25px;
     
+}
+.mobile li {
+    list-style: none;
+    margin: 20px 0px;
+    position: relative;
+    width: 100%;
+    text-align: center;
+    height: 25px;
 }
 .header li a {
     color: white;
@@ -130,13 +275,26 @@ export default {
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
-    
-   
+}
+.mobile li a {
+    color: white;
+    text-decoration: none;
+    font-family: cursive;
+    margin: 0px 0px;
+    display: inline-block;
+    white-space:nowrap;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
 }
 .header li a:hover {
     color: var(--cor5);
     
    
+}
+.mobile li a:active {
+    color: var(--cor5);
 }
 .inicio-enter-active, .inicio-leave-active {
     transition: 0.7s;
@@ -183,6 +341,9 @@ export default {
     max-width: 50px;
     height: 100%;
 }
+.mobile .icon-container {
+    display: none;
+}
 .icon {
     color: white;
     font-size: 1.1em;
@@ -196,4 +357,49 @@ export default {
 li a:hover .icon {
     color: var(--cor5) !important;
 }
+.spinTardis {
+    animation: tardisMenuSpin 3s;
+    animation-fill-mode: forwards;
+}
+.move {
+    animation: TardisMenu 2s;
+    animation-fill-mode: forwards;
+}
+.tardisNormal {
+    animation: opacity 0.6s;
+    animation-fill-mode: forwards;
+}
+ @keyframes TardisMenu {
+    33% {
+        top: 2%;
+        left: 2%;
+    }
+    33% {        
+        top: 41%;
+        left: 80%;
+        transform: translate(-80%, -41%);}
+    100% {
+        top: 71%;
+        left: 50%;
+        transform: translate(-50%, -71%);
+    }
+
+ }
+ @keyframes tardisMenuSpin {
+    from {
+        transform: rotateY(0deg);
+    }
+    to {
+        transform: rotateY(711deg);
+    }
+    
+ }
+ @keyframes opacity {
+    from {
+        opacity: 0.2;
+    }
+    to {
+        opacity: 1;
+    }
+ }
 </style>

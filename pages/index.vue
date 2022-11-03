@@ -62,6 +62,7 @@ export default {
   main{
     flex: 1;
   }
+
   .container-main {
     width: 100%;
     height: 100vh;
@@ -184,5 +185,6 @@ export default {
     text-decoration: none;
     font-size: 1em;
   }
+
 
 </style>

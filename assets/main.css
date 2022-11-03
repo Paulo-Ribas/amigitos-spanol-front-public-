@@ -30,6 +30,7 @@ html {
     --cor6: #9e3766;
     --cor7: #011031;
     --corMenu: #011031b4;
+    --corMenuMobile: #011031fd;
     --cor8: #D94B67;
     --cor9: #E75464;
     --background: linear-gradient(var(--corAzul), var(--cor5));

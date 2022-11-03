@@ -72,11 +72,9 @@ export default {
 
 <style scoped>
     .videos-container{
-        width: 110%;
+        width: 100%;
         height: 100vh;
-        position: absolute;
-        background-color: var(--corMenu);
-        z-index: 4;
+        background-color: var(--cor7);
         display: flex;
         align-items: center;
         flex-direction: column;
@@ -87,23 +85,27 @@ export default {
         max-width: 1280px;
         margin: 10px 0px;
         height: 200px;
-        border: 2px solid var(--corMenu);
-        background-color: var();
+        border: 7px solid var(--corMenu);
+        background: var(--scrollColor);
         display: flex;
         align-items: center;
         flex-wrap: nowrap;
-        overflow-x: auto;
+        overflow-x: auto
     }
     .video-box {
         max-width: 350px;
-        width: 100%;
         min-width: 300px;
-        height: 160px;
+        border-radius: 20px;
+        flex: 1;
+        /* height: 160px; */
+        min-height: 160px;
+        height: 88%;
+        max-height: 200px;
         margin: 0px 10px;
         background-color: var(--cor4);
         cursor: pointer;
         padding: 6px 0px;
-        border: 3px solid var(--cor1);
+        border: 3px solid var(--corMenuMobile);
         transition: 0.1s;
     }
     .video-box:hover {
@@ -126,13 +128,14 @@ export default {
     }
     .video-name {
         display: flex;
-        justify-content: center;
-        align-items: center;
-        width: 100%;
-        text-align: center;
-        height: 30%;
-        color: var(--cor7) ;
-        pointer-events: none;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    text-align: center;
+    height: 30%;
+    color: black;
+    text-shadow: 0px 0px 6px var(--corAzul);
+    pointer-events: none;
     }
     .name {
         font-family: cursive;
@@ -158,5 +161,56 @@ export default {
         color: white;
         margin: 0px 5px;
         cursor: pointer;
+    }
+    @media screen and (max-width: 740px)  {
+        .videos-container {
+            width: 100%;
+            height: 100vh;
+            background-color: var(--cor7);
+            display: flex;
+            align-items: center;
+            flex-direction: column;
+        }
+        .video-box-container {
+            width: 99%;
+            max-width: 1280px;
+            margin: 0px 0px; 
+            height: 100%;
+            border: none;
+            background: var(--scrollColor);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            flex-wrap: nowrap;
+            overflow-x: auto;
+        }
+        .video-box {
+                border-radius: 20px;
+                min-width: 300px;
+                max-width: none;
+            flex: 1;
+    /* height: 160px; */
+            min-height: 180px;
+    /* height: 88%; */
+            width: 100%;
+            max-height: 200px;
+            margin: 10px 0px;
+            background-color: var(--cor4);
+            cursor: pointer;
+            padding: 6px 0px;
+            border: 3px solid var(--corMenuMobile);
+            transition: 0.1s;
+        }
+        .confirm-container {
+            width: 99%;
+            max-width: 1280px;
+            height: 50px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        .icon-container {
+            padding-right: 0px;
+        }
     }
 </style>

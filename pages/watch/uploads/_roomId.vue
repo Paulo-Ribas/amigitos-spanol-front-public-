@@ -7,12 +7,13 @@
             v-if="!joined && pass && owner != user.id" @submitEmited="roomPassVerify($event)"
         />
         <PickVideo :videosProps="filesVideos" v-if="showVideos" @ChangeVideo="choiced($event)" @cancel="showVideos = false" />
-        <div class="video-container" v-if="joined">
+        <div class="video-container" v-if="joined && !mobile" v-show="!showVideos">
             <video @timeupdate="GaloFilhoDaPuta()" tabindex="1" @dblclick="fullScreamToggle()" 
             @click="showObject(), emitPlayPause()" @keydown="emitKeysEvents($event)" id="video">
                 <source src="/videoplayback.mp4" type="video/mp4">
             </video>
             <ControlsPlayerLive
+            :time="currentTime"
             @PlayPauseVideo="emitPlayPause($event)"
             @mouseSegura="mouseSegura"
             @setVolume="setVolume"
@@ -22,7 +23,23 @@
             @muteUnmute="muteUnmute()"
             />
         </div>
-        <ChatVideo  v-if="joined" @clicked="showVideos = !showVideos"/>
+        <div class="video-container-mobile" v-if="joined && mobile" v-show="!showVideos">
+            <video @timeupdate="GaloFilhoDaPuta()" tabindex="1" @dblclick="fullScreamToggle()" 
+            @click="showObject(), emitPlayPause()" @keydown="emitKeysEvents($event)" id="video">
+                <source src="/videoplayback.mp4" type="video/mp4">
+            </video>
+            <ControlsPlayerLiveMobile
+            @PlayPauseVideo="emitPlayPause($event)"
+            @mouseSegura="mouseSegura"
+            @setVolume="setVolume"
+            @aprenderMatematica="emitAprenderMatematica($event)"
+            @keysEvents="emitKeysEvents($event)"
+            @fullScreamToggle="fullScreamToggle($event)"
+            @muteUnmute="muteUnmute()"
+            />
+        </div>
+        <ChatVideo  v-show="!showVideos" v-if="joined && !mobile" @clicked="showVideos = !showVideos"/>
+        <ChatVideoMobile v-show="!showVideos" v-if="joined && mobile" @clicked="showVideos = !showVideos"/>
     </div>
 
 </template>
@@ -30,6 +47,7 @@
 import io from 'socket.io-client'
 import {mapState, mapActions, mapMutations} from 'vuex'
 import ButtonSpecial from '../../../components/ButtonSpecial.vue'
+import videosVue from '../../perfil/videos.vue'
 
 export default {
   components: { ButtonSpecial },
@@ -78,6 +96,15 @@ export default {
             showVideos: false,
             connected: false,
             err: '',
+            mobile: false,
+            currentTime:'00:00'
+        }
+    },
+    watch:{
+        mediaQuery(value, payload){
+            this.responsive()
+            
+
         }
     },
     computed:{
@@ -90,6 +117,9 @@ export default {
             else {
                 return []
             }
+        },
+        mediaQuery(){
+            return this.$mq
         }
     },
     middleware: ['auth', 'roomPass'],
@@ -141,6 +171,15 @@ export default {
                 console.log(this.user.state, 'user')
                 this.socket.emit('joinRoom', {user: this.user, room: this.room})
                 this.joined = true
+            }
+        },
+        responsive(){
+            console.log(this.$mq)
+            if (this.$mq === 'sm') {
+                this.mobile = true
+            }
+            else {
+                this.mobile = false
             }
         },
         sendVideoUrl(id){ 
@@ -282,6 +321,25 @@ export default {
             if(barra){
                 barra.style.width = `${video.currentTime / video.duration * 100}%`
             }
+            this.setTimeVideo()
+        },
+        setTimeVideo(){
+            let tempo = document.querySelector('p')
+    let video = document.getElementById('video')
+    video.addEventListener('timeupdate', e =>{
+        let tempVideo = Math.floor(video.currentTime)
+        let minutos = Math.floor(tempVideo / 60)
+        let segundos = Math.floor(tempVideo % 60) // isso pega o resto da divisao
+        let horas = Math.floor(minutos / 60)
+        minutos >= 60 ? minutos -= minutos : minutos
+        let time
+        if (horas <= 0){
+            time = `${String(minutos).padStart(2, '0')}:${String(segundos).padStart(2, '0')}`
+        }else{
+            time = `${String(horas).padStart(2, '0')}:${String(minutos).padStart(2, '0')}:${String(segundos).padStart(2, '0')}`
+        }
+        this.currentTime = time
+    })
         },
         emitKeysEvents($event){
             const eventEmit = {
@@ -400,6 +458,7 @@ export default {
         justify-content: center;
         align-items: center;
         flex-wrap: wrap;
+        overflow: auto;
     
     }
     .video-container {
@@ -422,7 +481,30 @@ export default {
         width: 10%;
         height: 50px;
     }
-
+    @media screen and (max-width: 720px) {
+        .container-app{
+            flex: 1;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            flex-wrap: nowrap;
+            overflow: scroll;
+        }
+        .video-container-mobile {
+            flex: 1;
+            width: 100%;
+            min-height: 200px;
+            position: relative;
+        }
+        #video{
+            width: 95%;
+            left: 50%;
+            transform: translateX(-50%)
+        }
+    }
+        
 
 
 </style>

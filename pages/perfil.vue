@@ -11,7 +11,7 @@
       </div>
     </div>
     <TardisLoadBig v-if="loanding"></TardisLoadBig>
-    <div class="user-config" v-if="!loanding">
+    <div class="user-config" v-if="!loanding && !mobile">
         <div class="user-img">
             <div class="img-container">
                 <img v-if="imgChoiced" :src="imgChoiced">
@@ -85,12 +85,11 @@
             </div>
         </div>
     </div>
-    <NuxtChild ref="userVideos" class="coisa" @question="sendQuestion($event)"/>
+    <NuxtChild ref="userVideos" class="coisa" @verify="verifyMobile" @toggleMobile="toggleMobile" @question="sendQuestion($event)"/>
   </div>
 </template>
 
 <script>
-import axios from 'axios'
 import {mapState, mapActions, mapMutations} from 'vuex'
 
 export default {
@@ -144,9 +143,15 @@ export default {
 
         })
     }, */
+    beforeMount(){
+        this.verifyMobile()
+
+    },
     mounted(){
         this.loanding = false
         console.log(this.$store.state.user)
+        console.log(this.$mq)
+        this.loanding = false
     },
     middleware: ['auth'],
     data(){
@@ -171,7 +176,8 @@ export default {
             saveEmail: false,
             savePassword: false,
             showIcon: false,
-            deleteVideo: {}
+            deleteVideo: {},
+            mobile: false,
 
 
         }
@@ -180,6 +186,9 @@ export default {
         ...mapState({
             user: state => state.user
         }),
+        mq(){
+            return this.$mq
+        }
     },
     watch:{
         newUserName(value, payload){
@@ -211,6 +220,18 @@ export default {
         }
     },
     methods: {
+        verifyMobile(){
+            console.log(this.$route.fullPath)
+            if (this.$route.fullPath === '/perfil/videos' && this.$mq === 'sm') {
+                this.mobile = true
+            }
+            else {
+                this.mobile = false
+            }
+        },
+        toggleMobile(){
+            this.mobile ? this.mobile = false : this.mobile = true
+        },
         ...mapMutations({REMOVE_TOKEN: 'user/REMOVE_TOKEN', SET_USER_INFO:'user/SET_USER_INFO', SET_TOKEN: 'user/SET_TOKEN'}),
         ...mapActions({
                 getToken: 'user/getToken', editUserName: 'user/editUserName', 
@@ -399,26 +420,17 @@ export default {
         align-items: center;
         justify-content: center;
         flex-wrap: wrap;
+        overflow: auto;
     }
     .user-config {
         flex: 1;
         max-width: 500px;
-        min-width: 300px;
+        min-width: 396px;
         margin: 0px 20px;
         background-color: var(--corMenu);
+        border-radius: 10px;
     }
-    .coisa {
-        flex: 1;
-        max-width: 500px;
-        min-width: 300px;
-        margin: 0px 20px;
-        background-color: var(--corMenu);
-        min-height: 396px;
-        display: flex;
-        flex-direction: column;
-        justify-content: space-between;
-        position: relative;
-    }
+
     .user-img {
         width: 100%;
         max-width: 500px;
@@ -637,4 +649,5 @@ export default {
     top: -1%;
     opacity: 0;
 }
+
 </style>

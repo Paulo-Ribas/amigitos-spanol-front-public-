@@ -4,7 +4,7 @@
     <div class="container-box-poop" v-show="showAlgo">
       <div class="warn-container">
         <h2>Selecione Os Videos</h2>
-            <TabbleVideosList btnProps="Selecionar" :videosProps="videos" @selected="addOrRemoveVideo($event)"/>
+            <TabbleVideosList class="tableWarn" btnProps="Selecionar" :videosProps="videos" @selected="addOrRemoveVideo($event)"/>
         <div class="btn-container">
             <button class="yes" @click="yes">Pronto</button>
             <button class="no" @click="close">Cancelar</button>
@@ -34,7 +34,7 @@
             </div>
             <div class="submit">
                 <input type="button" value="Escolher Videos" @click="showAlgo = true">
-                <ButtonSpecial btnProps="Criar Sala"></ButtonSpecial>
+                <ButtonSpecial btnProps="Criar Sala" class="create"></ButtonSpecial>
             </div>
         </form>
 
@@ -260,6 +260,9 @@ export default {
     background-color: rgba(0, 0, 0, 0.24);
     position: absolute;
 }
+.submit input {
+    margin: 20px auto;
+}
 .warn-container{
   width: 100%;
   max-width: 600px;
@@ -302,5 +305,43 @@ export default {
     cursor: pointer;
     pointer-events: all;
 }
-
+@media screen and (max-width: 670px) {
+    .container {
+        width: 100%;
+        max-width: 700px;
+        background-color: var(--corMenu);
+        border-top-right-radius: 10%;
+        padding: 0px;
+        height: 90vh;
+    }
+    .container form {
+        height: 100%;
+        justify-content: space-evenly;
+    }
+    .password input {
+        width: 90%;
+    }
+    .submit {
+        padding: 0px 4%;
+        display: flex;
+        flex-direction: column;
+    }
+    .submit input {
+        margin: 30px auto;
+    }
+    .create {
+        border-radius: 10px;
+    }
+    .warn-container {
+        height: 98%;
+        padding: 15px;
+    }
+    .tableWarn {
+        max-height: 370px;
+        margin: 10px 0px;
+        max-width: 550px;
+    }
+    
+    
+}
 </style>

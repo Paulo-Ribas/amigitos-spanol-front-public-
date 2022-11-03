@@ -96,4 +96,11 @@ export default {
         width: 100%;
         height: 100%;
     }
+     @media screen and (max-width: 670px) {
+    .box-container {
+      flex-direction: column;
+      height: 100%;
+    }
+    
+  }
 </style>

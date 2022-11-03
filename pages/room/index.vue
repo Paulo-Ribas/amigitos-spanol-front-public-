@@ -41,8 +41,9 @@ export default {
     },
     created(){
         this.connectionServer()
+    },
+    beforeMount(){
         this.checkRooms()
-        this.socket.emit('deleteRoomsWith0Members')
     },
     data(){
         return {
@@ -66,9 +67,10 @@ export default {
               
         },
         checkRooms(){
+            this.socket.emit('startVerify')
             setInterval(() => {
                 this.socket.emit('deleteRoomsWith0Members')
-            }, 10000);
+            }, 60000);
         }
     }
 }

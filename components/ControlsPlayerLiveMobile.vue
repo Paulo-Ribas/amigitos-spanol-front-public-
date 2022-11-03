@@ -1,12 +1,11 @@
 <template>
   <div class="controls" @keydown="keysEvents">
-    <div class="progress" @click="setFalse(), aprenderMatematica($event)"  @mousedown="teste($event)" @mousemove="ultimoTeste($event)" @mouseleave="clicado = false" draggable="false">
-      <div class="progress-bar"  draggable="false"></div>
+    <div class="progress"  @mousedown="aprenderMatematica" draggable="false">
+      <div class="progress-bar" @mousedown="aprenderMatematica" draggable="false"></div>
     </div>
     <div class="container-btns">
       <div class="btn-primary">
         <img src="/svg/botao_play_.svg" class="play-pause-icon" @click="PlayPauseVideo">
-        <div class="timer">{{currentTime}}</div>
         <div class="volume-container">
             <img src="/svg/com_som.svg" @click="emitMuteUnmute()" class="volume-icon">
             <input type="range" value="100" max="100" min="0" class="volume" @change="setVolume"/>
@@ -21,34 +20,9 @@
 
 <script>
 export default {
-    mounted(){
-        let MouseVerify = function VerifyMouse(contador) {
-                let interval = setTimeout(() => {
-                    document.querySelector('.controls').classList.add('opacity0')
-                }, 5000);
-                return interval
-        }
-        setInterval(() => {
-            return MouseVerify()
-        }, 2000);
-        document.getElementById('video').addEventListener('mousemove',() => {
-            document.querySelector('.controls').classList.remove('opacity0')
-                clearInterval(MouseVerify)
-    
-            })
-    },
     data(){
         return {
-            currentTime: this.$props.time,
-            clicado: false,
-        }
-    },
-    props: {
-        time: String
-    },
-    watch:{
-        time(value, payload){
-            this.currentTime = value
+
         }
     },
     methods: {
@@ -73,23 +47,6 @@ export default {
         },
         emitMuteUnmute(){
             this.$emit('muteUnmute')
-        },
-        teste($event){
-            if ($event.type === 'mousedown') {
-                this.clicado = true
-            }
-            else {
-                this.clicado = false
-            }
-        },
-        ultimoTeste($event){
-            if (this.clicado === true) {
-                this.aprenderMatematica($event)
-            }
-            console.log(this.clicado)
-        },
-        setFalse(){
-            this.clicado = false
         }
 
     }
@@ -97,9 +54,6 @@ export default {
 </script>
 
 <style>
-.opacity0 {
-    opacity: 0 !important;
-}
     .controls {
         width: 100%;
         height: 44px;
@@ -144,19 +98,22 @@ export default {
         margin: 0px 2px;
     }
     img {
-        height: 24px;
-        width: 24px;
+        height: 22px;
+        width: 22px;
         cursor: pointer;
     }
     .volume-container {
         display: flex;
     }
     .play-pause-icon {
-        height: 20px;
+        height: 18px;
     }
     .fullScreem-icon {
-        width: 45px;
-        height: 45px;
+        width: 43px;
+        height: 43px;
+    }
+    .volume-container input {
+        width: 75px;
     }
 
 </style>
