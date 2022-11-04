@@ -20,6 +20,29 @@
 
 <script>
 export default {
+     mounted(){
+        let controls = document.querySelector('.controls')
+        let MouseVerify = function VerifyMouse(contador) {
+                let interval = setTimeout(() => {
+                    console.log('mouse loll')
+                    if (controls) {
+                        controls.classList.add('opacity0')
+                    }
+                }, 5000);
+                return interval
+        }
+        setInterval(() => {
+            console.log('mouse lool')
+            return MouseVerify()
+        }, 7000);
+        document.querySelector('.video-container-mobile').addEventListener('click',() => {
+            if (controls) {
+                controls.classList.remove('opacity0')
+                clearInterval(MouseVerify)
+            }
+    
+            })
+    },
     data(){
         return {
 

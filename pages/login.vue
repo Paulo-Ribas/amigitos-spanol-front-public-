@@ -10,6 +10,7 @@
             <label>Senha</label>
             <input type="password" v-model="password">
             <input type="submit" value="Enviar" @click="sendUser">
+            <NuxtLink to="/recoveryPassword" class="recovery">esqueceu a senha?</NuxtLink>
         </form>
             <img src="/loanding1.gif" v-if="loanding" class="tardis-loanding">
     </div>
@@ -65,6 +66,13 @@ export default {
         flex-direction: column;
         justify-content: center;
         align-items: center;
+    }
+    .recovery {
+        color: white;
+        font-family: cursive;
+        font-size: 1em;
+        margin-bottom: -23px;
+        text-decoration-color: var(--corAzul);
     }
     form {
         width: 100%;

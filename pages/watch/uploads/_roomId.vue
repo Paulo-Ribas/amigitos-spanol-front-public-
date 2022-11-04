@@ -81,6 +81,9 @@ export default {
          })
     },
     fetchOnServer: false,
+    beforeMount(){
+        this.responsive()
+    },
     mounted(){
         window.addEventListener('beforeunload', this.emitUserDisconected)
     },
@@ -102,6 +105,7 @@ export default {
     },
     watch:{
         mediaQuery(value, payload){
+            console.log(value)
             this.responsive()
             
 
@@ -325,21 +329,21 @@ export default {
         },
         setTimeVideo(){
             let tempo = document.querySelector('p')
-    let video = document.getElementById('video')
-    video.addEventListener('timeupdate', e =>{
-        let tempVideo = Math.floor(video.currentTime)
-        let minutos = Math.floor(tempVideo / 60)
-        let segundos = Math.floor(tempVideo % 60) // isso pega o resto da divisao
-        let horas = Math.floor(minutos / 60)
-        minutos >= 60 ? minutos -= minutos : minutos
-        let time
-        if (horas <= 0){
-            time = `${String(minutos).padStart(2, '0')}:${String(segundos).padStart(2, '0')}`
-        }else{
-            time = `${String(horas).padStart(2, '0')}:${String(minutos).padStart(2, '0')}:${String(segundos).padStart(2, '0')}`
-        }
-        this.currentTime = time
-    })
+            let video = document.getElementById('video')
+            video.addEventListener('timeupdate', e =>{
+                let tempVideo = Math.floor(video.currentTime)
+                let minutos = Math.floor(tempVideo / 60)
+                let segundos = Math.floor(tempVideo % 60) // isso pega o resto da divisao
+                let horas = Math.floor(minutos / 60)
+                minutos >= 60 ? minutos -= minutos : minutos
+                let time
+                if (horas <= 0){
+                    time = `${String(minutos).padStart(2, '0')}:${String(segundos).padStart(2, '0')}`
+                }else{
+                    time = `${String(horas).padStart(2, '0')}:${String(minutos).padStart(2, '0')}:${String(segundos).padStart(2, '0')}`
+                }
+                this.currentTime = time
+            })
         },
         emitKeysEvents($event){
             const eventEmit = {
@@ -413,7 +417,7 @@ export default {
             }
         },
         fullScreamToggle() {
-            const video = document.querySelector('.video-container')
+            let video = document.querySelector('.video-container') || document.querySelector('.video-container-mobile')
             const fullscreenIcon = document.querySelector('.fullScreem-icon')
             if (!document.fullscreenElement) {
                 fullscreenIcon.src = '/svg/sair_da_tela_cheia_.svg'

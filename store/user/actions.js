@@ -174,6 +174,17 @@ export default {
         }
         
 
+    },
+    async sendRecoveryToken(context, payload){
+        let email = payload
+        try {
+            let sent = await this.$axios.$post(`${this.$config.dev_url}forgetedpass`, {email})
+            return sent
+            
+        } catch (error) {
+            throw error
+        }
+    
     }
 
 }

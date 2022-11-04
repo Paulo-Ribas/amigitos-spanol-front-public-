@@ -61,6 +61,7 @@ td img {
   color: var(--cor2);
   font-family: cursive;
   padding: 0px 2px;
+  word-break: break-word;
 }
 *>>> tr {
   margin: 2px 0px;
@@ -99,6 +100,7 @@ td img {
 .btn {
   text-align: center;
   cursor: pointer;
+  word-break: keep-all;
 }
 .btn:hover {
   cursor: pointer;

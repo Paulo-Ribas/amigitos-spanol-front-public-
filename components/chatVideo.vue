@@ -30,7 +30,14 @@
                                     </div>
                                     <span class="user-name-chat">{{msg.userName}}</span>
                                 </div>
-                                <div class="msg-text">
+                                <div class="msg-text" v-if="msg.id === user.id">
+                                    <p v-html="msg.text" v-if="msg.emoji">
+                                    </p>
+                                    <p v-else>
+                                        {{msg.text}}
+                                    </p>
+                                </div>
+                                <div class="msg-text flex-reverse" v-else>
                                     <p v-html="msg.text" v-if="msg.emoji">
                                     </p>
                                     <p v-else>
@@ -41,13 +48,13 @@
                         </div>
                         <div class="text-area-container">
                             <form class="btn-form">
-                                <textarea class="textarealol" @keydown="sendByEnter">
+                                <textarea class="textarealol" v-show="msgErr === ''" @keydown="sendByEnter">
                                 </textarea>
+                                <div class="erro" v-show="msgErr != ''">
+                                    {{msgErr}}
+                                </div>
                                 <input id="send" type="submit" value="Enviar" @click="sendMSG">
                             </form>
-                            <div class="erro-container">
-                                <Erro v-if="msgErr != ''" :erroProps="msgErr"></Erro>
-                            </div>
                         </div>
                     </div>
                 </div>
@@ -110,7 +117,6 @@ export default {
            this.socket.on('chatRecived', data => {
             this.attChat(data)
            })
-           this.JoinRoom()
         },
          JoinRoom(){
             let user = this.user
@@ -147,6 +153,7 @@ export default {
         },
         sendMSG(e){
             e.preventDefault()
+            this.emitMsg()
         },
         sendByEnter(key) {
             if (key.code === "Enter" && !key.shiftKey) {
@@ -165,12 +172,28 @@ export default {
                     setTimeout(() => {
                         this.msgSent = 0
                         this.msgErr = ''
-                    }, 6000);
+                    }, 5000);
                     return resolve()
                     }
                 if (this.msgSent > 8) {
                     this.msgErr = 'está enviando mensagens em um intervalo muito curto'
                     return reject()
+                }
+            })
+        },
+        verifyMsgSize(){
+            let msg = document.querySelector('textarea')
+            let msgValue = msg.value.split('')
+            return new Promise((resolve, reject) => {
+                if (msgValue.length >= 3000) {
+                    this.msgErr = "muito texto"
+                    setTimeout(() => {
+                        this.msgErr = ''
+                    }, 3000);
+                    return reject()
+                }
+                else {
+                    return resolve()
                 }
             })
         },
@@ -273,6 +296,9 @@ export default {
     .member {
         position: relative;
     }
+    .flex-reverse {
+        flex-direction: row-reverse;
+    }
     .members {
         height: 63px;
         width: 100%;
@@ -301,6 +327,16 @@ export default {
         background-color: white;
         border-radius: 6px;
         z-index: 2;
+    }
+    .erro {
+        color: white;
+        width: calc(100% - 30px);
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        text-align: center;
+        font-family: cursive;
+        height: 45px;
     }
     .options ul {
         width: 100%;
@@ -378,7 +414,7 @@ export default {
         min-width: 80px;
         border-radius: 29px;
         border-top-left-radius: 0px;
-        word-break: break-all;
+        word-break: break-word;
     }
      
     #send {

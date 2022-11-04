@@ -70,7 +70,10 @@ export default {
             this.socket.emit('startVerify')
             setInterval(() => {
                 this.socket.emit('deleteRoomsWith0Members')
-            }, 60000);
+            }, 10000);
+            setInterval(() => {
+                this.socket.emit('startVerify')
+            }, 14000)
         }
     }
 }
@@ -136,6 +139,8 @@ export default {
     }
     .room-datas h2 {
         color: white;
+        text-align: center;
+        word-break: break-word;
     }
     .room-datas a {
         width: 90%;

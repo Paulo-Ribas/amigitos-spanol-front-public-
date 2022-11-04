@@ -37,13 +37,13 @@
                         </div>
                         <div class="text-area-container">
                             <form class="btn-form">
-                                <textarea class="textarealol" @keydown="sendByEnter">
+                                <textarea v-show="msgErr === ''" class="textarealol" @keydown="sendByEnter">
                                 </textarea>
+                                <div class="erro" v-show="msgErr != ''">
+                                    {{msgErr}}
+                                </div>
                                 <input id="send" type="submit" value="Enviar" @click="sendMSG">
                             </form>
-                            <div class="erro-container">
-                                <Erro v-if="msgErr != ''" :erroProps="msgErr"></Erro>
-                            </div>
                         </div>
                     </div>
                 </div>
@@ -71,6 +71,9 @@ export default {
     mounted(){
         this.JoinRoom(),
         this.askChat()
+        if (this.members.length === 0) {
+            this.requestMembers()
+        }
     },
         data(){
             return {
@@ -112,9 +115,12 @@ export default {
             this.sendChat(data)
            })
            this.socket.on('chatRecived', data => {
-            this.attChat()
+            this.attChat(data)
            })
-           this.JoinRoom()
+           this.socket.on('membersSent', data => {
+            this.updateMember(data)
+            
+           })
         },
          JoinRoom(){
             let user = this.user
@@ -137,6 +143,7 @@ export default {
             }
             try {
                 await this.verifySpam()
+                await this.verifyMsgSize()
                 msg.value = null
                 this.socket.emit('newMSG', dates)
                 let scroll = document.querySelector('.chat-screen')
@@ -150,6 +157,7 @@ export default {
         },
         sendMSG(e){
             e.preventDefault()
+            this.emitMsg()
         },
         sendByEnter(key) {
             if (key.code === "Enter" && !key.shiftKey) {
@@ -168,12 +176,28 @@ export default {
                     setTimeout(() => {
                         this.msgSent = 0
                         this.msgErr = ''
-                    }, 6000);
+                    }, 5000);
                     return resolve()
                     }
                 if (this.msgSent > 8) {
                     this.msgErr = 'está enviando mensagens em um intervalo muito curto'
                     return reject()
+                }
+            })
+        },
+        verifyMsgSize(){
+            let msg = document.querySelector('textarea')
+            let msgValue = msg.value.split('')
+            return new Promise((resolve, reject) => {
+                if (msgValue.length >= 3000) {
+                    this.msgErr = "muito texto"
+                    setTimeout(() => {
+                        this.msgErr = ''
+                    }, 3000);
+                    return reject()
+                }
+                else {
+                    return resolve()
                 }
             })
         },
@@ -205,7 +229,9 @@ export default {
         },
         attChat(data){
             if (this.user.id === data.userRequest && this.msgs.length != data.chat.length) {
-                this.msgs = data.chat
+                setTimeout(() => {
+                    this.msgs = data.chat
+                }, 100);
             }
         },
         setScroll(msg){
@@ -220,8 +246,14 @@ export default {
             }
             
         },
+        requestMembers(){
+            this.socket.emit('requestForMembers', {room: this.room, user: this.user.id})
+        },
         updateMember(member){
-            this.members = member
+            console.log('o update member', member)
+            if (this.user.id === member.userId) {
+                this.members = member.members
+            }
         },
         teste(){
             console.log('teste lol')
@@ -271,6 +303,16 @@ export default {
     .width100 {
         opacity: 1;
         width: 82% !important;
+    }
+    .erro {
+        color: white;
+        width: calc(100% - 30px);
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        text-align: center;
+        font-family: cursive;
+        height: 45px;
     }
     .members-container {
         height: 58px;
@@ -408,7 +450,7 @@ export default {
         min-width: 80px;
         border-radius: 29px;
         border-top-left-radius: 0px;
-        word-break: break-all;
+        word-break: break-word;
     }
      
     #send {

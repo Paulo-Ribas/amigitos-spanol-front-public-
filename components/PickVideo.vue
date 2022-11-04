@@ -107,6 +107,7 @@ export default {
         padding: 6px 0px;
         border: 3px solid var(--corMenuMobile);
         transition: 0.1s;
+        word-break: break-word;
     }
     .video-box:hover {
         border: 3px solid var(--cor6);
@@ -200,6 +201,7 @@ export default {
             padding: 6px 0px;
             border: 3px solid var(--corMenuMobile);
             transition: 0.1s;
+            word-break: break-word;
         }
         .confirm-container {
             width: 99%;

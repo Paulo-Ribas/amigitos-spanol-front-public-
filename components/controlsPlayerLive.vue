@@ -22,18 +22,22 @@
 <script>
 export default {
     mounted(){
-        let MouseVerify = function VerifyMouse(contador) {
+        let MouseVerify = function VerifyMouse() {
                 let interval = setTimeout(() => {
-                    document.querySelector('.controls').classList.add('opacity0')
+                    if (document.querySelectior('.controls')) {
+                        document.querySelector('.controls').classList.add('opacity0')
+                    }
                 }, 5000);
                 return interval
         }
         setInterval(() => {
             return MouseVerify()
-        }, 2000);
-        document.getElementById('video').addEventListener('mousemove',() => {
-            document.querySelector('.controls').classList.remove('opacity0')
+        }, 5000);
+        document.querySelector('.video-container').addEventListener('mousemove',() => {
+            if (document.querySelector('.controls')) {
+                document.querySelector('.controls').classList.remove('opacity0')
                 clearInterval(MouseVerify)
+            }
     
             })
     },
