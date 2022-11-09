@@ -111,10 +111,13 @@ export default {
         this.prossesing = true
         this.getSetVideos(this.$cookies.get('token')).then(videos => {
           document.querySelector('.tardis-processing').classList.toggle('hidden')
-          this.uploading = true
-          this.completed = true
-          this.videoErr = ''
-          this.countVideo--
+          if (this.countVideo === 0) {
+            this.uploading = false
+            this.completed = true
+            
+          }
+            this.videoErr = ''
+          this.countVideo = this.countVideo - 1
         }).catch(erro => {
           console.log('talvez n esteja sendo atualizado por causa desse erro', erro)
         })
@@ -122,12 +125,14 @@ export default {
         let status = document.querySelector('.status')
         console.log(err)
         document.querySelector('.tardis-processing').classList.toggle('hidden')
-        this.uploading = false,
-        this.completed = false
-        console.log(err.response.data)
+        if (this.countVideo === 0) {
+          this.uploading = true,
+          this.completed = false
+          
+        }
         this.videoErr = err.response.data.err
         status.innerHTML = this.videoErr
-        this.countVideo--
+        this.countVideo = this.countVideo - 1
         console.log(this.videoErr)
       })
 

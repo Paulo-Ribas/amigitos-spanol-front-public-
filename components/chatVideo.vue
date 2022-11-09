@@ -76,9 +76,6 @@ export default {
          })
     },
     fetchOnServer: false,
-    created(){
-        this.connectionServer()
-    },
     mounted(){
         this.JoinRoom()
         this.askChat()
@@ -122,6 +119,7 @@ export default {
             let user = this.user
             console.log(this.user, 'user do join room')
             let room = this.room
+            this.connectionServer()
             this.socket.emit('joinRoom',{user,room})
         },
         askChat(){
@@ -185,7 +183,7 @@ export default {
             let msg = document.querySelector('textarea')
             let msgValue = msg.value.split('')
             return new Promise((resolve, reject) => {
-                if (msgValue.length >= 3000) {
+                if (msgValue.length >= 1500) {
                     this.msgErr = "muito texto"
                     setTimeout(() => {
                         this.msgErr = ''
@@ -243,7 +241,7 @@ export default {
             if (this.user.id === data.userRequest) {
                 setTimeout(() => {
                     this.msgs = data.chat
-                }, 69)
+                }, 100)
             }
         },
         updateMember(member){

@@ -52,7 +52,10 @@ export default {
     },
     computed:{ 
         roomFinal(){
-            return this.rooms
+            let roomRendered = this.rooms.filter(room => {
+                return room.rendered === true
+            })
+            return roomRendered
         }
     },
     methods: {
@@ -83,6 +86,7 @@ export default {
     #rooms-container {
         flex: 1;
         height: 100vh;
+        overflow-y: auto;
     }
     #rooms-container .create-room {
         width: 70%;
@@ -152,5 +156,25 @@ export default {
         justify-content: space-between;
         padding: 0px 10px;
         color: var(--cor7);
+    }
+    @media screen and (max-width: 400px) {
+        .box-room {
+            flex-direction: column;
+        }
+        .icon-container {
+            height: 30%;
+            width: 100%;
+        }
+        .icon-container svg {
+            font-size: 3.2em;
+        }
+        .room-datas {
+            height: 70%;
+            width: 100%;
+        }
+        .SEM-CRIATIVIDADE-CONTAINER {
+            justify-content: space-evenly;
+        }
+        
     }
 </style>

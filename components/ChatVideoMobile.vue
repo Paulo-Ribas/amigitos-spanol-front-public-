@@ -189,7 +189,7 @@ export default {
             let msg = document.querySelector('textarea')
             let msgValue = msg.value.split('')
             return new Promise((resolve, reject) => {
-                if (msgValue.length >= 3000) {
+                if (msgValue.length >= 1500) {
                     this.msgErr = "muito texto"
                     setTimeout(() => {
                         this.msgErr = ''
@@ -228,7 +228,7 @@ export default {
             this.socket.emit('chatSent', {userRequest, room, chat})
         },
         attChat(data){
-            if (this.user.id === data.userRequest && this.msgs.length != data.chat.length) {
+            if (this.user.id === data.userRequest) {
                 setTimeout(() => {
                     this.msgs = data.chat
                 }, 100);
@@ -458,6 +458,14 @@ export default {
         padding: 10px 10px;
         color: var(--cor7);
         border-radius: 24px;
+    }
+    @media screen and (max-width: 740px){
+        .video-menu-container{
+            margin-top: 0px;
+            flex: 0.980;
+            height: 97vh;
+            max-height: 480px;
+        }
     }
 
 </style>

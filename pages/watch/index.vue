@@ -43,7 +43,15 @@ export default {
       display: flex;
       overflow-X: scroll;
       padding: 10px 0px;
+      overflow-y: hidden;
 
    }
-
+   @media screen and (max-width: 400px) {
+      .series-row {
+         flex-direction: column;
+         align-items: center;
+         overflow-x: hidden;
+      }
+      
+   }
 </style>

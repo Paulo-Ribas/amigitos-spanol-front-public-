@@ -76,9 +76,8 @@ export default {
         display: flex;
         align-items: center;
         justify-content: center;
-        max-width: 390px;
-        min-width: 390px;
-        min-height: 400px;
+        max-width: 380px;
+        min-height: 595px;
         margin: 0px 5px;
         border-radius: 6px;
         overflow: hidden;

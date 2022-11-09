@@ -46,11 +46,8 @@
 <script>
 import io from 'socket.io-client'
 import {mapState, mapActions, mapMutations} from 'vuex'
-import ButtonSpecial from '../../../components/ButtonSpecial.vue'
-import videosVue from '../../perfil/videos.vue'
 
 export default {
-  components: { ButtonSpecial },
     name: 'dwV',
     layout: 'defualt',
     async asyncData(context){
@@ -129,7 +126,7 @@ export default {
     middleware: ['auth', 'roomPass'],
     methods: {
         connectionServer(){
-           this.socket = io.connect('http://localhost:3333/',{ rememberTransport: false, transports: ['websocket', 'polling', 'Flash Socket', 'AJAX long-polling']})
+           this.socket = io.connect(this.$config.dev_url,{ rememberTransport: false, transports: ['websocket', 'polling', 'Flash Socket', 'AJAX long-polling']})
            this.socket.on('sendRequestForSynchronization', data => {
             this.sendVideoUrl(data)
            })
@@ -328,12 +325,11 @@ export default {
             this.setTimeVideo()
         },
         setTimeVideo(){
-            let tempo = document.querySelector('p')
             let video = document.getElementById('video')
             video.addEventListener('timeupdate', e =>{
                 let tempVideo = Math.floor(video.currentTime)
                 let minutos = Math.floor(tempVideo / 60)
-                let segundos = Math.floor(tempVideo % 60) // isso pega o resto da divisao
+                let segundos = Math.floor(tempVideo % 60)
                 let horas = Math.floor(minutos / 60)
                 minutos >= 60 ? minutos -= minutos : minutos
                 let time
@@ -485,7 +481,31 @@ export default {
         width: 10%;
         height: 50px;
     }
-    @media screen and (max-width: 720px) {
+    .video-container-mobile {
+        flex: 2;
+        position: relative;
+        display: flex;
+        flex-direction: column;
+        max-width: 853px;
+        min-width: 400px;
+        height: 480px;
+        max-height: 480px;
+    }
+    @media screen and (max-width: 740px) {
+        .video-container-mobile {
+            flex: 2;
+            width: 100%;
+            min-height: 200px;
+            position: relative;
+            height: 97vh;
+        }
+        #video{
+            width: 95%;
+            left: 50%;
+            transform: translateX(-50%)
+        }
+    }
+    @media screen and (max-width: 560px) {
         .container-app{
             flex: 1;
             height: 100vh;
@@ -494,19 +514,9 @@ export default {
             justify-content: center;
             align-items: center;
             flex-wrap: nowrap;
-            overflow: scroll;
+            overflow: auto;
         }
-        .video-container-mobile {
-            flex: 1;
-            width: 100%;
-            min-height: 200px;
-            position: relative;
-        }
-        #video{
-            width: 95%;
-            left: 50%;
-            transform: translateX(-50%)
-        }
+        
     }
         
 

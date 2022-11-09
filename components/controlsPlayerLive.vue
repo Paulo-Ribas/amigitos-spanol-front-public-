@@ -23,19 +23,21 @@
 export default {
     mounted(){
         let MouseVerify = function VerifyMouse() {
+            let control = document.querySelector('.controls')
                 let interval = setTimeout(() => {
-                    if (document.querySelectior('.controls')) {
+                    if (control) {
                         document.querySelector('.controls').classList.add('opacity0')
                     }
-                }, 5000);
+                }, 7000);
                 return interval
         }
         setInterval(() => {
             return MouseVerify()
-        }, 5000);
+        }, 7000);
         document.querySelector('.video-container').addEventListener('mousemove',() => {
-            if (document.querySelector('.controls')) {
-                document.querySelector('.controls').classList.remove('opacity0')
+            let control = document.querySelector('.controls')
+            if (control) {
+                control.classList.remove('opacity0')
                 clearInterval(MouseVerify)
             }
     

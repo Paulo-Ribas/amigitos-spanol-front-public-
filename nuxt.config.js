@@ -53,7 +53,7 @@ export default {
   'mq': {
     defaultBreakpoint: 'sm',
     breakpoints: {
-      sm: 740,
+      sm: 742,
       md: 1250,
       lg: Infinity,
     }

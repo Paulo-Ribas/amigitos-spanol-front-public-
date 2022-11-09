@@ -6,6 +6,7 @@
     <div class="container-btns">
       <div class="btn-primary">
         <img src="/svg/botao_play_.svg" class="play-pause-icon" @click="PlayPauseVideo">
+        <div class="timer">{{currentTime}}</div>
         <div class="volume-container">
             <img src="/svg/com_som.svg" @click="emitMuteUnmute()" class="volume-icon">
             <input type="range" value="100" max="100" min="0" class="volume" @change="setVolume"/>
@@ -22,13 +23,13 @@
 export default {
      mounted(){
         let controls = document.querySelector('.controls')
-        let MouseVerify = function VerifyMouse(contador) {
+        let MouseVerify = function VerifyMouse() {
                 let interval = setTimeout(() => {
                     console.log('mouse loll')
                     if (controls) {
                         controls.classList.add('opacity0')
                     }
-                }, 5000);
+                }, 7000);
                 return interval
         }
         setInterval(() => {
@@ -45,7 +46,15 @@ export default {
     },
     data(){
         return {
-
+            currentTime: this.$props.time,
+        }
+    },
+    props: {
+        time: String
+    },
+    watch:{
+        time(value, payload){
+            this.currentTime = value
         }
     },
     methods: {
