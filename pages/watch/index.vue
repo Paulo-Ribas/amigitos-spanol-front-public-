@@ -44,7 +44,6 @@ export default {
       overflow-X: auto;
       padding: 10px 0px;
       overflow-y: hidden;
-
    }
    @media screen and (max-width: 400px) {
       .series-row {
