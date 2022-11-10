@@ -6,7 +6,6 @@
 </template>
 
 <script>
-import HeaderAside from '../components/HeaderAside.vue' 
 export default {
   name: 'DefaultLayout',
   data () {
@@ -14,9 +13,6 @@ export default {
       showAlgo: false
     }
   },
-  components:{
-    HeaderAside
-  }
 }
 </script>
 

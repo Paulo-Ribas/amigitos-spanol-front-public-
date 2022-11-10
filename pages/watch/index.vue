@@ -41,7 +41,7 @@ export default {
       height: 95%;
       max-width: 1350px;
       display: flex;
-      overflow-X: scroll;
+      overflow-X: auto;
       padding: 10px 0px;
       overflow-y: hidden;
 

@@ -220,7 +220,7 @@ export default {
     transition: width 1s;
     position: absolute;
     left: 0;
-    z-index: 2;
+    z-index: 10;
         
 }
 .width100 {
@@ -383,7 +383,22 @@ li a:hover .icon {
         left: 50%;
         transform: translate(-50%, -71%);
     }
-
+ }
+ @keyframes TardisMenuAside {
+    33% {
+        top: 2%;
+        left: 2%;
+    }
+    33% {        
+        top: 41%;
+        left: 80%;
+        transform: translate(-80%, -41%);}
+    100% {
+        top: 71%;
+        left: 50%;
+        transform: translate(513%, 28%);
+    }
+    
  }
  @keyframes tardisMenuSpin {
     from {

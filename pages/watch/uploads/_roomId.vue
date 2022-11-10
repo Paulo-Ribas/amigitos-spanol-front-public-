@@ -326,20 +326,19 @@ export default {
         },
         setTimeVideo(){
             let video = document.getElementById('video')
-            video.addEventListener('timeupdate', e =>{
-                let tempVideo = Math.floor(video.currentTime)
-                let minutos = Math.floor(tempVideo / 60)
-                let segundos = Math.floor(tempVideo % 60)
-                let horas = Math.floor(minutos / 60)
-                minutos >= 60 ? minutos -= minutos : minutos
-                let time
-                if (horas <= 0){
-                    time = `${String(minutos).padStart(2, '0')}:${String(segundos).padStart(2, '0')}`
-                }else{
-                    time = `${String(horas).padStart(2, '0')}:${String(minutos).padStart(2, '0')}:${String(segundos).padStart(2, '0')}`
-                }
-                this.currentTime = time
-            })
+            if(video === null) return
+            let tempVideo = Math.floor(video.currentTime)
+            let minutos = Math.floor(tempVideo / 60)
+            let segundos = Math.floor(tempVideo % 60)
+            let horas = Math.floor(minutos / 60)
+            minutos >= 60 ? minutos -= minutos : minutos
+            let time
+            if (horas <= 0){
+                time = `${String(minutos).padStart(2, '0')}:${String(segundos).padStart(2, '0')}`
+            }else{
+                time = `${String(horas).padStart(2, '0')}:${String(minutos).padStart(2, '0')}:${String(segundos).padStart(2, '0')}`
+            }
+            this.currentTime = time
         },
         emitKeysEvents($event){
             const eventEmit = {
@@ -515,6 +514,13 @@ export default {
             align-items: center;
             flex-wrap: nowrap;
             overflow: auto;
+        }
+        .video-container-mobile {
+            min-width: 360px;
+            width: 100%;
+        }
+        .video-container-mobile #video {
+           width: 100%;
         }
         
     }

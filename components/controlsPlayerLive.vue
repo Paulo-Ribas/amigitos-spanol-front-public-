@@ -22,26 +22,34 @@
 <script>
 export default {
     mounted(){
+        let control = document.querySelector('.controls')
         let MouseVerify = function VerifyMouse() {
-            let control = document.querySelector('.controls')
-                let interval = setTimeout(() => {
-                    if (control) {
-                        document.querySelector('.controls').classList.add('opacity0')
-                    }
-                }, 7000);
-                return interval
+            let timeOut = setTimeout(() => {
+                try {
+                    control.classList.add('opacity0')
+                            
+                } catch (error) {
+                        console.log(error, 'errooo')
+                }   
+            }, 7000);
+            return timeOut
         }
-        setInterval(() => {
-            return MouseVerify()
+
+        const interval = setInterval(() => {
+            MouseVerify()
         }, 7000);
+
         document.querySelector('.video-container').addEventListener('mousemove',() => {
-            let control = document.querySelector('.controls')
-            if (control) {
+            try {
                 control.classList.remove('opacity0')
-                clearInterval(MouseVerify)
+            } catch (error) {
+                throw error
             }
-    
+                clearInterval(MouseVerify)
             })
+         window.addEventListener('beforeunload', ()=> {
+            return clearInterval(interval)
+         })
     },
     data(){
         return {
@@ -54,6 +62,7 @@ export default {
     },
     watch:{
         time(value, payload){
+            if(value === null) return
             this.currentTime = value
         }
     },

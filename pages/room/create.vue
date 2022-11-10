@@ -314,6 +314,9 @@ export default {
         padding: 0px;
         height: 90vh;
     }
+    .container-box-poop {
+        width: 100%;
+    }
     .container form {
         height: 100%;
         justify-content: space-evenly;
@@ -334,7 +337,6 @@ export default {
     }
     .warn-container {
         height: 98%;
-        padding: 15px;
     }
     .tableWarn {
         max-height: 370px;

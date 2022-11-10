@@ -24,25 +24,29 @@ export default {
      mounted(){
         let controls = document.querySelector('.controls')
         let MouseVerify = function VerifyMouse() {
-                let interval = setTimeout(() => {
-                    console.log('mouse loll')
-                    if (controls) {
+                let timeOut = setTimeout(() => {
+                    try {
                         controls.classList.add('opacity0')
+                    } catch (error) {
+                        throw error    
                     }
                 }, 7000);
-                return interval
+                return timeOut
         }
-        setInterval(() => {
-            console.log('mouse lool')
-            return MouseVerify()
+        let interval = setInterval(() => {
+            MouseVerify()
         }, 7000);
         document.querySelector('.video-container-mobile').addEventListener('click',() => {
-            if (controls) {
-                controls.classList.remove('opacity0')
+                try {
+                    controls.classList.remove('opacity0')
+                } catch (error) {
+                    throw error
+                }
                 clearInterval(MouseVerify)
-            }
-    
             })
+        window.addEventListener('beforeunload', ()=> {
+            return clearInterval(interval)
+         })
     },
     data(){
         return {
@@ -54,6 +58,7 @@ export default {
     },
     watch:{
         time(value, payload){
+            if (value === null) return
             this.currentTime = value
         }
     },

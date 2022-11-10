@@ -251,9 +251,12 @@ export default {
         },
         updateMember(member){
             console.log('o update member', member)
+            console.log(member.user === null)
             if (this.user.id === member.userId) {
                 this.members = member.members
+                return
             }
+            this.members = member
         },
         teste(){
             console.log('teste lol')
@@ -298,7 +301,10 @@ export default {
         width: 310px;
     }
     .member {
+        height: 50px;
+        width: 50px;
         position: relative;
+        
     }
     .width100 {
         opacity: 1;
