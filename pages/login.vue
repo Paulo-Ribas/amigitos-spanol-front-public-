@@ -10,7 +10,7 @@
             <label>Senha</label>
             <input type="password" v-model="password">
             <input type="submit" value="Enviar" @click="sendUser">
-            <NuxtLink to="/recoveryPassword" class="recovery">esqueceu a senha?</NuxtLink>
+            <!-- <NuxtLink to="/recoveryPassword" class="recovery">esqueceu a senha?</NuxtLink> -->
         </form>
             <img src="/loanding1.gif" v-if="loanding" class="tardis-loanding">
     </div>
@@ -36,7 +36,7 @@ export default {
             $event.preventDefault()
             const {name, email, password} = this.$data
             this.loanding = true
-            axios.post('http://localhost:3333/login',{username: name, email, password}).then(sucefful => {
+            axios.post('/login',{username: name, email, password}).then(sucefful => {
                 let token = sucefful.data.token
                 console.log('sucefful', token)
                 this.$store.commit('user/SET_TOKEN', 'bearer ' + token)

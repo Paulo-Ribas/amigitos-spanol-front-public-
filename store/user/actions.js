@@ -7,7 +7,7 @@ export default {
     },
     async validateUser(context, payload){
         try {
-            let user = await this.$axios.$post(`${this.$config.dev_url}validate`,{},{headers:{authorization: payload}})
+            let user = await this.$axios.$post(`validate`,{},{headers:{authorization: payload}})
             console.log(user, 'o useeeeeer')
             return user.dates
         } 
@@ -20,7 +20,7 @@ export default {
     async postVideo(context, payload){
         let axiosInfos = payload
         try {
-            let post = this.$axios.$post(`${this.$config.dev_url}video`, axiosInfos.file, axiosInfos.getprogressAndSetHeaders)
+            let post = this.$axios.$post(`video`, axiosInfos.file, axiosInfos.getprogressAndSetHeaders)
             return post
             
         } catch (error) {
@@ -29,7 +29,7 @@ export default {
     },
     async getSetVideos(context,payload){
         try {
-            let res = await this.$axios.$get(`${this.$config.dev_url}videos`, {headers: { authorization: payload}})
+            let res = await this.$axios.$get(`videos`, {headers: { authorization: payload}})
             console.log('res', res)
             let videosArray = res.videos
             context.commit('SET_VIDEOS', videosArray)
@@ -50,7 +50,7 @@ export default {
             }
         }
         try{
-            let res = await this.$axios.$put(`${this.$config.dev_url}userName`,{username, email}, config)
+            let res = await this.$axios.$put(`userName`,{username, email}, config)
             console.log('por que aqui?', res)
             return res.token
             
@@ -71,7 +71,7 @@ export default {
             }
         }
         try {
-            let res = await this.$axios.$put(`${this.$config.dev_url}profileImg`, {imagem}, config)
+            let res = await this.$axios.$put(`profileImg`, {imagem}, config)
             console.log('por que aqui?', res)
             return res.token
 
@@ -91,7 +91,7 @@ export default {
             }
         }
         try {
-            let res = await this.$axios.$put(`${this.$config.dev_url}email`, {email, newEmail}, config)
+            let res = await this.$axios.$put(`email`, {email, newEmail}, config)
             console.log('por que aqui?', res)
             return res.token
 
@@ -111,7 +111,7 @@ export default {
             }
         }
         try {
-            let res = await this.$axios.$put(`${this.$config.dev_url}password`, { password, email }, config)
+            let res = await this.$axios.$put(`password`, { password, email }, config)
             console.log('por que aqui?', res)
             return res.token
 
@@ -129,7 +129,7 @@ export default {
             }
         }
         try {
-            let room = await this.$axios.$post(`${this.$config.dev_url}room`,dates,config)
+            let room = await this.$axios.$post(`room`,dates,config)
             return room.param
             
         } catch (Error) {
@@ -139,7 +139,7 @@ export default {
     async getRoom(context, payload) {
         console.log(payload, 'room')
         try {
-            let room = await this.$axios.$get(`${this.$config.dev_url}` + 'room/' + `${payload}`)
+            let room = await this.$axios.$get('room/' + `${payload}`)
             return room
             
         } catch (error) {
@@ -151,7 +151,7 @@ export default {
         let config = {headers:{
             authorization: payload.token
         }}
-        let isCorrect = await this.$axios.$post(this.$config.dev_url + 'joinRoom', {password, roomUrl}, config)
+        let isCorrect = await this.$axios.$post('joinRoom', {password, roomUrl}, config)
         return isCorrect
     },
     async deleteVideo(context, payload){
@@ -165,7 +165,7 @@ export default {
         }
         try {
             console.log('entrou aqui')
-            let deleted = await this.$axios.$delete(`${this.$config.dev_url}video/${video.file}`,config)
+            let deleted = await this.$axios.$delete(`video/${video.file}`,config)
             console.log(deleted, 'to recebendo resposta?')
             return deleted
             
@@ -178,7 +178,7 @@ export default {
     async sendRecoveryToken(context, payload){
         let email = payload
         try {
-            let sent = await this.$axios.$post(`${this.$config.dev_url}forgetedpass`, {email})
+            let sent = await this.$axios.$post(`forgetedpass`, {email})
             return sent
             
         } catch (error) {
