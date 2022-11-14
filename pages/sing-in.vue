@@ -33,7 +33,7 @@ export default {
         sendUser($event) {
             $event.preventDefault()
             const {name, email, password} = this
-            axios.post('user',{username: name, email, password}).then(sucefful => {
+            axios.post('${this.$config.api_url}user',{username: name, email, password}).then(sucefful => {
                 console.log('foi')
                 this.$router.push({name: 'login'})
             }).catch(err => {

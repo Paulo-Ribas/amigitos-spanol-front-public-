@@ -126,7 +126,7 @@ export default {
     middleware: ['auth', 'roomPass'],
     methods: {
         connectionServer(){
-           this.socket = io.connect(this.$config.dev_url,{ rememberTransport: false, transports: ['websocket', 'polling', 'Flash Socket', 'AJAX long-polling']})
+           this.socket = io.connect(this.$config.api_url,{ rememberTransport: false, transports: ['websocket', 'polling', 'Flash Socket', 'AJAX long-polling']})
            this.socket.on('sendRequestForSynchronization', data => {
             this.sendVideoUrl(data)
            })

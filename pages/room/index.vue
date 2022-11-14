@@ -33,7 +33,7 @@ export default {
     layout: 'default',
     middleware:['auth'],
     async asyncData(context){
-       let rooms = await context.$axios.$get(`${context.$config.dev_url}rooms`)
+       let rooms = await context.$axios.$get(`rooms`)
        return {
         rooms: rooms.rooms
        }
@@ -60,7 +60,7 @@ export default {
     },
     methods: {
         connectionServer(){
-            this.socket = io.connect('http://localhost:3333/')
+            this.socket = io.connect(this.$config.url_api)
             this.socket.on('roomRefresh', data => {
                 this.socket.emit('deleteRoomsWith0Members')
             })
