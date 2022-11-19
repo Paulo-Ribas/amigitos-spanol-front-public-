@@ -60,7 +60,7 @@ export default {
     },
     methods: {
         connectionServer(){
-            this.socket = io.connect(this.$config.url_api)
+            this.socket = io.connect('http://localhost:3333/')
             this.socket.on('roomRefresh', data => {
                 this.socket.emit('deleteRoomsWith0Members')
             })

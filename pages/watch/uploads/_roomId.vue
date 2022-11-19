@@ -159,6 +159,7 @@ export default {
             this.setCurrentTime(data)
            })
            this.socket.on('signal', data => {
+            console.log("o sinal chegou até aqui")
             this.socket.emit('answeredSignal', {roomUrl: this.room})
            })
            this.socket.on('disconnect', q => {
@@ -313,7 +314,7 @@ export default {
         },
         changeSrc(data){
             let video = document.querySelector('video')
-            document.querySelector('source').src = data.location
+            document.querySelector('source').src = data.cloudFront
             video.load()
         },
         GaloFilhoDaPuta(){

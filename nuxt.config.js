@@ -20,7 +20,7 @@ export default {
   },
   publicRuntimeConfig: {
     dev_url: process.env.DEV_URL,
-    api_url: process.env.API_URL,
+    api_url: process.env.API_URL, 
   },
 
   // Global CSS: https://go.nuxtjs.dev/config-css
@@ -66,6 +66,9 @@ export default {
         'faUpload', 'faPenToSquare', 'faCheck', 'faXmark', 'faArrowRightFromBracket', 'faArrowLeft'],
       brands: ['faYoutube']
     }
+  },
+  axios: {
+    baseURL: 'http://localhost:3333/'
   },
 
   // Vuetify module configuration: https://go.nuxtjs.dev/config-vuetify
