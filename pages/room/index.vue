@@ -52,15 +52,23 @@ export default {
     },
     computed:{ 
         roomFinal(){
+<<<<<<< HEAD
             let roomRendered = this.rooms.filter(room => {
                 return room.members.length > 0
             })
             return roomRendered
+=======
+           return  this.rooms
+>>>>>>> 1232308 (vai dar problema)
         }
     },
     methods: {
         connectionServer(){
+<<<<<<< HEAD
             this.socket = io.connect('https://www.amigitos-espanol-api.com.br/')
+=======
+            this.socket = io.connect('https://amigitos-espanol-api.com.br/')
+>>>>>>> 1232308 (vai dar problema)
             this.socket.on('roomRefresh', data => {
                 this.socket.emit('deleteRoomsWith0Members')
             })

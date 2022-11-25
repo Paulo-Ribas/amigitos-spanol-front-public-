@@ -70,7 +70,11 @@ export default {
     }
   },
   axios: {
+<<<<<<< HEAD
     baseURL: 'http://www.amigitos-espanol-api.com.br/'
+=======
+    baseURL: 'https://www.amigitos-espanol-api.com.br/'
+>>>>>>> 1232308 (vai dar problema)
   },
 
   // Vuetify module configuration: https://go.nuxtjs.dev/config-vuetify

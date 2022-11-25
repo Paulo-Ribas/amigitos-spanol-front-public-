@@ -100,7 +100,11 @@ export default {
     },
     methods:{
         connectionServer(){
+<<<<<<< HEAD
            this.socket = io.connect('https://www.amigitos-espanol-api.com.br/')
+=======
+           this.socket = io.connect('https://amigitos-espanol-api.com.br/')
+>>>>>>> 1232308 (vai dar problema)
            this.socket.on('msg', data => {
             this.renderMSG(data)
            })

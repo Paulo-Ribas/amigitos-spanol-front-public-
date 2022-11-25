@@ -127,7 +127,11 @@ export default {
     middleware: ['auth', 'roomPass'],
     methods: {
         connectionServer(){
+<<<<<<< HEAD
            this.socket = io.connect('https://www.amigitos-espanol-api.com.br/',{ rememberTransport: false, transports: ['websocket', 'polling', 'Flash Socket', 'AJAX long-polling']})
+=======
+           this.socket = io.connect('https://amigitos-espanol-api.com.br/',{ rememberTransport: false, transports: ['websocket', 'polling', 'Flash Socket', 'AJAX long-polling']})
+>>>>>>> 1232308 (vai dar problema)
            this.socket.on('sendRequestForSynchronization', data => {
             this.sendVideoUrl(data)
            })

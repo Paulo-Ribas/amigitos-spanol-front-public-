@@ -25,7 +25,7 @@ export default {
             this.emoji = dates.data.user[0].emoji
             console.log(dates, 'teste')
             if (dates.data.user[0].profileimg.split('.')[0] === 'default') {
-                this.imgSrc = 'default.png'
+                this.imgSrc = '/default.png'
             }
             else {
                 this.imgSrc = dates.data.user[0].profileimg
