@@ -10,7 +10,7 @@
             </div>
             <div class="room-datas">
                 <h2>{{room.roomName}}</h2>
-                    <LinkSpecial btnProps="Entrar" :UrlProps="'/watch/uploads/' + room.url"></LinkSpecial>
+                    <LinkSpecial btnProps="Entrar" :UrlProps="'watch/' + room.type +  '/' + room.url"></LinkSpecial>
                 <div class="SEM-CRIATIVIDADE-CONTAINER">
                     <span>{{room.members.length}} / {{room.maxMembers}}</span>
                     <span v-if="room.pass">Privada</span>
@@ -53,14 +53,14 @@ export default {
     computed:{ 
         roomFinal(){
             let roomRendered = this.rooms.filter(room => {
-                return room.rendered === true
+                return room.members.length > 0
             })
             return roomRendered
         }
     },
     methods: {
         connectionServer(){
-            this.socket = io.connect('http://localhost:3333/')
+            this.socket = io.connect('https://www.amigitos-espanol-api.com.br/')
             this.socket.on('roomRefresh', data => {
                 this.socket.emit('deleteRoomsWith0Members')
             })

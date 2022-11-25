@@ -157,6 +157,7 @@ export default {
     async deleteVideo(context, payload){
         let token = payload.token
         let video = payload.video
+        let decodedName = decodeURI(video.file)
         console.log('console do payload delete', payload)
         let config = {
             headers: {
@@ -165,7 +166,7 @@ export default {
         }
         try {
             console.log('entrou aqui')
-            let deleted = await this.$axios.$delete(`video/${video.file}`,config)
+            let deleted = await this.$axios.$delete(`video/${decodedName}`,config)
             console.log(deleted, 'to recebendo resposta?')
             return deleted
             

@@ -20,7 +20,7 @@ import axios from 'axios'
 export default {
     name:'',
     fetch(){
-        axios.get(`${this.$config.dev_url}user/${this.$route.params.userId}`).then(dates => {
+        axios.get(`https://www.amigitos-espanol-api.com.br/user/${this.$route.params.userId}`).then(dates => {
             this.name = dates.data.user[0].username
             this.emoji = dates.data.user[0].emoji
             console.log(dates, 'teste')

@@ -1,16 +1,6 @@
 <template>
   <div id="creating">
     <Erro :erroProps="erro" v-if="erro != ''"></Erro>
-    <div class="container-box-poop" v-show="showAlgo">
-      <div class="warn-container">
-        <h2>Selecione Os Videos</h2>
-            <TabbleVideosList class="tableWarn" btnProps="Selecionar" :videosProps="videos" @selected="addOrRemoveVideo($event)"/>
-        <div class="btn-container">
-            <button class="yes" @click="yes">Pronto</button>
-            <button class="no" @click="close">Cancelar</button>
-        </div>
-      </div>
-    </div>
     <div class="container" v-show="!showAlgo">
         <form @submit="preventSubmit($event), sendRoomData()">
             <div class="container-1">
@@ -33,7 +23,6 @@
                 </Transition>
             </div>
             <div class="submit">
-                <input type="button" value="Escolher Videos" @click="showAlgo = true">
                 <ButtonSpecial btnProps="Criar Sala" class="create"></ButtonSpecial>
             </div>
         </form>
@@ -63,8 +52,6 @@ export default {
             passChoice: false,
             inBetween10And20: false,
             password: '',
-            videos: this.$store.state.user.videos,
-            videosAdded: [],
             showAlgo: false,
             erro: '',
             loanding: false,
@@ -77,8 +64,10 @@ export default {
             this.name.length > 33 ? this.name = payload : this.name = value
         },
         qtd(value, payload) {
-            value == '' ? this.inBetween10And20 = false : this.inBetween10And20
-            isNaN(value) ? this.qtd = payload : this.qtd = value
+            console.log(value)
+            value === '' || value === undefined ? value = '0' : value
+            value == '0' ? this.inBetween10And20 = false : this.inBetween10And20
+            isNaN(value) ? this.qtd = value.replace(/[^0-9]/g, '') : this.qtd = value
             payload == 1 && value.split('')[1] != 1 && !this.inBetween10And20 ? this.qtd = value.split('')[1] : this.qtd = this.qtd // comentar o porque da escolha
             /* parseInt(payload >= 10) ? this.qtd = value : this.qtd = this.qtd */
             payload == 1 && value == 11 ? this.inBetween10And20 = true : this.qtd = this.qtd
@@ -110,29 +99,6 @@ export default {
         close() {
             this.showAlgo = false
         },
-        addOrRemoveVideo(event){
-            event.target.innerHTML === "Selecionar" ?  event.target.innerHTML ='Cancelar' : event.target.innerHTML = 'Selecionar'
-            event.target.classList.toggle('selected')
-            event.target.previousElementSibling.classList.toggle('selected')
-            let isInArray = this.checkIfVideoIsInArray(event.video._id)
-            isInArray ? this.RemoveVideoFromArray(event.video._id) : this.addVideoInArray(event.video)
-            console.log(this.videosAdded)
-        },
-        addVideoInArray(video) {
-            this.videosAdded.push(video)
-        },
-        RemoveVideoFromArray(id) {
-            let newArray = this.videosAdded.filter(video => {
-                return id != video._id
-            })
-            this.videosAdded = newArray
-        },
-        checkIfVideoIsInArray(id){
-            let found = this.videosAdded.find(video => {
-                return id === video._id
-            })
-            return found
-        },
         sendRoomData(){
             let token = this.$cookies.get('token')
             this.erro = ""
@@ -142,14 +108,14 @@ export default {
                     password: this.password,
                     passChoice: this.passChoice, 
                     roomName:this.name, 
-                    filesVideos: this.videosAdded, 
+                    filesVideos: [], 
                     maxMembers: this.qtd,
-                    type: 'upload', 
+                    type: 'youtube',
                 } 
             }
             this.postRoom(axiosConfig).then(res => {
                 console.log(res)
-                this.$router.push({name: 'watch-uploads-roomId', params:{ roomId: res.url}})
+                this.$router.push({name: 'watch-youtube-roomId', params:{ roomId: res.url}})
             }).catch(err => {
                 console.log(err, 'o erro')
                 this.erro = err

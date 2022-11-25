@@ -2,29 +2,25 @@
   <div id="watch">
     <div class="box-container">
         <div class="room-container">
-            <NuxtLink to="/room/create" class="room-box1">
+            <NuxtLink to="/room/create/youtube" class="room-box1">
                 <fa :icon="['fab', 'youtube']"></fa>
                 <h2>Assistir Videos Youtube</h2>
             </NuxtLink>
-            <NuxtLink to="/room/create" class="room-box2">
+            <NuxtLink to="/room/create/upload" class="room-box2">
                  <fa icon="upload"></fa>
                 <h2>Assistir Videos Enviados</h2>
             </NuxtLink>
         </div>
         <div class="room">
-            <LinkSpecialVue UrlProps="/room" btnProps="Ver Salas Criadas"/>
+            <LinkSpecial UrlProps="/room" btnProps="Ver Salas Criadas"/>
         </div>
     </div>
   </div>
 </template>
 
-<script>
-import LinkSpecialVue from '../components/LinkSpecial.vue'
+<script> 
 export default {
     name:'qqq',
-    components: {
-        LinkSpecialVue
-    },
     middleware: ['auth']
 
 }

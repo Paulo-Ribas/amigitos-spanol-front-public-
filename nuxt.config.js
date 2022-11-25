@@ -30,6 +30,7 @@ export default {
 
   // Plugins to run before rendering page: https://go.nuxtjs.dev/config-plugins
   plugins: [
+    { src: '@/plugins/youtube.js', ssr: false } 
   ],
 
   // Auto import components: https://go.nuxtjs.dev/config-components
@@ -39,11 +40,12 @@ export default {
   buildModules: [
     // https://go.nuxtjs.dev/vuetify
     '@nuxtjs/vuetify',
-    '@nuxtjs/fontawesome'
+    '@nuxtjs/fontawesome',
+
   ],
 
   // Modules: https://go.nuxtjs.dev/config-modules
-    ssr: true,
+  ssr: true,
   target: 'server',
   modules: [
     '@nuxtjs/axios',
@@ -54,7 +56,7 @@ export default {
   'mq': {
     defaultBreakpoint: 'sm',
     breakpoints: {
-      sm: 742,
+      sm: 760,
       md: 1250,
       lg: Infinity,
     }
@@ -63,12 +65,12 @@ export default {
     component: 'fa',
     icons: {
       solid: ['faHome', 'faEnvelope', 'faUser', 'faUsers', 'faChalkboard',
-        'faUpload', 'faPenToSquare', 'faCheck', 'faXmark', 'faArrowRightFromBracket', 'faArrowLeft'],
+        'faUpload', 'faPenToSquare', 'faCheck', 'faXmark', 'faArrowRightFromBracket', 'faArrowLeft', 'faSearch'],
       brands: ['faYoutube']
     }
   },
   axios: {
-    baseURL: 'http://localhost:3333/'
+    baseURL: 'http://www.amigitos-espanol-api.com.br/'
   },
 
   // Vuetify module configuration: https://go.nuxtjs.dev/config-vuetify
@@ -92,5 +94,6 @@ export default {
 
   // Build Configuration: https://go.nuxtjs.dev/config-build
   build: {
+    transpile: ['vue-youtube-embed'] 
   }
 }

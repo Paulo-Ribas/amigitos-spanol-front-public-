@@ -96,6 +96,7 @@ export default {
             showVideos: false,
             connected: false,
             err: '',
+            members: [],
             mobile: false,
             currentTime:'00:00'
         }
@@ -126,9 +127,12 @@ export default {
     middleware: ['auth', 'roomPass'],
     methods: {
         connectionServer(){
-           this.socket = io.connect(this.$config.api_url,{ rememberTransport: false, transports: ['websocket', 'polling', 'Flash Socket', 'AJAX long-polling']})
+           this.socket = io.connect('https://www.amigitos-espanol-api.com.br/',{ rememberTransport: false, transports: ['websocket', 'polling', 'Flash Socket', 'AJAX long-polling']})
            this.socket.on('sendRequestForSynchronization', data => {
             this.sendVideoUrl(data)
+           })
+           this.socket.on('listMembersUpdate', data => {
+            this.updateMemberRoom(data)
            })
            this.socket.on('msg', data => {
                this.renderMSG(data)
@@ -175,6 +179,9 @@ export default {
                 this.joined = true
             }
         },
+        updateMemberRoom(member){
+            this.members = member
+        },
         responsive(){
             console.log(this.$mq)
             if (this.$mq === 'sm') {
@@ -185,6 +192,7 @@ export default {
             }
         },
         sendVideoUrl(id){ 
+            if(this.members[0].id != this.user.id) return
             let Url = document.querySelector('source').src
                 let dates = {
                     room: this.room, 
@@ -238,6 +246,7 @@ export default {
                 }, 1000);
         },
         sendCurrentTime(user){
+            if(this.members[0].id != this.user.id) return
             let video = document.getElementById('video')
             let videoStats = {
                 room: this.room,

@@ -100,7 +100,7 @@ export default {
     },
     methods:{
         connectionServer(){
-           this.socket = io.connect('http://localhost:3333/')
+           this.socket = io.connect('https://www.amigitos-espanol-api.com.br/')
            this.socket.on('msg', data => {
             this.renderMSG(data)
            })
@@ -170,10 +170,10 @@ export default {
                     setTimeout(() => {
                         this.msgSent = 0
                         this.msgErr = ''
-                    }, 5000);
+                    }, 4000);
                     return resolve()
                     }
-                if (this.msgSent > 8) {
+                if (this.msgSent > 9) {
                     this.msgErr = 'está enviando mensagens em um intervalo muito curto'
                     return reject()
                 }
@@ -230,6 +230,7 @@ export default {
             
         },
         sendChat(data){
+            if(this.members[0].id != this.user.id) return
             let userRequest = data.user
             let room = this.room
             let chat = this.msgs
@@ -317,6 +318,7 @@ export default {
         position: absolute;
         border-radius: 20px;
         cursor: pointer;
+        object-fit: cover;
     }
     .options {
         position: absolute;
@@ -388,14 +390,15 @@ export default {
         position: relative;
     }
       .img-container img{
-        width: 34px;
-        height: 34px;
+        width: 40px;
+        height: 40px;
         border-radius: 20px;
         position: absolute;
         top: 50%;
         left: 50%;
         transform: translate(-50%, -50%);
         z-index: 2;
+        object-fit: cover;
     }
     .user-name-chat {
         color: var(--cor6);

@@ -103,7 +103,7 @@ export default {
     },
     methods:{
         connectionServer(){
-           this.socket = io.connect('http://localhost:3333/')
+           this.socket = io.connect('https://www.amigitos-espanol-api.com.br/')
            this.socket.on('msg', data => {
             this.renderMSG(data)
            })
@@ -222,6 +222,7 @@ export default {
           this.setScroll(msg)
         },
         sendChat(data){
+            if(this.members[0].id != this.user.id) return
             let userRequest = data.user
             let room = this.room
             let chat = this.msgs
@@ -371,6 +372,8 @@ export default {
         position: absolute;
         border-radius: 20px;
         cursor: pointer;
+        object-fit: cover;
+        object-fit: cover;
     }
     .options {
         position: absolute;
