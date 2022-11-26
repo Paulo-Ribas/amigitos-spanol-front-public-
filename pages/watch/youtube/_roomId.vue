@@ -216,7 +216,7 @@ export default {
             console.log('deu erro no player lol', event)
         },
         sendVideoUrl(id){ 
-            if(this.members[0].id != this.user.id) {
+            if(this.members[0].id === this.user.id && this.user.id != id.id) {
                 let Url = this.ytUrl
                 Url === "" ? Url = 'https://www.youtube.com/embed/hNGrGGbFX2s' : Url
                 console.log(this.ytUrl, 'estou enviando essa url')
@@ -227,17 +227,17 @@ export default {
                     }
                     this.socket.emit('UrlSent',dates)       
             }
-            /* if (this.members[0].id === id.id && this.members.length > 1 && this.members[1].id === this.user.id) {
+            if(this.members[0].id === id.id && this.members.length > 1 && this.members[1].id === this.user.id) {
                     let Url = this.ytUrl
                     Url === "" ? Url = 'https://www.youtube.com/embed/hNGrGGbFX2s' : Url
-                    console.log(this.ytUrl, 'estou enviando essa url')
+                    console.log(this.ytUrl, 'estou enviando essa url 2')
                     let dates = {
                         room: this.room, 
                         userId: id.id,
                         Url
                     }
                     this.socket.emit('UrlSent',dates)
-            } */
+            }
         },
         playing(event){
             console.log(event.target, 'ta vindo aq?, não')
@@ -588,6 +588,11 @@ export default {
             position: relative;
             height: 97vh;
         }
+        .youtube-VideoPlayer-mobile .teste, #youtube-player-1 {
+            position: absolute !important;
+            width: 100% !important;
+            height: 100% !important;
+        }
         #video{
             width: 95%;
             left: 50%;
@@ -613,7 +618,7 @@ export default {
         .youtube-VideoPlayer-mobile #video {
            width: 100%;
         }
-        #youtube-player-3 {
+       .youtube-VideoPlayer-mobile .teste, #youtube-player-1 {
             position: absolute !important;
             width: 100% !important;
             height: 100% !important;
