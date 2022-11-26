@@ -168,56 +168,11 @@ export default {
         margin: 25px 5px;
         cursor: pointer;
     }
-    @media screen and (max-width: 740px)  {
-        .videos-container {
-            width: 100%;
-            height: 100vh;
-            background-color: var(--cor7);
-            display: flex;
-            align-items: center;
-            flex-direction: column;
-        }
-        .video-box-container {
-            width: 99%;
-            max-width: 1280px;
-            margin: 0px 0px; 
-            height: 100%;
-            border: none;
-            background: var(--scrollColor);
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            flex-wrap: nowrap;
-            overflow-x: auto;
-        }
-        .video-box {
-                border-radius: 20px;
-                min-width: 300px;
-                max-width: none;
-            flex: 1;
-    /* height: 160px; */
-            min-height: 180px;
-    /* height: 88%; */
-            width: 100%;
-            max-height: 200px;
-            margin: 10px 0px;
-            background-color: var(--cor4);
-            cursor: pointer;
-            padding: 6px 0px;
-            border: 3px solid var(--corMenuMobile);
-            transition: 0.1s;
-            word-break: break-word;
-        }
-        .confirm-container {
-            width: 99%;
-            max-width: 1280px;
-            height: 50px;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-        }
-        .icon-container {
-            padding-right: 0px;
-        }
+    @media screen and (max-width: 760px)  {
+        .showInput {
+        width: calc(99% - 40px) !important;
+        
+    }
+        
     }
 </style>

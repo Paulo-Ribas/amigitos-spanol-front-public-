@@ -21,7 +21,7 @@
             @muteUnmute="muteUnmute()"
             :time="currentTime"></ControlsPlayerLiveYT>
         </div>
-        <div class="youtube-VideoPlayer-mobile" v-if="joined && mobile">
+        <div class="youtube-VideoPlayer-mobile" id="video" v-if="joined && mobile">
             <div class="wall" @click="emitPlayPause(), setFocus()" @keydown="emitKeysEvents($event)"></div>
             <playerYT class="teste" @error="showError($event)" @cued="AskForSyncronization()" @ready="ready($event)" @playing="playing($event)" :player-vars="{autoplay:0, controls: 0, }" player-width="100%" player-height="100%" :video-id="videoId"></playerYT>
             <ControlsPlayerLiveMobile
@@ -152,6 +152,9 @@ export default {
            this.socket.on('synchronize', data => {
             this.setVideoStatus(data)
            })
+           this.socket.on('sendPlayerState', data => {
+            this.sendPlayerState(data)
+           })
            this.socket.on('PlayPause', data => {
             console.log('foi dado play')
             this.PlayPauseVideo()
@@ -171,6 +174,9 @@ export default {
            })
            this.socket.on('currentTimeRecived', data => {
             this.setCurrentTime(data)
+           })
+           this.socket.on('playerStateRecived', data => {
+            this.verifyVideoStateAndOrSetCurrentTime(data)
            })
            this.socket.on('signal', data => {
             console.log("o sinal chegou até aqui")
@@ -237,6 +243,8 @@ export default {
             console.log(event.target, 'ta vindo aq?, não')
             this.player = event.target
             this.setTimeVideo()
+            this.askForPlayerState()
+
         },
         async setVideoUrl(data){
             console.log('esse sim é o video que to recebendo lol', data)
@@ -330,6 +338,36 @@ export default {
         },
         emitPlayPause($event){
             this.socket.emit('playPause', {event: $event, room: this.room})
+
+        },
+        askForPlayerState(){
+            this.socket.emit('askForPlayerState', {room: this.room, userId: this.user.id})
+        },
+        sendPlayerState(userId){
+            if(userId != this.user.id && this.user.id === this.members[0]){
+                let playerState = this.player.getPlayerState()
+                let playerCurrentTime = this.player.getCurrentTime()
+                this.socket.emit('playerState', {room: this.room, userId, playerState, playerCurrentTime})
+            }
+        },
+        verifyVideoStateAndOrSetCurrentTime(playerStateData){
+            if (playerStateData.userId === this.userId) {
+                let playerState = this.player.getPlayerState()
+                let playerCurrentTime = this.player.getCurrentTime()
+                if (playerState != playerStateData.playerState) {
+                    if (playerStateData.playerState != 1) {
+                        this.player.pauseVideo()
+                        this.player.seekTo(playerStateData.playerCurrentTime)
+                    }
+                    else {
+                        this.player.seekTo(playerStateData.playerCurrentTime)
+                        this.player.playVideo()
+                    }
+                    
+                }
+                
+            }
+            
 
         },
         PlayPauseVideo(){
@@ -536,8 +574,8 @@ export default {
         width: 100% !important;
         height: 100% !important;
     }
-    @media screen and (max-width: 740px) {
-        .video-container-mobile {
+    @media screen and (max-width: 760px) {
+        .youtube-VideoPlayer-mobile {
             flex: 2;
             width: 100%;
             min-height: 200px;
@@ -561,11 +599,12 @@ export default {
             flex-wrap: nowrap;
             overflow: auto;
         }
-        .video-container-mobile {
+        .youtube-VideoPlayer-mobile {
             min-width: 360px;
             width: 100%;
+            position: relative;
         }
-        .video-container-mobile #video {
+        .youtube-VideoPlayer-mobile #video {
            width: 100%;
         }
         
