@@ -227,7 +227,7 @@ export default {
                     }
                     this.socket.emit('UrlSent',dates)       
             }
-            if (this.members[0].id === id.id && this.members.length > 1 && this.members[1].id === this.user.id) {
+            /* if (this.members[0].id === id.id && this.members.length > 1 && this.members[1].id === this.user.id) {
                     let Url = this.ytUrl
                     Url === "" ? Url = 'https://www.youtube.com/embed/hNGrGGbFX2s' : Url
                     console.log(this.ytUrl, 'estou enviando essa url')
@@ -237,13 +237,15 @@ export default {
                         Url
                     }
                     this.socket.emit('UrlSent',dates)
-            }
+            } */
         },
         playing(event){
             console.log(event.target, 'ta vindo aq?, não')
             this.player = event.target
             this.setTimeVideo()
-            this.askForPlayerState()
+            setTimeout(() => {
+                this.askForPlayerState()
+            }, 1000);
 
         },
         async setVideoUrl(data){
@@ -252,11 +254,11 @@ export default {
                 room: this.room,
                 userId:this.user.id
             }
-            if(data.userId === this.user.id && this.members[0].id === this.user.id && this.members.length > 1) {
+            /* if(data.userId === this.user.id && this.members[0].id === this.user.id && this.members.length > 1) {
                 this.videoId = this.$youtube.getIdFromURL(data.Url)
                 return this.socket.emit('askForCurrentTime', dates)
                 
-            } 
+            }  */
             if(data.userId === this.user.id && this.members[0].id != this.user.id){
                 this.videoId = this.$youtube.getIdFromURL(data.Url)
                 return this.socket.emit('askForCurrentTime', dates)
