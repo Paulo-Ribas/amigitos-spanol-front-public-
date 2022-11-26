@@ -356,7 +356,7 @@ export default {
             if (playerStateData.userId === this.userId) {
                 let playerState = this.player.getPlayerState()
                 console.log('o requisitante', playerState, 'o que mandou', playerStateData.playerState)
-                let playerCurrentTime = this.player.getCurrentTime()
+                let playerCurrentTime = this.player.getCurrentTime() 
                 if (playerState != playerStateData.playerState) {
                     if (playerStateData.playerState != 1 && this.playerState === 1) {
                         this.player.pauseVideo()
