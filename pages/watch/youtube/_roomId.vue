@@ -2,8 +2,12 @@
     <div class="container-app">
         <Erro :erroProps="err" v-if="err != ''"></Erro>
         <JoinRoomBtn btnProps="clique aqui para começar a assistir" v-if="!joined && !pass" @clicked="JoinRoom()"></JoinRoomBtn>
+        <JoinRoomBtn btnProps="clique aqui para começar a assistir" v-if="!joined && owner === user.id && pass" @clicked="JoinRoom()"></JoinRoomBtn>
+        <JoinRoomForm labelPassProps="Digite A Senha" inputPlaceholderProps="senha..." inputSubmitProps="Pronto"
+            v-if="!joined && pass && owner != user.id" @submitEmited="roomPassVerify($event)"
+        />
         <PickVideoYT v-if="showVideos" @ChangeVideo="choiced($event)" @cancel="showVideos = false" />
-        <div class="youtube-VideoPlayer" @click="setFocus()" tabindex="1" @keydown="emitKeysEvents($event)" v-if="joined" id="video">
+        <div class="youtube-VideoPlayer" @click="setFocus()" tabindex="1" @keydown="emitKeysEvents($event)" v-if="joined && !mobile" id="video">
             <div class="wall" @click="emitPlayPause(), setFocus()" @keydown="emitKeysEvents($event)"></div>
             <playerYT class="teste" @error="showError($event)" @cued="AskForSyncronization()" @ready="ready($event)" @playing="playing($event)" :player-vars="{autoplay:0, controls: 0, }" player-width="100%" player-height="100%" :video-id="videoId"></playerYT>
             <ControlsPlayerLiveYT
@@ -17,7 +21,7 @@
             @muteUnmute="muteUnmute()"
             :time="currentTime"></ControlsPlayerLiveYT>
         </div>
-        <div class="youtube-VideoPlayer-mobile" v-if="mobile">
+        <div class="youtube-VideoPlayer-mobile" v-if="joined && mobile">
             <div class="wall" @click="emitPlayPause(), setFocus()" @keydown="emitKeysEvents($event)"></div>
             <playerYT class="teste" @error="showError($event)" @cued="AskForSyncronization()" @ready="ready($event)" @playing="playing($event)" :player-vars="{autoplay:0, controls: 0, }" player-width="100%" player-height="100%" :video-id="videoId"></playerYT>
             <ControlsPlayerLiveMobile
@@ -129,7 +133,7 @@ export default {
             return this.$mq
         }
     },
-    middleware: [],
+    middleware: ['auth', 'roomPass'],
     methods: {
         connectionServer(){
            this.socket = io.connect('https://www.amigitos-espanol-api.com.br/',{ rememberTransport: false, transports: ['websocket', 'polling', 'Flash Socket', 'AJAX long-polling']})
@@ -206,16 +210,28 @@ export default {
             console.log('deu erro no player lol', event)
         },
         sendVideoUrl(id){ 
-            if(this.members[0].id != this.user.id) return
-            let Url = this.ytUrl
-            Url === "" ? Url = 'https://www.youtube.com/embed/hNGrGGbFX2s' : Url
-            console.log(this.ytUrl, 'estou enviando essa url')
-                let dates = {
-                    room: this.room, 
-                    userId: id.id,
-                    Url
-                }
-                this.socket.emit('UrlSent',dates)       
+            if(this.members[0].id != this.user.id) {
+                let Url = this.ytUrl
+                Url === "" ? Url = 'https://www.youtube.com/embed/hNGrGGbFX2s' : Url
+                console.log(this.ytUrl, 'estou enviando essa url')
+                    let dates = {
+                        room: this.room, 
+                        userId: id.id,
+                        Url
+                    }
+                    this.socket.emit('UrlSent',dates)       
+            }
+            if (this.members[0].id === id.id && this.members.length > 1 && this.members[1].id === this.user.id) {
+                    let Url = this.ytUrl
+                    Url === "" ? Url = 'https://www.youtube.com/embed/hNGrGGbFX2s' : Url
+                    console.log(this.ytUrl, 'estou enviando essa url')
+                    let dates = {
+                        room: this.room, 
+                        userId: id.id,
+                        Url
+                    }
+                    this.socket.emit('UrlSent',dates)
+            }
         },
         playing(event){
             console.log(event.target, 'ta vindo aq?, não')
@@ -228,6 +244,11 @@ export default {
                 room: this.room,
                 userId:this.user.id
             }
+            if(data.userId === this.user.id && this.members[0] === this.user.id && this.members.length > 1) {
+                this.videoId = this.$youtube.getIdFromURL(data.Url)
+                return this.socket.emit('askForCurrentTime', dates)
+                
+            } 
             if(data.userId === this.user.id && this.members[0] != this.user.id){
                 this.videoId = this.$youtube.getIdFromURL(data.Url)
                 return this.socket.emit('askForCurrentTime', dates)
@@ -314,7 +335,7 @@ export default {
         PlayPauseVideo(){
             const play = document.querySelector('.play-pause-icon')
             console.log(this.player.getPlayerState(),'cadeeeeee', this.player.getVideoData())
-            if (this.player.getPlayerState() === 2 || this.player.getPlayerState() === 5) {
+            if (this.player.getPlayerState() === 2 || this.player.getPlayerState() === 5 || this.player.getPlayerState() === -1) {
                 this.player.playVideo()
                 console.log('vou dar play?', this.player)
                 play.src = '/svg/botao_pause.svg'
