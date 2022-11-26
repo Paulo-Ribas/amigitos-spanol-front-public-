@@ -345,17 +345,20 @@ export default {
         },
         sendPlayerState(userId){
             if(userId != this.user.id && this.user.id === this.members[0]){
+                console.log('chegou no sendPlayer', this.user.id, this.members[0])
                 let playerState = this.player.getPlayerState()
                 let playerCurrentTime = this.player.getCurrentTime()
                 this.socket.emit('playerState', {room: this.room, userId, playerState, playerCurrentTime})
             }
         },
         verifyVideoStateAndOrSetCurrentTime(playerStateData){
+            console.log('agora vou rerificar o state', playerStateData)
             if (playerStateData.userId === this.userId) {
                 let playerState = this.player.getPlayerState()
+                console.log('o requisitante', playerState, 'o que mandou', playerStateData.playerState)
                 let playerCurrentTime = this.player.getCurrentTime()
                 if (playerState != playerStateData.playerState) {
-                    if (playerStateData.playerState != 1) {
+                    if (playerStateData.playerState != 1 && this.playerState === 1) {
                         this.player.pauseVideo()
                         this.player.seekTo(playerStateData.playerCurrentTime)
                     }
@@ -606,6 +609,11 @@ export default {
         }
         .youtube-VideoPlayer-mobile #video {
            width: 100%;
+        }
+        #youtube-player-3 {
+            position: absolute !important;
+            width: 100% !important;
+            height: 100% !important;
         }
         
     }
