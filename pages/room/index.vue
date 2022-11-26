@@ -53,7 +53,7 @@ export default {
     computed:{ 
         roomFinal(){
             let roomRendered = this.rooms.filter(room => {
-                return room.members.length > 0
+                return room.members.length > 0 
             })
             return roomRendered
         }
