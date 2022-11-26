@@ -344,6 +344,7 @@ export default {
             this.socket.emit('askForPlayerState', {room: this.room, userId: this.user.id})
         },
         sendPlayerState(userId){
+            console.log('era para eu enviar o player')
             if(userId != this.user.id && this.user.id === this.members[0]){
                 console.log('chegou no sendPlayer', this.user.id, this.members[0])
                 let playerState = this.player.getPlayerState()
