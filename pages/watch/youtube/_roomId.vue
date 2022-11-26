@@ -252,12 +252,12 @@ export default {
                 room: this.room,
                 userId:this.user.id
             }
-            if(data.userId === this.user.id && this.members[0] === this.user.id && this.members.length > 1) {
+            if(data.userId === this.user.id && this.members[0].id === this.user.id && this.members.length > 1) {
                 this.videoId = this.$youtube.getIdFromURL(data.Url)
                 return this.socket.emit('askForCurrentTime', dates)
                 
             } 
-            if(data.userId === this.user.id && this.members[0] != this.user.id){
+            if(data.userId === this.user.id && this.members[0].id != this.user.id){
                 this.videoId = this.$youtube.getIdFromURL(data.Url)
                 return this.socket.emit('askForCurrentTime', dates)
             }
@@ -345,8 +345,8 @@ export default {
         },
         sendPlayerState(userId){
             console.log('era para eu enviar o player')
-            if(userId != this.user.id && this.user.id === this.members[0]){
-                console.log('chegou no sendPlayer', this.user.id, this.members[0])
+            if(userId != this.user.id && this.user.id === this.members[0].id){
+                console.log('chegou no sendPlayer', this.user.id, this.members[0].id)
                 let playerState = this.player.getPlayerState()
                 let playerCurrentTime = this.player.getCurrentTime()
                 this.socket.emit('playerState', {room: this.room, userId, playerState, playerCurrentTime})
