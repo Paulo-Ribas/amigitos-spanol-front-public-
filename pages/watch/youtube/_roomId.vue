@@ -409,6 +409,7 @@ export default {
             console.log(this.player.getPlayerState(),'cadeeeeee', this.player.getVideoData())
             if (this.player.getPlayerState() === 2 || this.player.getPlayerState() === 5 || this.player.getPlayerState() === -1) {
                 this.player.playVideo()
+                
                 console.log('vou dar play?', this.player)
                 play.src = '/svg/botao_pause.svg'
             }
