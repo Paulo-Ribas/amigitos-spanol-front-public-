@@ -86,7 +86,12 @@ export default {
         window.addEventListener('message', event => {
             this.timeUpdateSimulation(event)
         })
-        
+        setInterval(() => {
+            this.askForCurrentTime()
+        }, 1300);
+        setInterval(() => {
+            this.askForPlayerState()
+        }, 1000);
     },
     beforeDestroy(){
         this.emitUserDisconected()
@@ -176,11 +181,17 @@ export default {
             this.setCurrentTime(data)
            })
            this.socket.on('playerStateRecived', data => {
-            this.verifyVideoStateAndOrSetCurrentTime(data)
+            this.verifyVideoState(data)
            })
            this.socket.on('signal', data => {
             console.log("o sinal chegou até aqui")
             this.socket.emit('answeredSignal', {roomUrl: this.room})
+           })
+           this.socket.on('userAskingCurrentTime',data => {
+            this.sendCurrentTimeForVerification(data)
+           })
+           this.socket.on('currentTimeYtRecived',data => {
+            this.setOnlyCurrentTime(data)
            })
            this.socket.on('disconnect', q => {
             this.socket.emit('desconectado', q)
@@ -243,9 +254,6 @@ export default {
             console.log(event.target, 'ta vindo aq?, não')
             this.player = event.target
             this.setTimeVideo()
-            setTimeout(() => {
-                this.askForPlayerState()
-            }, 1000);
 
         },
         async setVideoUrl(data){
@@ -308,6 +316,7 @@ export default {
                     this.player.seekTo(dates.videoStats.currentTime)
                     play.src = '/svg/botao_pause.svg'
                 }
+                
                     
                 
                 
@@ -339,6 +348,7 @@ export default {
             video.classList.add('focus')
         },
         emitPlayPause($event){
+            if(this.socket === null) return
             this.socket.emit('playPause', {event: $event, room: this.room})
 
         },
@@ -354,19 +364,37 @@ export default {
                 this.socket.emit('playerState', {room: this.room, userId, playerState, playerCurrentTime})
             }
         },
-        verifyVideoStateAndOrSetCurrentTime(playerStateData){
+        askForCurrentTime(){
+            if (this.user.id != this.members[0].id) {
+                this.socket.emit('askingYtCurrentTime', {userId: this.user.id, room: this.room})
+            }
+        },
+        sendCurrentTimeForVerification(data){
+            if (this.user.id === this.members[0].id) {
+                let currentTime = this.player.getCurrentTime()
+                this.socket.emit('currentTimeYt', {currentTime, userId: data.userId, room: this.room})
+                
+            }
+        },
+        setOnlyCurrentTime(data){
+            if (this.user.id === data.userId) {
+                let timeCalc = parseFloat((this.player.getCurrentTime() - data.currentTime).toFixed(3)) * 1000
+                if (timeCalc >= 550 || timeCalc <= 550) {
+                    this.player.seekTo(data.currentTime)
+                }
+            }
+        },
+        verifyVideoState(playerStateData){
             console.log('agora vou rerificar o state', playerStateData)
             if (playerStateData.userId === this.userId) {
                 let playerState = this.player.getPlayerState()
                 console.log('o requisitante', playerState, 'o que mandou', playerStateData.playerState)
                 let playerCurrentTime = this.player.getCurrentTime() 
                 if (playerState != playerStateData.playerState) {
-                    if (playerStateData.playerState != 1 && this.playerState === 1) {
-                        this.player.pauseVideo()
-                        this.player.seekTo(playerStateData.playerCurrentTime)
+                    if (playerStateData.playerState === 1 && playerState === 2) {
+                        this.player.playVideo()
                     }
-                    else {
-                        this.player.seekTo(playerStateData.playerCurrentTime)
+                    if(playerStateData.playerState === 2 && playerState === 1){
                         this.player.playVideo()
                     }
                     
