@@ -70,7 +70,7 @@ export default {
     }
   },
   axios: {
-    baseURL: 'http://www.amigitos-espanol-api.com.br/'
+    baseURL: 'https://www.amigitos-espanol-api.com.br/'
   },
 
   // Vuetify module configuration: https://go.nuxtjs.dev/config-vuetify
