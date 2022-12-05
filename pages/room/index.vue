@@ -1,7 +1,7 @@
 <template>
   <div id="rooms-container">
-    <div class="room-box-container" v-if="roomFinal.length > 0">
-        <div class="box-room" v-for="room in roomFinal" :key="room._id">
+    <div class="room-box-container" v-if="rooms.length > 0">
+        <div class="box-room" v-for="room in rooms" :key="room._id">
             <div class="icon-container" v-if="room.type === 'youtube'">
                 <fa :icon="['fab','youtube']"/>
             </div>
@@ -33,7 +33,7 @@ export default {
     layout: 'default',
     middleware:['auth'],
     async asyncData(context){
-       let rooms = await context.$axios.$get(`rooms`)
+       let rooms = await context.$axios.$get(`roomsRenderizated`)
        return {
         rooms: rooms.rooms
        }
