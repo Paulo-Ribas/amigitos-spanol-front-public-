@@ -83,6 +83,9 @@ export default {
     },
     mounted(){
         window.addEventListener('beforeunload', this.emitUserDisconected)
+        setInterval(() => {
+            this.askForCurrentTime()
+        }, 3500);
     },
     beforeDestroy(){
         this.emitUserDisconected()
@@ -166,6 +169,15 @@ export default {
             console.log("o sinal chegou até aqui")
             this.socket.emit('answeredSignal', {roomUrl: this.room})
            })
+           this.socket.on('playerStateRecived', data => {
+            this.verifyVideoState(data)
+           })
+           this.socket.on('userAskingCurrentTime',data => {
+            this.sendCurrentTimeForVerification(data)
+           })
+           this.socket.on('currentTimeUploadRecived',data => {
+            this.setOnlyCurrentTime(data)
+            })
            this.socket.on('disconnect', q => {
             this.socket.emit('desconectado', q)
            })
@@ -269,6 +281,54 @@ export default {
                 }
                 
             }
+        },
+        askForCurrentTime(){
+            if (this.user.id != this.members[0].id) {
+                this.socket.emit('askingUploadCurrentTime', {userId: this.user.id, room: this.room})
+            }
+        },
+        sendCurrentTimeForVerification(data){
+            let video = document.querySelector('video')
+            if (this.user.id === this.members[0].id) {
+                let currentTime = video.currentTime
+                this.socket.emit('currentTimeUpload', {currentTime, userId: data.userId, room: this.room})
+                
+            }
+        },
+        setOnlyCurrentTime(data){
+            let video = document.querySelector('video')
+            if (this.user.id === data.userId) {
+                let timeCalc = parseFloat((video.currentTime - data.currentTime).toFixed(3)) * 1000
+                if (timeCalc >= 5600 || timeCalc <= -600) {
+                    video.currentTime = data.currentTime
+                }
+            }
+        },
+        sendPlayerState(){
+            console.log('era para eu enviar o player')
+            let video = document.querySelector('video')
+            if(this.user.id === this.members[0].id){
+                console.log('chegou no sendPlayer')
+                let playerState = video.paused
+                this.socket.emit('playerState', {room: this.room, userId, playerState, playerCurrentTime})
+            }
+        },
+        verifyVideoState(playerStateData){
+            const video = document.querySelector('video')
+            console.log('agora vou rerificar o state', playerStateData)
+            if (this.user.id != this.members[0].id) {
+                let playerState = video.paused
+                console.log('o requisitante', playerState, 'o que mandou', playerStateData.playerState)
+                if (playerStateData.playerState === false && playerState === true) {
+                    video.play()
+                }
+                if(playerStateData.playerState === true && playerState === false){
+                    video.pause()
+                }     
+                
+            }
+            
+
         },
         roomPassVerify(event){
             this.joinByPass({password: event.password,roomUrl: this.room, token: this.$cookies.get('token')}).then(correct => {

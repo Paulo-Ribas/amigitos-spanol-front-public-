@@ -87,11 +87,11 @@ export default {
             this.timeUpdateSimulation(event)
         })
         setInterval(() => {
-            this.askForCurrentTime()
-        }, 1300);
+            this.sendPlayerState()
+        }, 4900);
         setInterval(() => {
-            this.askForPlayerState()
-        }, 1000);
+            this.askForCurrentTime()
+        }, 5000);
     },
     beforeDestroy(){
         this.emitUserDisconected()
@@ -156,9 +156,6 @@ export default {
            })
            this.socket.on('synchronize', data => {
             this.setVideoStatus(data)
-           })
-           this.socket.on('sendPlayerState', data => {
-            this.sendPlayerState(data)
            })
            this.socket.on('PlayPause', data => {
             console.log('foi dado play')
@@ -352,15 +349,11 @@ export default {
             this.socket.emit('playPause', {event: $event, room: this.room})
 
         },
-        askForPlayerState(){
-            this.socket.emit('askForPlayerState', {room: this.room, userId: this.user.id})
-        },
-        sendPlayerState(userId){
+        sendPlayerState(){
             console.log('era para eu enviar o player')
-            if(userId != this.user.id && this.user.id === this.members[0].id){
-                console.log('chegou no sendPlayer', this.user.id, this.members[0].id)
+            if(this.user.id === this.members[0].id){
+                console.log('chegou no sendPlayer')
                 let playerState = this.player.getPlayerState()
-                let playerCurrentTime = this.player.getCurrentTime()
                 this.socket.emit('playerState', {room: this.room, userId, playerState, playerCurrentTime})
             }
         },
@@ -379,26 +372,23 @@ export default {
         setOnlyCurrentTime(data){
             if (this.user.id === data.userId) {
                 let timeCalc = parseFloat((this.player.getCurrentTime() - data.currentTime).toFixed(3)) * 1000
-                if (timeCalc >= 550 || timeCalc <= 550) {
+                console.log('esse log é pra voce gusta', timeCalc)
+                if (timeCalc >= 600 || timeCalc <= -600) {
                     this.player.seekTo(data.currentTime)
                 }
             }
         },
         verifyVideoState(playerStateData){
             console.log('agora vou rerificar o state', playerStateData)
-            if (playerStateData.userId === this.userId) {
+            if (this.user.id != this.members[0].id) {
                 let playerState = this.player.getPlayerState()
                 console.log('o requisitante', playerState, 'o que mandou', playerStateData.playerState)
-                let playerCurrentTime = this.player.getCurrentTime() 
-                if (playerState != playerStateData.playerState) {
-                    if (playerStateData.playerState === 1 && playerState === 2) {
-                        this.player.playVideo()
-                    }
-                    if(playerStateData.playerState === 2 && playerState === 1){
-                        this.player.playVideo()
-                    }
-                    
+                if (playerStateData.playerState === 1 && playerState === 2) {
+                    this.player.playVideo()
                 }
+                if(playerStateData.playerState === 2 && playerState === 1){
+                    this.player.pauseVideo()
+                }     
                 
             }
             
