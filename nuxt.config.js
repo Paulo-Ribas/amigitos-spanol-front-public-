@@ -70,7 +70,7 @@ export default {
     }
   },
   axios: {
-    baseURL: 'https://www.amigitos-espanol-api.com.br/'
+    baseURL: 'http://localhost:3333/'
   },
 
   // Vuetify module configuration: https://go.nuxtjs.dev/config-vuetify

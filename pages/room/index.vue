@@ -60,7 +60,7 @@ export default {
     },
     methods: {
         connectionServer(){
-            this.socket = io.connect('https://www.amigitos-espanol-api.com.br/')
+            this.socket = io.connect('http://localhost:3333/')
             this.socket.on('roomRefresh', data => {
                 this.socket.emit('deleteRoomsWith0Members')
             })

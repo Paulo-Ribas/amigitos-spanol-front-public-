@@ -7,7 +7,7 @@ export default {
     },
     async validateUser(context, payload){
         try {
-            let user = await this.$axios.$post(`validate`,{},{headers:{authorization: payload}})
+            let user = await this.$axios.$post(`http://localhost:3333/validate`,{},{headers:{authorization: payload}})
             console.log(user, 'o useeeeeer')
             return user.dates
         } 

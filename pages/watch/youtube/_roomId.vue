@@ -24,7 +24,7 @@
         <div class="youtube-VideoPlayer-mobile" id="video" v-if="joined && mobile">
             <div class="wall" @click="emitPlayPause(), setFocus()" @keydown="emitKeysEvents($event)"></div>
             <playerYT class="teste" @error="showError($event)" @cued="AskForSyncronization()" @ready="ready($event)" @playing="playing($event)" :player-vars="{autoplay:0, controls: 0, }" player-width="100%" player-height="100%" :video-id="videoId"></playerYT>
-            <ControlsPlayerLiveMobile
+            <ControlsPlayerLiveYtMobile
             @click="setFocus()" 
             @PlayPauseVideo="emitPlayPause()"
             @mouseSegura="mouseSegura"
@@ -33,7 +33,7 @@
             @keysEvents="emitKeysEvents($event)"
             @fullScreamToggle="fullScreamToggle($event)"
             @muteUnmute="muteUnmute()"
-            :time="currentTime"></ControlsPlayerLiveMobile>
+            :time="currentTime"></ControlsPlayerLiveYtMobile>
         </div>
         <ChatVideo v-if="joined && !mobile" @clicked="showVideos = !showVideos"/>
         <ChatVideoMobile v-show="!showVideos" v-if="joined && mobile" @clicked="showVideos = !showVideos"/>
@@ -88,7 +88,7 @@ export default {
         })
         setInterval(() => {
             this.sendPlayerState()
-        }, 4900);
+        }, 4700);
         setInterval(() => {
             this.askForCurrentTime()
         }, 5000);
@@ -141,7 +141,7 @@ export default {
     middleware: ['auth', 'roomPass'],
     methods: {
         connectionServer(){
-           this.socket = io.connect('https://www.amigitos-espanol-api.com.br/',{ rememberTransport: false, transports: ['websocket', 'polling', 'Flash Socket', 'AJAX long-polling']})
+           this.socket = io.connect('http://localhost:3333/',{ rememberTransport: false, transports: ['websocket', 'polling', 'Flash Socket', 'AJAX long-polling']})
            this.socket.on('sendRequestForSynchronization', data => {
             this.sendVideoUrl(data)
            })
@@ -178,6 +178,7 @@ export default {
             this.setCurrentTime(data)
            })
            this.socket.on('playerStateRecived', data => {
+            console.log('recebi o player', data)
             this.verifyVideoState(data)
            })
            this.socket.on('signal', data => {
@@ -351,10 +352,11 @@ export default {
         },
         sendPlayerState(){
             console.log('era para eu enviar o player')
+            console.log(this.user.id, this.members[0].id)
             if(this.user.id === this.members[0].id){
                 console.log('chegou no sendPlayer')
                 let playerState = this.player.getPlayerState()
-                this.socket.emit('playerState', {room: this.room, userId, playerState, playerCurrentTime})
+                this.socket.emit('playerState', {room: this.room, playerState})
             }
         },
         askForCurrentTime(){

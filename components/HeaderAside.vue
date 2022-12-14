@@ -185,10 +185,7 @@ export default {
 </script>
 
 <style scoped>
-@font-face {
-    font-family: 'Secular';
-    src: url('./static/fonts/SecularOne-Regular.ttf');
-}
+
 .tardis-icon-menu {
     width: 45px;
     height: 45px;
