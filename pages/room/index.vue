@@ -68,11 +68,13 @@ export default {
                 return room.members.length > 0 
             })
             return roomRendered
+
         }
     },
     methods: {
         connectionServer(){
             this.socket = io.connect('https://amigitos-espanol-api.com.br/')
+
             this.socket.on('roomRefresh', data => {
                 this.socket.emit('deleteRoomsWith0Members')
             })

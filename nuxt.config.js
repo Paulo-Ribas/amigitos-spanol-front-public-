@@ -74,6 +74,7 @@ export default {
   },
   axios: {
     baseURL: 'https://amigitos-espanol-api.com.br/'
+
   },
 
   // Vuetify module configuration: https://go.nuxtjs.dev/config-vuetify

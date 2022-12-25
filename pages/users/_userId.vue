@@ -24,7 +24,7 @@ export default {
             this.name = dates.data.user[0].username
             this.emoji = dates.data.user[0].emoji
             if (dates.data.user[0].profileimg.split('.')[0] === 'default') {
-                this.imgSrc = 'default.png'
+                this.imgSrc = '/default.png'
             }
             else {
                 this.imgSrc = dates.data.user[0].profileimg
