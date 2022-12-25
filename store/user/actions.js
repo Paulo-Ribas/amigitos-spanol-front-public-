@@ -8,7 +8,6 @@ export default {
     async validateUser(context, payload){
         try {
             let user = await this.$axios.$post(`http://localhost:3333/validate`,{},{headers:{authorization: payload}})
-            console.log(user, 'o useeeeeer')
             return user.dates
         } 
         catch(error){
@@ -18,9 +17,10 @@ export default {
         }
     },
     async postVideo(context, payload){
-        let axiosInfos = payload
+        let headers = payload.axiosInfos.getprogressAndSetHeaders.headers
+        let onUploadProgress = payload.onUploadProgress
         try {
-            let post = this.$axios.$post(`video`, axiosInfos.file, axiosInfos.getprogressAndSetHeaders)
+            let post = this.$axios.$post(`video`, payload.axiosInfos.file, {headers, onUploadProgress})
             return post
             
         } catch (error) {
@@ -186,6 +186,16 @@ export default {
             throw error
         }
     
+    },
+    async changePasswordByToken(context, payload){
+        let {email, password, token} = payload
+        try {
+            let changed = await this.$axios.$put(`changepasswordbytoken/${token}`, {email, password})
+            return changed
+        }
+        catch(err){
+            throw err
+        }
     }
 
 }

@@ -1,6 +1,5 @@
 export default {
     SET_TOKEN(state, payload){
-        console.log(payload,'token diferente?')
         this.$cookies.remove('token')
         this.$cookies.set('token', payload, {
             path: '/',
@@ -16,7 +15,6 @@ export default {
         state.videos = payload
     },
     SET_USER_INFO(state, payload){
-        console.log('setando', payload)
         let { username, email, profileimg, emoji, id} = payload
         state.id = id
         state.userName = username,

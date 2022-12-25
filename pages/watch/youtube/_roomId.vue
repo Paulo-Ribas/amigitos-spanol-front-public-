@@ -21,7 +21,7 @@
             @muteUnmute="muteUnmute()"
             :time="currentTime"></ControlsPlayerLiveYT>
         </div>
-        <div class="youtube-VideoPlayer-mobile" id="video" v-if="joined && mobile">
+        <div class="youtube-VideoPlayer-mobile" tabindex="1" id="video" @keydown="emitKeysEvents($event)" v-if="joined && mobile">
             <div class="wall" @click="emitPlayPause(), setFocus()" @keydown="emitKeysEvents($event)"></div>
             <playerYT class="teste" @error="showError($event)" @cued="AskForSyncronization()" @ready="ready($event)" @playing="playing($event)" :player-vars="{autoplay:0, controls: 0, }" player-width="100%" player-height="100%" :video-id="videoId"></playerYT>
             <ControlsPlayerLiveYtMobile
@@ -96,6 +96,19 @@ export default {
     beforeDestroy(){
         this.emitUserDisconected()
     },
+    head(){
+        return {
+            title: 'assistindo pelo Youtube',
+            meta: [
+                { charset: 'utf-8' },
+                { name: 'viewport', content: 'width=device-width, initial-scale=1' },
+                { hid: 'description', name: 'description', content: 'um site feito em homenagem para um antigo grupo, aqui você pode assistir videos ao mesmo tempo com seus amigos, tanto pelo youtube ou você mesmo fazendo upload deles' },
+                { name: 'format-detection', content: 'telephone=no'},
+                {name:'robots', content: 'nofollow'},
+                {name: 'author', content: 'Paulo Ribas'},
+            ]
+        }
+    },
     data(){
         return {
             joined: false,
@@ -141,7 +154,7 @@ export default {
     middleware: ['auth', 'roomPass'],
     methods: {
         connectionServer(){
-           this.socket = io.connect('http://localhost:3333/',{ rememberTransport: false, transports: ['websocket', 'polling', 'Flash Socket', 'AJAX long-polling']})
+           this.socket = io.connect('https://amigitos-espanol-api.com.br/',{ rememberTransport: false, transports: ['websocket', 'polling', 'Flash Socket', 'AJAX long-polling']})
            this.socket.on('sendRequestForSynchronization', data => {
             this.sendVideoUrl(data)
            })
@@ -162,7 +175,7 @@ export default {
             this.PlayPauseVideo()
            })
            this.socket.on('keysEvents', key => {
-            this.keysEvents(key)
+            this.keysEvents(key.event)
            })
            this.socket.on('aprenderMatematica', data => {
             this.aprenderMatematica(data)
@@ -210,7 +223,7 @@ export default {
         },
         responsive(){
             console.log(this.$mq)
-            if (this.$mq === 'sm') {
+            if (this.$mq === 'sm' || this.$mq === "md") {
                 this.mobile = true
             }
             else {
@@ -448,10 +461,10 @@ export default {
             this.currentTime = time
         },
         emitKeysEvents($event){
-            console.log(eventEmit, ' cade o coiso')
             const eventEmit = {
                 code: $event.code
             }
+            console.log(eventEmit, ' cade o coiso')
             this.socket.emit('keysEvents', {event: eventEmit, room: this.room})
 
         },
@@ -511,7 +524,7 @@ export default {
             }
         },
         fullScreamToggle() {
-            let video = document.querySelector('.youtube-VideoPlayer') || document.querySelector('.video-container-mobile')
+            let video = document.querySelector('.youtube-VideoPlayer') || document.querySelector('.youtube-VideoPlayer-mobile')
             const fullscreenIcon = document.querySelector('.fullScreem-icon')
             if (!document.fullscreenElement) {
                 fullscreenIcon.src = '/svg/sair_da_tela_cheia_.svg'
@@ -523,17 +536,19 @@ export default {
             }
         },
         muteUnmute(){
-            const video = document.getElementById('video')
             const volumeValue = document.querySelector('.volume')
             const volumeIcon = document.querySelector('.volume-icon')
-            if (video.volume > 0) {
-                video.volume = 0
+            console.log('o volume', this.player.getVolume())
+            if (this.player.getVolume() > 0) {
+                this.player.mute()
+                this.player.setVolume(0)
                 volumeValue.value = 0
                 volumeIcon.src = '/svg/sem_som.svg'    
             }
             else {
                 console.log(this.oldVolume)
-                video.volume = this.oldVolume
+                this.player.unMute()
+                this.player.setVolume(this.oldVolume * 100)
                 volumeValue.value = this.oldVolume * 100
                 volumeIcon.src = '/svg/com_som.svg'    
             }
@@ -574,6 +589,7 @@ export default {
         max-width: 853px;
         min-width: 400px;
         height: 480px;
+        max-height: 480px;
         outline: none;
     }
     video {
@@ -609,17 +625,14 @@ export default {
             min-height: 200px;
             position: relative;
             height: 97vh;
+            max-height: 480px;
         }
         .youtube-VideoPlayer-mobile .teste, #youtube-player-1 {
             position: absolute !important;
             width: 100% !important;
             height: 100% !important;
         }
-        #video{
-            width: 95%;
-            left: 50%;
-            transform: translateX(-50%)
-        }
+        
     }
     @media screen and (max-width: 560px) {
         .container-app{

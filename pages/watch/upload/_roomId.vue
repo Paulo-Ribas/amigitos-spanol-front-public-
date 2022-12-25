@@ -6,8 +6,8 @@
         <JoinRoomForm labelPassProps="Digite A Senha" inputPlaceholderProps="senha..." inputSubmitProps="Pronto"
             v-if="!joined && pass && owner != user.id" @submitEmited="roomPassVerify($event)"
         />
-        <PickVideo :videosProps="filesVideos" v-if="showVideos" @ChangeVideo="choiced($event)" @cancel="showVideos = false" />
-        <div class="video-container" v-if="joined && !mobile" v-show="!showVideos">
+        <PickVideo :videosProps="filesVideos" v-show="showVideos" @ChangeVideo="choiced($event)" @cancel="showVideos = false" />
+        <div class="video-container" v-if="joined && !mobile">
             <video @timeupdate="GaloFilhoDaPuta()" tabindex="1" @dblclick="fullScreamToggle()" 
             @click="showObject(), emitPlayPause()" @keydown="emitKeysEvents($event)" id="video">
                 <source src="/videoplayback.mp4" type="video/mp4">
@@ -23,7 +23,7 @@
             @muteUnmute="muteUnmute()"
             />
         </div>
-        <div class="video-container-mobile" v-if="joined && mobile" v-show="!showVideos">
+        <div class="video-container-mobile" v-if="joined && mobile">
             <video @timeupdate="GaloFilhoDaPuta()" tabindex="1" @dblclick="fullScreamToggle()" 
             @click="showObject(), emitPlayPause()" @keydown="emitKeysEvents($event)" id="video">
                 <source src="/videoplayback.mp4" type="video/mp4">
@@ -38,8 +38,8 @@
             @muteUnmute="muteUnmute()"
             />
         </div>
-        <ChatVideo  v-show="!showVideos" v-if="joined && !mobile" @clicked="showVideos = !showVideos"/>
-        <ChatVideoMobile v-show="!showVideos" v-if="joined && mobile" @clicked="showVideos = !showVideos"/>
+        <ChatVideo v-if="joined && !mobile" @clicked="showVideos = !showVideos"/>
+        <ChatVideoMobile v-if="joined && mobile" @clicked="showVideos = !showVideos"/>
     </div>
 
 </template>
@@ -93,6 +93,19 @@ export default {
     beforeDestroy(){
         this.emitUserDisconected()
     },
+    head(){
+        return {
+            title: 'assistindo pelo Uploads',
+            meta: [
+                { charset: 'utf-8' },
+                { name: 'viewport', content: 'width=device-width, initial-scale=1' },
+                { hid: 'description', name: 'description', content: 'um site feito em homenagem para um antigo grupo, aqui você pode assistir videos ao mesmo tempo com seus amigos, tanto pelo youtube ou você mesmo fazendo upload deles' },
+                { name: 'format-detection', content: 'telephone=no'},
+                {name:'robots', content: 'nofollow'},
+                {name: 'author', content: 'Paulo Ribas'},
+            ]
+        }
+    },
     data(){
         return {
             joined: false,
@@ -133,7 +146,7 @@ export default {
     middleware: ['auth', 'roomPass'],
     methods: {
         connectionServer(){
-           this.socket = io.connect('http://localhost:3333/',{ rememberTransport: false, transports: ['websocket', 'polling', 'Flash Socket', 'AJAX long-polling']})
+           this.socket = io.connect('https://amigitos-espanol-api.com.br/',{ rememberTransport: false, transports: ['websocket', 'polling', 'Flash Socket', 'AJAX long-polling']})
            this.socket.on('sendRequestForSynchronization', data => {
             this.sendVideoUrl(data)
            })
@@ -154,7 +167,7 @@ export default {
             this.PlayPauseVideo()
            })
            this.socket.on('keysEvents', key => {
-            this.keysEvents(key)
+            this.keysEvents(key.event)
            })
            this.socket.on('aprenderMatematica', data => {
             this.aprenderMatematica(data)
@@ -198,8 +211,7 @@ export default {
             this.members = member
         },
         responsive(){
-            console.log(this.$mq)
-            if (this.$mq === 'sm') {
+            if (this.$mq === 'sm' || this.$mq === "md") {
                 this.mobile = true
             }
             else {
@@ -417,7 +429,7 @@ export default {
             const eventEmit = {
                 code: $event.code
             }
-            console.log(eventEmit)
+            console.log(eventEmit , 'cade o coiso')
             this.socket.emit('keysEvents', {event: eventEmit, room: this.room})
 
         },
@@ -541,11 +553,13 @@ export default {
         max-width: 853px;
         min-width: 400px;
         height: 480px;
+        outline: none;
     }
     video {
         position: absolute;
         width: 100%;
         height: 100%;
+        outline: none;
         
     }
 

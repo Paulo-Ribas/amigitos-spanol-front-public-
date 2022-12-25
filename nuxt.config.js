@@ -4,15 +4,17 @@ export default {
   // Global page headers: https://go.nuxtjs.dev/config-head
   head: {
     titleTemplate: '%s - amigitos-spanol-frontEnd',
-    title: 'amigitos-spanol-frontEnd',
+    title: 'amigitos-spanol-y-sla',
     htmlAttrs: {
-      lang: 'en'
+      lang: 'pt-br'
     },
     meta: [
       { charset: 'utf-8' },
       { name: 'viewport', content: 'width=device-width, initial-scale=1' },
-      { hid: 'description', name: 'description', content: '' },
-      { name: 'format-detection', content: 'telephone=no' }
+      { hid: 'description', name: 'description', content: 'um site feito em homenagem para um antigo grupo, aqui você pode assistir videos ao mesmo tempo com seus amigos, tanto pelo youtube ou você mesmo fazendo upload deles' },
+      { name: 'format-detection', content: 'telephone=no'},
+      {name:'robots', content: 'nofollow'},
+      {name: 'author', content: 'Paulo Ribas'},
     ],
     link: [
       { rel: 'icon', type: 'image/x-icon', href: '/favicon.ico' }
@@ -56,9 +58,10 @@ export default {
   'mq': {
     defaultBreakpoint: 'sm',
     breakpoints: {
-      sm: 760,
-      md: 1250,
-      lg: Infinity,
+      sm: 500,
+      md: 760,
+      lg: 1250,
+      xl: Infinity,
     }
   },
   fontawesome: {
@@ -70,7 +73,7 @@ export default {
     }
   },
   axios: {
-    baseURL: 'http://localhost:3333/'
+    baseURL: 'https://amigitos-espanol-api.com.br/'
   },
 
   // Vuetify module configuration: https://go.nuxtjs.dev/config-vuetify

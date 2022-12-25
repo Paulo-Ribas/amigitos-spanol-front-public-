@@ -1,88 +1,81 @@
 <template>
         <section id="serie">
-            <div class="serie-container">
-                <div class="filter">
-                    <div class="ep">
-                        <label for="ep">episódio: </label>
-                        <select id="ep">
-                            <option value="1">1</option>
-                            <option value="2">2</option>
-                            <option value="3">3</option>
-                            <option value="4">4</option>
-                            <option value="5">5</option>
-                            <option value="6">6</option>
-                            <option value="7">7</option>
-                            <option value="8">8</option>
-                            <option value="9">9</option>
-                            <option value="10">10</option>
-                            <option value="11">11</option>
-                            <option value="12">12</option>
-                            <option value="13">13</option>
-                            <option value="14">14</option>
-                            <option value="es">especial natal</option>
-                        </select>
-                    </div>
-                    <div class="temp">
-                        <label for="temp">temporada: </label>
-                        <select id="temp">
-                            <option value="1">1</option>
-                            <option value="2">2</option>
-                            <option value="3">3</option>
-                            <option value="4">4</option>
-                            <option value="5">5</option>
-                            <option value="6">6</option>
-                            <option value="7">7</option>
-                            <option value="8">8</option>
-                        </select>
-                    </div>
-                </div>
-                <div class="grid-container">
-                    <div class="serie-list-temps">
-                        <div class="temps-conteiner" v-for="temp, index in temps" :key="index">
-                            <h2 @click="selecetSeason(index)">temporada {{index + 1}}</h2>
-                        </div>
-                    </div>
-                    <div class="ep-list-container">
-                        <div class="ep-container" v-for="season, index in season" :key="index">
-                            <NuxtLink class="ep" :to="'Doctor-Who/' + season.temp +'/' + season.ep">EP {{season.ep}}</NuxtLink>
-                        </div>
-                    </div>
-                </div>
+            <TardisLoadBig v-if="!loaded"></TardisLoadBig>
+            <SerieSeasonList v-if="loaded" :selectedTempProps="0"></SerieSeasonList>
+            <div class="background-img">
+                <img src="/background.jpg">
             </div>
         </section>
 
 </template>
 
 <script>
+import {mapActions} from 'vuex'
 export default {
     middleware: ['auth'],
-    async fetch(){
-        let eps = await this.$store.dispatch('series/getTemps')
-        console.log(eps)
-        this.temps = eps.Dw
-        
+    mounted(){
+        this.loaded = true
+    },
+    head(){
+        return {
+            title: 'Doctor Who',
+            meta: [
+                { charset: 'utf-8' },
+                { name: 'viewport', content: 'width=device-width, initial-scale=1' },
+                { hid: 'description', name: 'description', content: 'um site feito em homenagem para um antigo grupo, aqui você pode assistir videos ao mesmo tempo com seus amigos, tanto pelo youtube ou você mesmo fazendo upload deles' },
+                { name: 'format-detection', content: 'telephone=no'},
+                {name:'robots', content: 'nofollow'},
+                {name: 'author', content: 'Paulo Ribas'},
+            ]
+        }
     },
     data(){
         return {
-            season: this.temps,
-            temps: []
-        }
-    },
-    computed: {
-        tempsComputed(){
-            return this.temps
+            selectedTemp: 1,
+            seasonList: [],
+            loaded: false,
+            showTardis: true,
         }
     },
     methods: {
-        selecetSeason(season){
-            this.season = this.temps[season]
-            console.log(this.temps)
+        ...mapActions({
+            selectSeasom: 'series/getTemp'
+        }),
+        async seasonSelected(season){
+            console.log("cadeeeeeee")
+            let select = document.getElementById('temp').selectedIndex
+            const temp = select
+            let selectedTemp = await this.selectSeasom({temp})
+            console.log(select)
+            console.log(selectedTemp)
+            select === 0? this.showTardis = true : this.showTardis = false
+            this.selectedTemp = temp
+            this.seasonList = selectedTemp.data
+            
 
         }
     }
 }
 </script>
 
-<style>
+<style scoped>
+    #serie {
+        flex: 1;
+        height: 100vh;
+        font-family: cursive;
+        display: flex;
+    }
+    .background-img {
+        display: flex;
+        flex: 1;
+        position: relative;
+    }
+    .background-img img{
+        position: absolute;
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        left: 0;
+    }
 
 </style>

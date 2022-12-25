@@ -3,7 +3,7 @@
     <div class="video-box-container">
         <div class="video-box" data-video-box v-for="video in videos" :key="video._id" @click="setVideoPicked(video), definePinkClass($event)">
             <div class="video-img">
-                <img src="/default.png" alt="">
+                <img :src="user.profileimg" alt="img logo">
             </div>
             <div class="video-name"><h3>{{video.fileName}}</h3></div>
         </div>
@@ -18,10 +18,8 @@
 </template>
 
 <script>
+import { mapState } from 'vuex'
 export default {
-    mounted(){
-        console.log(this.videos)
-    },
     data(){
         return {
             videos:this.$props.videosProps,
@@ -32,6 +30,11 @@ export default {
     },
     props:{
         videosProps: Array
+    },
+    computed:{
+        ...mapState({
+            user: state => state.user
+        })
     },
     methods:{
         definePinkClass(event){
@@ -74,10 +77,12 @@ export default {
     .videos-container{
         width: 100%;
         height: 100vh;
-        background-color: var(--cor7);
+        background-color: #011031ce;
         display: flex;
         align-items: center;
         flex-direction: column;
+        position: absolute;
+        z-index: 6;
 
     }
     .video-box-container {
@@ -167,10 +172,12 @@ export default {
         .videos-container {
             width: 100%;
             height: 100vh;
-            background-color: var(--cor7);
+            background-color: #011031ce;
             display: flex;
             align-items: center;
             flex-direction: column;
+            position: absolute;
+            z-index: 6;
         }
         .video-box-container {
             width: 99%;

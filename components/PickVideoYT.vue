@@ -1,7 +1,7 @@
 <template>
   <div class="videos-container">
     <form class="input-container" @submit="requestVideoDatas($event)">
-        <input type="url" :class="{'youtube-link-input':'youtube-link-input', 'showInput': showInput}" v-model="url">
+        <input type="url" placeholder="  Video Url..." :class="{'youtube-link-input':'youtube-link-input', 'showInput': showInput}" v-model="url">
         <button type="submit" @click="setShowInput">
             <fa icon="magnifying-glass"></fa>
         </button>

@@ -103,7 +103,7 @@ export default {
     },
     methods:{
         connectionServer(){
-           this.socket = io.connect('http://localhost:3333/')
+           this.socket = io.connect('https://amigitos-espanol-api.com.br/')
            this.socket.on('msg', data => {
             this.renderMSG(data)
            })
@@ -468,7 +468,7 @@ export default {
         color: var(--cor7);
         border-radius: 24px;
     }
-    @media screen and (max-width: 740px){
+    @media screen and (max-width: 760px){
         .video-menu-container{
             margin-top: 0px;
             flex: 0.980;

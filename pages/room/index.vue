@@ -29,7 +29,19 @@
 <script>
 import io from 'socket.io-client'
 export default {
-    name: '',
+    head(){
+        return {
+            title: 'Salas',
+            meta: [
+                { charset: 'utf-8' },
+                { name: 'viewport', content: 'width=device-width, initial-scale=1' },
+                { hid: 'description', name: 'description', content: 'um site feito em homenagem para um antigo grupo, aqui você pode assistir videos ao mesmo tempo com seus amigos, tanto pelo youtube ou você mesmo fazendo upload deles' },
+                { name: 'format-detection', content: 'telephone=no'},
+                {name:'robots', content: 'nofollow'},
+                {name: 'author', content: 'Paulo Ribas'},
+            ]
+        }
+    },
     layout: 'default',
     middleware:['auth'],
     async asyncData(context){
@@ -60,7 +72,7 @@ export default {
     },
     methods: {
         connectionServer(){
-            this.socket = io.connect('http://localhost:3333/')
+            this.socket = io.connect('https://amigitos-espanol-api.com.br/')
             this.socket.on('roomRefresh', data => {
                 this.socket.emit('deleteRoomsWith0Members')
             })

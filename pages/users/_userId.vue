@@ -20,10 +20,9 @@ import axios from 'axios'
 export default {
     name:'',
     fetch(){
-        axios.get(`http://localhost:3333/user/${this.$route.params.userId}`).then(dates => {
+        axios.get(`https://amigitos-espanol-api.com.br//user/${this.$route.params.userId}`).then(dates => {
             this.name = dates.data.user[0].username
             this.emoji = dates.data.user[0].emoji
-            console.log(dates, 'teste')
             if (dates.data.user[0].profileimg.split('.')[0] === 'default') {
                 this.imgSrc = 'default.png'
             }
@@ -36,6 +35,19 @@ export default {
     fetchOnServer: false,
     mounted(){
         this.loading = false
+    },
+    head(){
+        return {
+            title: this.name,
+            meta: [
+                { charset: 'utf-8' },
+                { name: 'viewport', content: 'width=device-width, initial-scale=1' },
+                { hid: 'description', name: 'description', content: 'um site feito em homenagem para um antigo grupo, aqui você pode assistir videos ao mesmo tempo com seus amigos, tanto pelo youtube ou você mesmo fazendo upload deles' },
+                { name: 'format-detection', content: 'telephone=no'},
+                {name:'robots', content: 'nofollow'},
+                {name: 'author', content: 'Paulo Ribas'},
+            ]
+        }
     },
     data(){
         return {

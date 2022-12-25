@@ -1,8 +1,10 @@
 <template>
-    <div class="login">
-        <Erro :erroProps="erro" v-if="erro != ''"></Erro>
+    <div class="Sign">
+        <div class="erro" v-if="erro != ''">
+            {{erro}}
+        </div>
         <form @submit="sendUser">
-            <h2>Login</h2>
+            <h2>Cadastre-se</h2>
             <label>Nome</label>
             <input type="text" v-model="name">
             <label>Email</label>
@@ -10,9 +12,7 @@
             <label>Senha</label>
             <input type="password" v-model="password">
             <input type="submit" value="Enviar" @click="sendUser">
-            <!-- <NuxtLink to="/recoveryPassword" class="recovery">esqueceu a senha?</NuxtLink> -->
         </form>
-            <img src="/loanding1.gif" v-if="loanding" class="tardis-loanding">
     </div>
   
 </template>
@@ -20,37 +20,37 @@
 <script>
 import axios from "axios";
 export default {
+    name: 'qe',
+    head(){
+        return {
+            title: 'sign-up',
+            meta: [
+                { charset: 'utf-8' },
+                { name: 'viewport', content: 'width=device-width, initial-scale=1' },
+                { hid: 'description', name: 'description', content: 'um site feito em homenagem para um antigo grupo, aqui você pode assistir videos ao mesmo tempo com seus amigos, tanto pelo youtube ou você mesmo fazendo upload deles' },
+                { name: 'format-detection', content: 'telephone=no'},
+                {name:'robots', content: 'nofollow'},
+                {name: 'author', content: 'Paulo Ribas'},
+            ]
+        }
+    },
     data(){
         return {
             name: '',
             email: '',
             password: '',
-            erro: '',
-            loanding: false
+            erro: ''
         }
-    },
-    components: {
     },
     methods: {
         sendUser($event) {
             $event.preventDefault()
-            const {name, email, password} = this.$data
-            this.loanding = true
-            console.log(this.$config)
-            axios.post(`http://localhost:3333/login`,{username: name, email, password}).then(sucefful => {
-                let token = sucefful.data.token
-                console.log('sucefful', token)
-                this.$store.commit('user/SET_TOKEN', 'bearer ' + token)
-                this.$store.dispatch('user/validateUser', 'bearer ' + token).then(res => {
-                    let id = res.id
-                    this.$router.push({name: 'users-userId', params:{userId: id}})
-                }).catch(err => {
-                    console.log(err)
-                })
+            const {name, email, password} = this
+            axios.post('https://amigitos-espanol-api.com.br/user',{username: name, email, password}).then(sucefful => {
+                console.log('foi')
+                this.$router.push({name: 'login'})
             }).catch(err => {
-                console.log(err)
                 this.erro = err.response.data.err
-                this.loanding = false
             })
             
         }
@@ -60,20 +60,13 @@ export default {
 </script>
 
 <style scoped>
-    .login {
+    .Sign {
         flex: 1;
         height: 100vh;
         display: flex;
         flex-direction: column;
         justify-content: center;
         align-items: center;
-    }
-    .recovery {
-        color: white;
-        font-family: cursive;
-        font-size: 1em;
-        margin-bottom: -23px;
-        text-decoration-color: var(--corAzul);
     }
     form {
         width: 100%;
@@ -107,7 +100,22 @@ export default {
         color: white;
     }
 
-h2 {
+    .erro {
+        width: 99%;
+        max-width: 800px;    
+        background-color: var(--cor5);
+        position: absolute;
+        border-radius: 50px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        top: 5%;
+        height: 40px;
+        color: white;
+        font-size: 1.2em;
+        font-family:'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+    h2 {
     position: absolute;
     font-family: cursive;
     font-size: 1.8em;
@@ -115,11 +123,6 @@ h2 {
     top: 0;
     transform: translateY(-60px);
 }
-.tardis-loanding {
-    position: absolute;
-    width: 40px;
-    height: 50px;
-    bottom: 10%;
-}
+
 
 </style>

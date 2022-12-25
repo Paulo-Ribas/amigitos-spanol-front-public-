@@ -12,7 +12,7 @@
                   </NuxtLink>
              </div>
              <div class="sigin-container">
-                <NuxtLink to="/sign-in">
+                <NuxtLink to="/sign-up">
                    Cadastre-se
                  </NuxtLink>
              </div>
@@ -43,6 +43,19 @@ export default {
   mounted(){
     this.loanding = false
   },
+  head(){
+        return {
+            title: 'Assistir Ao Mesmo Tempo',
+            meta: [
+                { charset: 'utf-8' },
+                { name: 'viewport', content: 'width=device-width, initial-scale=1' },
+                { hid: 'description', name: 'description', content: 'um site feito em homenagem para um antigo grupo, aqui você pode assistir videos ao mesmo tempo com seus amigos, tanto pelo youtube ou você mesmo fazendo upload deles' },
+                { name: 'format-detection', content: 'telephone=no'},
+                {name:'robots', content: 'nofollow'},
+                {name: 'author', content: 'Paulo Ribas'},
+            ]
+        }
+    },
   data(){
     return {
       loanding: true,

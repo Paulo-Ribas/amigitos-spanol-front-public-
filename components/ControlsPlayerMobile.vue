@@ -1,11 +1,20 @@
 <template>
+  <div class="mobile-controls-container" @click="toggleControll">
+    <div class="controls-container" v-show="displayBlock">
+        <div class="skip-container" @click="keysEvents('ArrowRight')">
+            <img src="/svg/adiantar_o_video_.svg" class="skip-icon">
+        </div>
+        <img src="/svg/botao_play_.svg" class="play-pause-icon" @click="PlayPauseVideo">
+        <div class="return-container" @click="keysEvents('ArrowLeft')">
+            <img src="/svg/regressar_o_video_.svg" class="return-icon">
+        </div>
+    </div>
   <div class="controls" @keydown="keysEvents">
-    <div class="progress" @click="setFalse(), aprenderMatematica($event)"  @mousedown="teste($event)" @mousemove="ultimoTeste($event)" @mouseleave="clicado = false" draggable="false">
-      <div class="progress-bar"  draggable="false"></div>
+    <div class="progress"  @mousedown="aprenderMatematica" draggable="false">
+      <div class="progress-bar" @mousedown="aprenderMatematica" draggable="false"></div>
     </div>
     <div class="container-btns">
       <div class="btn-primary">
-        <img src="/svg/botao_play_.svg" class="play-pause-icon" @click="PlayPauseVideo">
         <div class="timer">{{currentTime}}</div>
         <div class="volume-container">
             <img src="/svg/com_som.svg" @click="emitMuteUnmute()" class="volume-icon">
@@ -17,44 +26,46 @@
       </div>
     </div>
   </div>
+    </div>
 </template>
 
 <script>
 export default {
-    mounted(){
-        let control = document.querySelector('.controls')
+     mounted(){
+        let controls = document.querySelector('.controls')
+        let self = this
         let MouseVerify = function VerifyMouse() {
-            let timeOut = setTimeout(() => {
-                try {
-                    control.classList.add('opacity0')
-                            
-                } catch (error) {
-                        console.log(error, 'errooo')
-                }   
-            }, 7000);
-            return timeOut
+                let timeOut = setTimeout(function () {
+                    try {
+                        controls.classList.add('opacity0')
+                        this.removeDisplayBlock()
+                    } catch (error) {
+                        throw error    
+                    }
+                }.bind(self), 7000);
+                return timeOut
         }
-
-        const interval = setInterval(() => {
+        let interval = setInterval(() => {
+            console.log(controls)
             MouseVerify()
         }, 7000);
-
-        document.querySelector('.video-container').addEventListener('mousemove',() => {
-            try {
-                control.classList.remove('opacity0')
-            } catch (error) {
-                throw error
-            }
+        document.querySelector('.video-container').addEventListener('click', function (){
+                try {
+                    controls.classList.remove('opacity0')
+                    this.toggleControll()
+                } catch (error) {
+                    throw error
+                }
                 clearInterval(MouseVerify)
-            })
-         window.addEventListener('beforeunload', ()=> {
+            }.bind(self))
+        window.addEventListener('beforeunload', ()=> {
             return clearInterval(interval)
          })
     },
     data(){
         return {
             currentTime: this.$props.time,
-            clicado: false,
+            displayBlock: false,
         }
     },
     props: {
@@ -62,7 +73,7 @@ export default {
     },
     watch:{
         time(value, payload){
-            if(value === null) return
+            if (value === null) return
             this.currentTime = value
         }
     },
@@ -81,7 +92,9 @@ export default {
             this.$emit('aprenderMatematica', $event)
         },
         keysEvents($event){
-            this.$emit('keysEvents', $event)
+            let event = {code:$event}
+            console.log(event, $event, 'evento')
+            this.$emit('keysEvents', event)
         },
         fullScreamToggle($event){
             this.$emit('fullScreamToggle', $event)
@@ -89,22 +102,11 @@ export default {
         emitMuteUnmute(){
             this.$emit('muteUnmute')
         },
-        teste($event){
-            if ($event.type === 'mousedown') {
-                this.clicado = true
-            }
-            else {
-                this.clicado = false
-            }
+        toggleControll(){
+            this.displayBlock = true
         },
-        ultimoTeste($event){
-            if (this.clicado === true) {
-                this.aprenderMatematica($event)
-            }
-            console.log(this.clicado)
-        },
-        setFalse(){
-            this.clicado = false
+        removeDisplayBlock(){
+            this.displayBlock = false
         }
 
     }
@@ -115,6 +117,33 @@ export default {
 .opacity0 {
     opacity: 0 !important;
 }
+.mobile-controls-container {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    z-index: 2;
+}
+    .controls-container {
+        position: absolute;
+        width: 100%;
+        height: 100%;
+        z-index: 2;
+        background-color: var(--corMenu);
+    }
+    .skip-container {
+        width: 50%;
+        height: 100%;
+        position: absolute;
+        z-index: 2;
+        right: 0;
+    }
+    .return-container {
+        width: 50%;
+        height: 100%;
+        position: absolute;
+        z-index: 2;
+        left: 0;
+    }
     .controls {
         width: 100%;
         height: 44px;
@@ -159,19 +188,28 @@ export default {
         margin: 0px 2px;
     }
     img {
-        height: 24px;
-        width: 24px;
+        height: 22px;
+        width: 22px;
         cursor: pointer;
     }
     .volume-container {
         display: flex;
     }
-    .play-pause-icon {
-        height: 20px;
+     .play-pause-icon, .skip-icon, .return-icon {
+        height: 42px;
+        width: 42px;
+        position: absolute;
+        left: 50%;
+        top: 50%;
+        transform: translate(-50%, -50%);
+        z-index: 3;
     }
     .fullScreem-icon {
-        width: 45px;
-        height: 45px;
+        width: 43px;
+        height: 43px;
+    }
+    .volume-container input {
+        width: 75px;
     }
 
 </style>
