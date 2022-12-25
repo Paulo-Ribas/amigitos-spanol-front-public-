@@ -1,10 +1,12 @@
 <template>
     <div class="recovery">
         <Erro :erroProps="err" v-if="err != ''"></Erro>
-        <form>
+        <Sucess :sucessProps="sucess" v-if="sucess != ''"></Sucess>
+        <form v-if="sucess === ''">
             <label>Email</label>
             <input type="email" id="email" placeholder="Digite Seu Email Para A Recuperação">
             <input type="submit" value="Enviar" @click="sendEmail">
+            <TardisLoadBig class="tardis" v-if="loadTardis && sucess === '' && err ===''"></TardisLoadBig>
         </form>
     </div>
   
@@ -13,16 +15,35 @@
 <script>
 export default {
     layout: 'noMenu',
+    head(){
+        return {
+            title: 'recovery pass',
+            meta: [
+                { charset: 'utf-8' },
+                { name: 'viewport', content: 'width=device-width, initial-scale=1' },
+                { hid: 'description', name: 'description', content: 'um site feito em homenagem para um antigo grupo, aqui você pode assistir videos ao mesmo tempo com seus amigos, tanto pelo youtube ou você mesmo fazendo upload deles' },
+                { name: 'format-detection', content: 'telephone=no'},
+                {name:'robots', content: 'nofollow'},
+                {name: 'author', content: 'Paulo Ribas'},
+            ]
+        }
+    },
     data(){
         return {
-            err: ''
+            err: '',
+            sucess: '',
+            loadTardis: false,
         }
     },
     methods: {
         sendEmail(e){
             e.preventDefault()
             let email = document.getElementById('email').value
-            this.$store.dispatch('user/sendRecoveryToken',email).then(done => {}).catch(err => {
+            this.loadTardis = true
+            this.$store.dispatch('user/sendRecoveryToken',email).then(done => {
+                console.log(done)
+                this.sucess = "Email Enviado Com Sucesso"
+            }).catch(err => {
                 this.err = err.response.data.err
             })
         }
@@ -70,6 +91,9 @@ export default {
         font-family: cursive;
         font-size: 1.2em;
         color: white;
+    }
+    .tardis{
+        transform: translate(-50%, calc(-50% - -150px));
     }
 
 </style>

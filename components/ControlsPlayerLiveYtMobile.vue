@@ -35,7 +35,7 @@ export default {
         let controls = document.querySelector('.controls')
         let self = this
         let MouseVerify = function VerifyMouse() {
-                let timeOut = setTimeout(function () {
+                let timeOut = setTimeout(function (){
                     try {
                         controls.classList.add('opacity0')
                         this.removeDisplayBlock()
@@ -48,7 +48,7 @@ export default {
         let interval = setInterval(() => {
             MouseVerify()
         }, 7000);
-        document.querySelector('.video-container-mobile').addEventListener('click', function (){
+        document.querySelector('.youtube-VideoPlayer-mobile').addEventListener('click',function() {
                 try {
                     controls.classList.remove('opacity0')
                     this.toggleControll()
@@ -64,7 +64,7 @@ export default {
     data(){
         return {
             currentTime: this.$props.time,
-            displayBlock: false,
+            displayBlock:false,
         }
     },
     props: {
@@ -154,7 +154,7 @@ export default {
     .progress {
         width: 100%;
         background-color: var(--cor2);
-        height: 8px;
+        height: 10px;
         position: relative;
         cursor: pointer;
     }
@@ -191,7 +191,7 @@ export default {
     .volume-container {
         display: flex;
     }
-     .play-pause-icon, .skip-icon, .return-icon {
+    .play-pause-icon, .skip-icon, .return-icon {
         height: 42px;
         width: 42px;
         position: absolute;

@@ -1,7 +1,7 @@
 <template>
   <div id="rooms-container">
-    <div class="room-box-container" v-if="roomFinal.length > 0">
-        <div class="box-room" v-for="room in roomFinal" :key="room._id">
+    <div class="room-box-container" v-if="rooms.length > 0">
+        <div class="box-room" v-for="room in rooms" :key="room._id">
             <div class="icon-container" v-if="room.type === 'youtube'">
                 <fa :icon="['fab','youtube']"/>
             </div>
@@ -29,11 +29,23 @@
 <script>
 import io from 'socket.io-client'
 export default {
-    name: '',
+    head(){
+        return {
+            title: 'Salas',
+            meta: [
+                { charset: 'utf-8' },
+                { name: 'viewport', content: 'width=device-width, initial-scale=1' },
+                { hid: 'description', name: 'description', content: 'um site feito em homenagem para um antigo grupo, aqui você pode assistir videos ao mesmo tempo com seus amigos, tanto pelo youtube ou você mesmo fazendo upload deles' },
+                { name: 'format-detection', content: 'telephone=no'},
+                {name:'robots', content: 'nofollow'},
+                {name: 'author', content: 'Paulo Ribas'},
+            ]
+        }
+    },
     layout: 'default',
     middleware:['auth'],
     async asyncData(context){
-       let rooms = await context.$axios.$get(`rooms`)
+       let rooms = await context.$axios.$get(`roomsRenderizated`)
        return {
         rooms: rooms.rooms
        }
@@ -52,23 +64,17 @@ export default {
     },
     computed:{ 
         roomFinal(){
-<<<<<<< HEAD
             let roomRendered = this.rooms.filter(room => {
-                return room.members.length > 0
+                return room.members.length > 0 
             })
             return roomRendered
-=======
-           return  this.rooms
->>>>>>> 1232308 (vai dar problema)
+
         }
     },
     methods: {
         connectionServer(){
-<<<<<<< HEAD
-            this.socket = io.connect('https://www.amigitos-espanol-api.com.br/')
-=======
             this.socket = io.connect('https://amigitos-espanol-api.com.br/')
->>>>>>> 1232308 (vai dar problema)
+
             this.socket.on('roomRefresh', data => {
                 this.socket.emit('deleteRoomsWith0Members')
             })

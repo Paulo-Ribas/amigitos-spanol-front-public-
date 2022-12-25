@@ -8,11 +8,12 @@
     </span>
     </h2>
       <TabbleVideosList :btnProps="'deletar'" :videosProps="user.videos" @selected="areYouSure($event)"></TabbleVideosList>
-    <div class="progress-bar" v-if="uploading && !completed && countVideo > 0 && videoErr != ''">
+    <div class="progress-bar" v-if="!completed">
       <span class="completed" v-if="completed">completo</span>
-      <span class="status" v-if="uploading">enviando arquivo</span>
+      <span class="status" v-if="uploading && !prossesing && videoErr === ''">enviando arquivo</span>
+      <span class="status" v-if="prossesing && videoErr === ''">processando...</span>
       <span class="erro_video" v-if="videoErr">{{videoErr}}</span>
-      <span class="porcent"></span>
+      <span class="porcent" v-if="uploading && !prossesing"></span>
       <span class="videosUploading" v-if="countVideo > 0">{{countVideo}}</span>
       <div class="progress"></div>
       <TardisVerySmall v-if="!completed" class="hidden tardis-processing"></TardisVerySmall>
@@ -51,13 +52,26 @@ export default {
     this.$emit('toggleMobile')
   },
   fetchOnServer: false,
+  head(){
+        return {
+            title: 'videos',
+            meta: [
+                { charset: 'utf-8' },
+                { name: 'viewport', content: 'width=device-width, initial-scale=1' },
+                { hid: 'description', name: 'description', content: 'um site feito em homenagem para um antigo grupo, aqui você pode assistir videos ao mesmo tempo com seus amigos, tanto pelo youtube ou você mesmo fazendo upload deles' },
+                { name: 'format-detection', content: 'telephone=no'},
+                {name:'robots', content: 'nofollow'},
+                {name: 'author', content: 'Paulo Ribas'},
+            ]
+        }
+    },
   data() {
     return {
       token: undefined,
       loanding: true,
       uploading: false,
       prossesing: false,
-      completed: false,
+      completed: true,
       videoErr: '',
       countVideo: 0,
       mobile: false,
@@ -82,7 +96,7 @@ export default {
       this.completed = false
       this.uploading = true
       this.prossesing = false
-      this.videoErr = ' '
+      this.videoErr = ''
       this.countVideo += 1 
       let axiosInfos = {
         file: Form,
@@ -90,15 +104,18 @@ export default {
           onUploadProgress(event){
             document.querySelector('.tardis-processing').classList.add('hidden')
               let progress = Math.round((event.loaded * 100) / event.total)
+              console.log(this.countVideo, 'teste teste ')
               let progressBar = document.querySelector('.progress')
               let progressPorcent = document.querySelector('.porcent')
               let status = document.querySelector('.status')
-              status.innerHTML === 'enviando arquivo' ? status.innerHTML = status.innerHTML : status.innerHTML = 'enviando arquivo'
+              //status.innerHTML === 'enviando arquivo' ? status.innerHTML = status.innerHTML : status.innerHTML = 'enviando arquivo'
               progressBar.style.width = `${progress}%`
               progressPorcent.innerHTML = `${progress}%` //inner para matar as saudades
+              this.videoErr = ''
+              this.uploading = true
               if (progress === 100) {
-                progressPorcent.innerHTML = ''
-                status.innerHTML = 'processando'
+                this.prossesing = true
+                this.videoErr = ''
                 document.querySelector('.tardis-processing').classList.toggle('hidden')
                 
               }
@@ -106,17 +123,21 @@ export default {
           headers: { authorization: this.$cookies.get('token')}
         }
       }
-      this.postVideo(axiosInfos).then(res => {
+      let onUploadProgress = axiosInfos.getprogressAndSetHeaders.onUploadProgress.bind(this)
+      this.postVideo({axiosInfos, onUploadProgress}).then(res => {
         console.log('chegou no postar ao menos')
-        this.prossesing = true
         this.getSetVideos(this.$cookies.get('token')).then(videos => {
-          document.querySelector('.tardis-processing').classList.toggle('hidden')
+          if (prossessing) {
+              document.querySelector('.tardis-processing').classList.toggle('hidden')
+          }
           if (this.countVideo === 0) {
             this.uploading = false
+            this.prossessing = false
             this.completed = true
             
           }
-            this.videoErr = ''
+          this.prossesing = false
+          this.videoErr = ''
           this.countVideo = this.countVideo - 1
         }).catch(erro => {
           console.log('talvez n esteja sendo atualizado por causa desse erro', erro)
@@ -131,7 +152,7 @@ export default {
           
         }
         this.videoErr = err.response.data.err
-        status.innerHTML = this.videoErr
+        this.prossesing = false
         this.countVideo = this.countVideo - 1
         console.log(this.videoErr)
       })

@@ -6,8 +6,8 @@
         <JoinRoomForm labelPassProps="Digite A Senha" inputPlaceholderProps="senha..." inputSubmitProps="Pronto"
             v-if="!joined && pass && owner != user.id" @submitEmited="roomPassVerify($event)"
         />
-        <PickVideo :videosProps="filesVideos" v-if="showVideos" @ChangeVideo="choiced($event)" @cancel="showVideos = false" />
-        <div class="video-container" v-if="joined && !mobile" v-show="!showVideos">
+        <PickVideo :videosProps="filesVideos" v-show="showVideos" @ChangeVideo="choiced($event)" @cancel="showVideos = false" />
+        <div class="video-container" v-if="joined && !mobile">
             <video @timeupdate="GaloFilhoDaPuta()" tabindex="1" @dblclick="fullScreamToggle()" 
             @click="showObject(), emitPlayPause()" @keydown="emitKeysEvents($event)" id="video">
                 <source src="/videoplayback.mp4" type="video/mp4">
@@ -23,7 +23,7 @@
             @muteUnmute="muteUnmute()"
             />
         </div>
-        <div class="video-container-mobile" v-if="joined && mobile" v-show="!showVideos">
+        <div class="video-container-mobile" v-if="joined && mobile">
             <video @timeupdate="GaloFilhoDaPuta()" tabindex="1" @dblclick="fullScreamToggle()" 
             @click="showObject(), emitPlayPause()" @keydown="emitKeysEvents($event)" id="video">
                 <source src="/videoplayback.mp4" type="video/mp4">
@@ -38,8 +38,8 @@
             @muteUnmute="muteUnmute()"
             />
         </div>
-        <ChatVideo  v-show="!showVideos" v-if="joined && !mobile" @clicked="showVideos = !showVideos"/>
-        <ChatVideoMobile v-show="!showVideos" v-if="joined && mobile" @clicked="showVideos = !showVideos"/>
+        <ChatVideo v-if="joined && !mobile" @clicked="showVideos = !showVideos"/>
+        <ChatVideoMobile v-if="joined && mobile" @clicked="showVideos = !showVideos"/>
     </div>
 
 </template>
@@ -83,9 +83,28 @@ export default {
     },
     mounted(){
         window.addEventListener('beforeunload', this.emitUserDisconected)
+        setInterval(() => {
+            this.askForCurrentTime()
+        }, 5000);
+        setInterval(() => {
+            this.sendPlayerState()
+        }, 4900);
     },
     beforeDestroy(){
         this.emitUserDisconected()
+    },
+    head(){
+        return {
+            title: 'assistindo pelo Uploads',
+            meta: [
+                { charset: 'utf-8' },
+                { name: 'viewport', content: 'width=device-width, initial-scale=1' },
+                { hid: 'description', name: 'description', content: 'um site feito em homenagem para um antigo grupo, aqui você pode assistir videos ao mesmo tempo com seus amigos, tanto pelo youtube ou você mesmo fazendo upload deles' },
+                { name: 'format-detection', content: 'telephone=no'},
+                {name:'robots', content: 'nofollow'},
+                {name: 'author', content: 'Paulo Ribas'},
+            ]
+        }
     },
     data(){
         return {
@@ -127,11 +146,7 @@ export default {
     middleware: ['auth', 'roomPass'],
     methods: {
         connectionServer(){
-<<<<<<< HEAD
-           this.socket = io.connect('https://www.amigitos-espanol-api.com.br/',{ rememberTransport: false, transports: ['websocket', 'polling', 'Flash Socket', 'AJAX long-polling']})
-=======
            this.socket = io.connect('https://amigitos-espanol-api.com.br/',{ rememberTransport: false, transports: ['websocket', 'polling', 'Flash Socket', 'AJAX long-polling']})
->>>>>>> 1232308 (vai dar problema)
            this.socket.on('sendRequestForSynchronization', data => {
             this.sendVideoUrl(data)
            })
@@ -152,7 +167,7 @@ export default {
             this.PlayPauseVideo()
            })
            this.socket.on('keysEvents', key => {
-            this.keysEvents(key)
+            this.keysEvents(key.event)
            })
            this.socket.on('aprenderMatematica', data => {
             this.aprenderMatematica(data)
@@ -170,6 +185,15 @@ export default {
             console.log("o sinal chegou até aqui")
             this.socket.emit('answeredSignal', {roomUrl: this.room})
            })
+           this.socket.on('playerStateRecived', data => {
+            this.verifyVideoState(data)
+           })
+           this.socket.on('userAskingCurrentTime',data => {
+            this.sendCurrentTimeForVerification(data)
+           })
+           this.socket.on('currentTimeUploadRecived',data => {
+            this.setOnlyCurrentTime(data)
+            })
            this.socket.on('disconnect', q => {
             this.socket.emit('desconectado', q)
            })
@@ -187,8 +211,7 @@ export default {
             this.members = member
         },
         responsive(){
-            console.log(this.$mq)
-            if (this.$mq === 'sm') {
+            if (this.$mq === 'sm' || this.$mq === "md") {
                 this.mobile = true
             }
             else {
@@ -274,6 +297,54 @@ export default {
                 
             }
         },
+        askForCurrentTime(){
+            if (this.user.id != this.members[0].id) {
+                this.socket.emit('askingUploadCurrentTime', {userId: this.user.id, room: this.room})
+            }
+        },
+        sendCurrentTimeForVerification(data){
+            let video = document.querySelector('video')
+            if (this.user.id === this.members[0].id) {
+                let currentTime = video.currentTime
+                this.socket.emit('currentTimeUpload', {currentTime, userId: data.userId, room: this.room})
+                
+            }
+        },
+        setOnlyCurrentTime(data){
+            let video = document.querySelector('video')
+            if (this.user.id === data.userId) {
+                let timeCalc = parseFloat((video.currentTime - data.currentTime).toFixed(3)) * 1000
+                if (timeCalc >= 5600 || timeCalc <= -600) {
+                    video.currentTime = data.currentTime
+                }
+            }
+        },
+        sendPlayerState(){
+            console.log('era para eu enviar o player')
+            let video = document.querySelector('video')
+            if(this.user.id === this.members[0].id){
+                console.log('chegou no sendPlayer')
+                let playerState = video.paused
+                this.socket.emit('playerState', {room: this.room, userId, playerState, playerCurrentTime})
+            }
+        },
+        verifyVideoState(playerStateData){
+            const video = document.querySelector('video')
+            console.log('agora vou rerificar o state', playerStateData)
+            if (this.user.id != this.members[0].id) {
+                let playerState = video.paused
+                console.log('o requisitante', playerState, 'o que mandou', playerStateData.playerState)
+                if (playerStateData.playerState === false && playerState === true) {
+                    video.play()
+                }
+                if(playerStateData.playerState === true && playerState === false){
+                    video.pause()
+                }     
+                
+            }
+            
+
+        },
         roomPassVerify(event){
             this.joinByPass({password: event.password,roomUrl: this.room, token: this.$cookies.get('token')}).then(correct => {
                 console.log('correto?', correct)
@@ -358,7 +429,7 @@ export default {
             const eventEmit = {
                 code: $event.code
             }
-            console.log(eventEmit)
+            console.log(eventEmit , 'cade o coiso')
             this.socket.emit('keysEvents', {event: eventEmit, room: this.room})
 
         },
@@ -482,11 +553,13 @@ export default {
         max-width: 853px;
         min-width: 400px;
         height: 480px;
+        outline: none;
     }
     video {
         position: absolute;
         width: 100%;
         height: 100%;
+        outline: none;
         
     }
 

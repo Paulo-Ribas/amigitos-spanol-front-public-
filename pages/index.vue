@@ -2,27 +2,20 @@
   <main>
     <div class="container-main" v-if="!loanding && show">
         <div class="container-text">
-          <h2>ASSISTIR AO MESMO TEMPO</h2>
-          <p>Lorem ipsum dolor, sit amet consectetur adipisicing elit. Aliquam, ipsum ratione! Accusamus distinctio veritatis cumque, labore explicabo nam vitae nesciunt suscipit dolorem possimus, earum, harum cupiditate sunt inventore sit sed quidem exercitationem iure.</p>
+          <h1>ASSISTIR AO MESMO TEMPO</h1>
+          <h2>Assista videos do youtube ao mesmo tempo com amigos em salas personalizadas ou assista videos próprios, fazendo upload dos videos desejados e criando uma sala personalizade para assistir ao em grupo com amigos, e caso também queira assistir Doctor Who, clique em assistir solo</h2>
         </div>
         <div class="login-sigin-container">
             <div class="login-container">
-              <h3>Login</h3>
-              <div class="link-container">
-                <img src="/tardis-icon-23.png" class="tardis-icon">
                   <NuxtLink to="/login">
-                   Assistir Com Youtube
+                   Login
                   </NuxtLink>
-              </div>
-            </div>
-            <div class="sigin-container">
-              <h3>Cadastre-se</h3>
-             <div class="link-container">
-                <NuxtLink to="/sing-in">
-                   Ou Também Assista O Próprio Video
+             </div>
+             <div class="sigin-container">
+                <NuxtLink to="/sign-up">
+                   Cadastre-se
                  </NuxtLink>
              </div>
-            </div>
           </div>
         </div>
   </main>
@@ -50,6 +43,19 @@ export default {
   mounted(){
     this.loanding = false
   },
+  head(){
+        return {
+            title: 'Assistir Ao Mesmo Tempo',
+            meta: [
+                { charset: 'utf-8' },
+                { name: 'viewport', content: 'width=device-width, initial-scale=1' },
+                { hid: 'description', name: 'description', content: 'um site feito em homenagem para um antigo grupo, aqui você pode assistir videos ao mesmo tempo com seus amigos, tanto pelo youtube ou você mesmo fazendo upload deles' },
+                { name: 'format-detection', content: 'telephone=no'},
+                {name:'robots', content: 'nofollow'},
+                {name: 'author', content: 'Paulo Ribas'},
+            ]
+        }
+    },
   data(){
     return {
       loanding: true,
@@ -60,131 +66,71 @@ export default {
 </script>
 <style scoped>
   main{
-    flex: 1;
+    flex:1
   }
-
-  .container-main {
+  .container-main{
     width: 100%;
+    max-width: 800px;
+    margin: auto;
     height: 100vh;
     display: flex;
+    flex-direction: column;
+    justify-content: center;
     align-items: center;
-  }
-  .container-text {
-    height: 400px;
     font-family: cursive;
-    padding: 0px 2%;
-    width: 50%;
+    background-image: url('/tardis.png');
+    background-size: contain;
+  }
+  .container-text{
+    text-align: center;
+  }
+  .container-text h1 {
+    color: var(--cor2);
+    text-shadow: 0px 0px 5px var(--cor7);
   }
   .container-text h2 {
-    color: var(--cor1);
-    font-size: 2em;
-    text-align: center;
-    text-shadow: 0px 0px 6px var(--cor7);
-    margin-top: 20px;
-    text-align: left;
-  }
-  .container-text p {
-    margin-top: 10px;
-    color: lightgray;
+    max-width: 800px;
     font-size: 1.1em;
-    text-shadow: 0px 0px 4px var(--cor2);
-    font-weight: lighter;
+    margin: 20px 0px;
+    color: black;
+    text-shadow: 0px 0px 5px var(--cor3);
   }
   .login-sigin-container {
-    width: 50%;
+    width: 100%;
+    max-width: 500px;
     display: flex;
-    flex-direction: column;
-    justify-content: flex-end;
-    height: 400px;
-    font-family: cursive;
+    justify-content: space-evenly;
   }
-  .text-container {
-    color: var(--cor1);
-    font-size: 1em;
-    padding: 0px 15px;
-  }
-  .login-container, .sigin-container {
-    width: 100%;
-  }
-  .login-container h3{
-    text-align: center;
-    font-size: 1.4em;
-    font-family: cursive;
-    margin: 4px;
-    color: var(--cor5);
-  }
-  .sigin-container h3 {
-    text-align: center;
-    font-size: 1.4em;
-    font-family: cursive;
-    margin: 4px;
-    color: var(--cor2);
-  }
-  .link-container {
-    width: 100%;
-    height: 80px;
-    position: relative;
-  }
-  .tardis-icon {
-    position: absolute;
-    width: 50px;
-    height: 75px;
-    top: 50%;
-    left: -9%;
-    transform: translate(0%, -50%);
-    z-index: 2;
-    pointer-events: none;
-    transition: 0.5s
-  }
-  .login-container .link-container a{
-    display: inline-block;
-    width: 70%;
-    height: 100%;
-    background-color: var(--cor7);
+  .login-container {
+    width: 120px;
+    height: 40px;
+    background: var(--corMenu);
     border-radius: 6px;
-    border-top-left-radius: 20px;
-    border-top-right-radius: 200%;
-    transform: translateX(-60px);
     display: flex;
     justify-content: center;
     align-items: center;
-    color: var(--cor9);
-    text-decoration: none;
-    font-size: 1em;
-    transition: 0.6s
+    border: 2px solid var(--cor1);
   }
-  .login-container .link-container:hover a{
-    display: inline-block;
-    width: 70%;
-    height: 100%;
-    background-color: var(--cor7);
-    border-top-left-radius: 200%;
-    border-top-right-radius: 20px;
-    transform: translateX(0px);
+  .sigin-container {
+    width: 120px;
+    height: 40px;
+    background: var(--corMenu);
     display: flex;
     justify-content: center;
     align-items: center;
-    color: var(--cor9);
+    border-radius: 6px;
+    border: 2px solid var(--cor1);
+  }
+  .login-sigin-container a {
     text-decoration: none;
-    font-size: 1em;
-  }
-  .login-container .link-container:hover > img {
-    left: 90%;
-  }
-  .sigin-container .link-container a {
-    display: inline-block;
+    font-size: 1.1em;
+    color: white;
+    display: block;
     width: 100%;
     height: 100%;
-    background-color: var(--cor7);
-    border-radius: 40px;
-    transform: translateX(0px);;
     display: flex;
     justify-content: center;
     align-items: center;
-    color: var(--cor1);
-    text-decoration: none;
-    font-size: 1em;
   }
-
 
 </style>

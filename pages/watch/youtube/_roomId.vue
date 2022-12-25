@@ -2,8 +2,12 @@
     <div class="container-app">
         <Erro :erroProps="err" v-if="err != ''"></Erro>
         <JoinRoomBtn btnProps="clique aqui para começar a assistir" v-if="!joined && !pass" @clicked="JoinRoom()"></JoinRoomBtn>
+        <JoinRoomBtn btnProps="clique aqui para começar a assistir" v-if="!joined && owner === user.id && pass" @clicked="JoinRoom()"></JoinRoomBtn>
+        <JoinRoomForm labelPassProps="Digite A Senha" inputPlaceholderProps="senha..." inputSubmitProps="Pronto"
+            v-if="!joined && pass && owner != user.id" @submitEmited="roomPassVerify($event)"
+        />
         <PickVideoYT v-if="showVideos" @ChangeVideo="choiced($event)" @cancel="showVideos = false" />
-        <div class="youtube-VideoPlayer" @click="setFocus()" tabindex="1" @keydown="emitKeysEvents($event)" v-if="joined" id="video">
+        <div class="youtube-VideoPlayer" @click="setFocus()" tabindex="1" @keydown="emitKeysEvents($event)" v-if="joined && !mobile" id="video">
             <div class="wall" @click="emitPlayPause(), setFocus()" @keydown="emitKeysEvents($event)"></div>
             <playerYT class="teste" @error="showError($event)" @cued="AskForSyncronization()" @ready="ready($event)" @playing="playing($event)" :player-vars="{autoplay:0, controls: 0, }" player-width="100%" player-height="100%" :video-id="videoId"></playerYT>
             <ControlsPlayerLiveYT
@@ -17,10 +21,10 @@
             @muteUnmute="muteUnmute()"
             :time="currentTime"></ControlsPlayerLiveYT>
         </div>
-        <div class="youtube-VideoPlayer-mobile" v-if="mobile">
+        <div class="youtube-VideoPlayer-mobile" tabindex="1" id="video" @keydown="emitKeysEvents($event)" v-if="joined && mobile">
             <div class="wall" @click="emitPlayPause(), setFocus()" @keydown="emitKeysEvents($event)"></div>
             <playerYT class="teste" @error="showError($event)" @cued="AskForSyncronization()" @ready="ready($event)" @playing="playing($event)" :player-vars="{autoplay:0, controls: 0, }" player-width="100%" player-height="100%" :video-id="videoId"></playerYT>
-            <ControlsPlayerLiveMobile
+            <ControlsPlayerLiveYtMobile
             @click="setFocus()" 
             @PlayPauseVideo="emitPlayPause()"
             @mouseSegura="mouseSegura"
@@ -29,7 +33,7 @@
             @keysEvents="emitKeysEvents($event)"
             @fullScreamToggle="fullScreamToggle($event)"
             @muteUnmute="muteUnmute()"
-            :time="currentTime"></ControlsPlayerLiveMobile>
+            :time="currentTime"></ControlsPlayerLiveYtMobile>
         </div>
         <ChatVideo v-if="joined && !mobile" @clicked="showVideos = !showVideos"/>
         <ChatVideoMobile v-show="!showVideos" v-if="joined && mobile" @clicked="showVideos = !showVideos"/>
@@ -82,10 +86,28 @@ export default {
         window.addEventListener('message', event => {
             this.timeUpdateSimulation(event)
         })
-        
+        setInterval(() => {
+            this.sendPlayerState()
+        }, 4700);
+        setInterval(() => {
+            this.askForCurrentTime()
+        }, 5000);
     },
     beforeDestroy(){
         this.emitUserDisconected()
+    },
+    head(){
+        return {
+            title: 'assistindo pelo Youtube',
+            meta: [
+                { charset: 'utf-8' },
+                { name: 'viewport', content: 'width=device-width, initial-scale=1' },
+                { hid: 'description', name: 'description', content: 'um site feito em homenagem para um antigo grupo, aqui você pode assistir videos ao mesmo tempo com seus amigos, tanto pelo youtube ou você mesmo fazendo upload deles' },
+                { name: 'format-detection', content: 'telephone=no'},
+                {name:'robots', content: 'nofollow'},
+                {name: 'author', content: 'Paulo Ribas'},
+            ]
+        }
     },
     data(){
         return {
@@ -129,10 +151,10 @@ export default {
             return this.$mq
         }
     },
-    middleware: [],
+    middleware: ['auth', 'roomPass'],
     methods: {
         connectionServer(){
-           this.socket = io.connect('https://www.amigitos-espanol-api.com.br/',{ rememberTransport: false, transports: ['websocket', 'polling', 'Flash Socket', 'AJAX long-polling']})
+           this.socket = io.connect('https://amigitos-espanol-api.com.br/',{ rememberTransport: false, transports: ['websocket', 'polling', 'Flash Socket', 'AJAX long-polling']})
            this.socket.on('sendRequestForSynchronization', data => {
             this.sendVideoUrl(data)
            })
@@ -153,7 +175,7 @@ export default {
             this.PlayPauseVideo()
            })
            this.socket.on('keysEvents', key => {
-            this.keysEvents(key)
+            this.keysEvents(key.event)
            })
            this.socket.on('aprenderMatematica', data => {
             this.aprenderMatematica(data)
@@ -168,9 +190,19 @@ export default {
            this.socket.on('currentTimeRecived', data => {
             this.setCurrentTime(data)
            })
+           this.socket.on('playerStateRecived', data => {
+            console.log('recebi o player', data)
+            this.verifyVideoState(data)
+           })
            this.socket.on('signal', data => {
             console.log("o sinal chegou até aqui")
             this.socket.emit('answeredSignal', {roomUrl: this.room})
+           })
+           this.socket.on('userAskingCurrentTime',data => {
+            this.sendCurrentTimeForVerification(data)
+           })
+           this.socket.on('currentTimeYtRecived',data => {
+            this.setOnlyCurrentTime(data)
            })
            this.socket.on('disconnect', q => {
             this.socket.emit('desconectado', q)
@@ -191,7 +223,7 @@ export default {
         },
         responsive(){
             console.log(this.$mq)
-            if (this.$mq === 'sm') {
+            if (this.$mq === 'sm' || this.$mq === "md") {
                 this.mobile = true
             }
             else {
@@ -206,21 +238,34 @@ export default {
             console.log('deu erro no player lol', event)
         },
         sendVideoUrl(id){ 
-            if(this.members[0].id != this.user.id) return
-            let Url = this.ytUrl
-            Url === "" ? Url = 'https://www.youtube.com/embed/hNGrGGbFX2s' : Url
-            console.log(this.ytUrl, 'estou enviando essa url')
-                let dates = {
-                    room: this.room, 
-                    userId: id.id,
-                    Url
-                }
-                this.socket.emit('UrlSent',dates)       
+            if(this.members[0].id === this.user.id && this.user.id != id.id) {
+                let Url = this.ytUrl
+                Url === "" ? Url = 'https://www.youtube.com/embed/hNGrGGbFX2s' : Url
+                console.log(this.ytUrl, 'estou enviando essa url')
+                    let dates = {
+                        room: this.room, 
+                        userId: id.id,
+                        Url
+                    }
+                    this.socket.emit('UrlSent',dates)       
+            }
+            if(this.members[0].id === id.id && this.members.length > 1 && this.members[1].id === this.user.id) {
+                    let Url = this.ytUrl
+                    Url === "" ? Url = 'https://www.youtube.com/embed/hNGrGGbFX2s' : Url
+                    console.log(this.ytUrl, 'estou enviando essa url 2')
+                    let dates = {
+                        room: this.room, 
+                        userId: id.id,
+                        Url
+                    }
+                    this.socket.emit('UrlSent',dates)
+            }
         },
         playing(event){
             console.log(event.target, 'ta vindo aq?, não')
             this.player = event.target
             this.setTimeVideo()
+
         },
         async setVideoUrl(data){
             console.log('esse sim é o video que to recebendo lol', data)
@@ -228,7 +273,12 @@ export default {
                 room: this.room,
                 userId:this.user.id
             }
-            if(data.userId === this.user.id && this.members[0] != this.user.id){
+            /* if(data.userId === this.user.id && this.members[0].id === this.user.id && this.members.length > 1) {
+                this.videoId = this.$youtube.getIdFromURL(data.Url)
+                return this.socket.emit('askForCurrentTime', dates)
+                
+            }  */
+            if(data.userId === this.user.id && this.members[0].id != this.user.id){
                 this.videoId = this.$youtube.getIdFromURL(data.Url)
                 return this.socket.emit('askForCurrentTime', dates)
             }
@@ -277,6 +327,7 @@ export default {
                     this.player.seekTo(dates.videoStats.currentTime)
                     play.src = '/svg/botao_pause.svg'
                 }
+                
                     
                 
                 
@@ -308,14 +359,62 @@ export default {
             video.classList.add('focus')
         },
         emitPlayPause($event){
+            if(this.socket === null) return
             this.socket.emit('playPause', {event: $event, room: this.room})
+
+        },
+        sendPlayerState(){
+            console.log('era para eu enviar o player')
+            console.log(this.user.id, this.members[0].id)
+            if(this.user.id === this.members[0].id){
+                console.log('chegou no sendPlayer')
+                let playerState = this.player.getPlayerState()
+                this.socket.emit('playerState', {room: this.room, playerState})
+            }
+        },
+        askForCurrentTime(){
+            if (this.user.id != this.members[0].id) {
+                this.socket.emit('askingYtCurrentTime', {userId: this.user.id, room: this.room})
+            }
+        },
+        sendCurrentTimeForVerification(data){
+            if (this.user.id === this.members[0].id) {
+                let currentTime = this.player.getCurrentTime()
+                this.socket.emit('currentTimeYt', {currentTime, userId: data.userId, room: this.room})
+                
+            }
+        },
+        setOnlyCurrentTime(data){
+            if (this.user.id === data.userId) {
+                let timeCalc = parseFloat((this.player.getCurrentTime() - data.currentTime).toFixed(3)) * 1000
+                console.log('esse log é pra voce gusta', timeCalc)
+                if (timeCalc >= 600 || timeCalc <= -600) {
+                    this.player.seekTo(data.currentTime)
+                }
+            }
+        },
+        verifyVideoState(playerStateData){
+            console.log('agora vou rerificar o state', playerStateData)
+            if (this.user.id != this.members[0].id) {
+                let playerState = this.player.getPlayerState()
+                console.log('o requisitante', playerState, 'o que mandou', playerStateData.playerState)
+                if (playerStateData.playerState === 1 && playerState === 2) {
+                    this.player.playVideo()
+                }
+                if(playerStateData.playerState === 2 && playerState === 1){
+                    this.player.pauseVideo()
+                }     
+                
+            }
+            
 
         },
         PlayPauseVideo(){
             const play = document.querySelector('.play-pause-icon')
             console.log(this.player.getPlayerState(),'cadeeeeee', this.player.getVideoData())
-            if (this.player.getPlayerState() === 2 || this.player.getPlayerState() === 5) {
+            if (this.player.getPlayerState() === 2 || this.player.getPlayerState() === 5 || this.player.getPlayerState() === -1) {
                 this.player.playVideo()
+
                 console.log('vou dar play?', this.player)
                 play.src = '/svg/botao_pause.svg'
             }
@@ -323,6 +422,7 @@ export default {
                 this.player.pauseVideo()
                 play.src = '/svg/botao_play_.svg'
             }
+            console.log('saudades')
         },
         showObject(event){
             console.log(event)
@@ -361,10 +461,10 @@ export default {
             this.currentTime = time
         },
         emitKeysEvents($event){
-            console.log(eventEmit, ' cade o coiso')
             const eventEmit = {
                 code: $event.code
             }
+            console.log(eventEmit, ' cade o coiso')
             this.socket.emit('keysEvents', {event: eventEmit, room: this.room})
 
         },
@@ -424,7 +524,7 @@ export default {
             }
         },
         fullScreamToggle() {
-            let video = document.querySelector('.youtube-VideoPlayer') || document.querySelector('.video-container-mobile')
+            let video = document.querySelector('.youtube-VideoPlayer') || document.querySelector('.youtube-VideoPlayer-mobile')
             const fullscreenIcon = document.querySelector('.fullScreem-icon')
             if (!document.fullscreenElement) {
                 fullscreenIcon.src = '/svg/sair_da_tela_cheia_.svg'
@@ -436,17 +536,19 @@ export default {
             }
         },
         muteUnmute(){
-            const video = document.getElementById('video')
             const volumeValue = document.querySelector('.volume')
             const volumeIcon = document.querySelector('.volume-icon')
-            if (video.volume > 0) {
-                video.volume = 0
+            console.log('o volume', this.player.getVolume())
+            if (this.player.getVolume() > 0) {
+                this.player.mute()
+                this.player.setVolume(0)
                 volumeValue.value = 0
                 volumeIcon.src = '/svg/sem_som.svg'    
             }
             else {
                 console.log(this.oldVolume)
-                video.volume = this.oldVolume
+                this.player.unMute()
+                this.player.setVolume(this.oldVolume * 100)
                 volumeValue.value = this.oldVolume * 100
                 volumeIcon.src = '/svg/com_som.svg'    
             }
@@ -487,6 +589,7 @@ export default {
         max-width: 853px;
         min-width: 400px;
         height: 480px;
+        max-height: 480px;
         outline: none;
     }
     video {
@@ -515,19 +618,21 @@ export default {
         width: 100% !important;
         height: 100% !important;
     }
-    @media screen and (max-width: 740px) {
-        .video-container-mobile {
+    @media screen and (max-width: 760px) {
+        .youtube-VideoPlayer-mobile {
             flex: 2;
             width: 100%;
             min-height: 200px;
             position: relative;
             height: 97vh;
+            max-height: 480px;
         }
-        #video{
-            width: 95%;
-            left: 50%;
-            transform: translateX(-50%)
+        .youtube-VideoPlayer-mobile .teste, #youtube-player-1 {
+            position: absolute !important;
+            width: 100% !important;
+            height: 100% !important;
         }
+        
     }
     @media screen and (max-width: 560px) {
         .container-app{
@@ -540,12 +645,18 @@ export default {
             flex-wrap: nowrap;
             overflow: auto;
         }
-        .video-container-mobile {
+        .youtube-VideoPlayer-mobile {
             min-width: 360px;
             width: 100%;
+            position: relative;
         }
-        .video-container-mobile #video {
+        .youtube-VideoPlayer-mobile #video {
            width: 100%;
+        }
+       .youtube-VideoPlayer-mobile .teste, #youtube-player-1 {
+            position: absolute !important;
+            width: 100% !important;
+            height: 100% !important;
         }
         
     }

@@ -44,7 +44,7 @@
                  </Transition>
 
             </li>
-            <li>
+            <!-- <li>
                 <div class="icon-container">
                     <fa class="icon" icon="chalkboard"/>
                 </div>
@@ -52,12 +52,12 @@
                     <NuxtLink to="/videos-estudando" v-if="show">Videos Estudando</NuxtLink>
                  </Transition>
 
-            </li>
+            </li> -->
         </ul>
     </nav>
   </header>
   <header :class="{mobile:'mobile', width100}" id="header--mobile" v-else>
-    <div :class="{'tardis-icon-menu': 'tardis-icon-menu', move}" @click="toogleMobileMenu">
+    <div :class="{'tardis-icon-menu': 'tardis-icon-menu', move, 'vertical-mobile-tardis-icon': vertical }" @click="toogleMobileMenu">
         <img src="/svg/tardis.svg" :class="{spinTardis , tardisNormal}"/>
     </div>
     <nav>
@@ -104,7 +104,7 @@
                  </Transition>
 
             </li>
-            <li @click="toogleMobileMenu">
+            <!-- <li @click="toogleMobileMenu">
                 <div class="icon-container">
                     <fa class="icon" icon="chalkboard"/>
                 </div>
@@ -112,7 +112,7 @@
                     <NuxtLink to="/videos-estudando" v-if="show" @click="toogleMobileMenu">Videos Estudando</NuxtLink>
                  </Transition>
 
-            </li>
+            </li> -->
         </ul>
     </nav>
   </header>
@@ -127,12 +127,16 @@ export default {
             width100: false,
             spinTardis: false,
             move: false,
-            tardisNormal: true
+            tardisNormal: true,
+            vertical: false
             
         }
     },
     created(){
         this.responsive()
+    },
+    mounted(){
+        this.checkVerticalMobile()
     },
     beforeDestroy(){
         this.responsive()
@@ -166,16 +170,27 @@ export default {
             !this.move ? this.move = true : this.move = false
             !this.tardisNormal ? this.tardisNormal = true : this.tardisNormal = false
             console.log('clicado')
+            this.checkVerticalMobile()
         },
         responsive(){
             console.log(this.$mq)
-            if (this.$mq === 'sm') {
+            if (this.$mq === 'sm' || this.$mq === "md") {
                 this.mobile = true
             }
             else {
                 this.mobile = false
             }
         },
+        checkVerticalMobile(){
+            console.log('indo no if')
+            if (this.$mq === "md" && this.move) {
+                this.vertical = true
+            }
+            else {
+                console.log('tirando o coisa', document.querySelector('.tardis-icon-menu'))
+            this.vertical = false
+            }
+        }
 
     }
     
@@ -185,10 +200,7 @@ export default {
 </script>
 
 <style scoped>
-@font-face {
-    font-family: 'Secular';
-    src: url('./static/fonts/SecularOne-Regular.ttf');
-}
+
 .tardis-icon-menu {
     width: 45px;
     height: 45px;
@@ -333,6 +345,9 @@ export default {
 .assistirJuntos-leave-to, .assistirSolo-leave-to, .videosEstudando-leave-to{
     opacity: 0;
     transform: translate(-174%, -50%) !important;
+}
+.vertical-mobile-tardis-icon {
+    top: calc(1% - -29px) !important;
 }
 
 .icon-container{

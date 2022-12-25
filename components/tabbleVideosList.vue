@@ -3,7 +3,7 @@
       <table>
          <tbody>
           <tr v-for="(video, index) in videos" :key="video.name">
-            <td class="img"><img src="/default.png" /></td>
+            <td class="img"><img :src="user.profileimg" /></td>
             <td colspan="1"> {{ video.fileName }}</td>
             <td class="btn" :data-video="index" @click="areYouSure($event)">{{btn}}</td>
           </tr> 
@@ -13,6 +13,7 @@
 </template>
 
 <script>
+import {mapState} from 'vuex'
 export default {
     data(){
         return {
@@ -38,6 +39,11 @@ export default {
         const video = this.videos[index]
         this.$emit('selected',{video: video, target: event.target, father: event.target.parentElement})
       }
+    },
+    computed: {
+      ...mapState({
+        user: state => state.user
+      })
     }
 
 }
@@ -56,6 +62,7 @@ tr {
 td img {
   width: 50px;
   height: 50px;
+  object-fit: cover;
 }
   *>>> td {
   color: var(--cor2);

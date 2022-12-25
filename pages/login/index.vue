@@ -10,7 +10,7 @@
             <label>Senha</label>
             <input type="password" v-model="password">
             <input type="submit" value="Enviar" @click="sendUser">
-            <!-- <NuxtLink to="/recoveryPassword" class="recovery">esqueceu a senha?</NuxtLink> -->
+            <NuxtLink to="/login/recoverypass" class="recovery">esqueceu a senha?</NuxtLink> -->
         </form>
             <img src="/loanding1.gif" v-if="loanding" class="tardis-loanding">
     </div>
@@ -20,6 +20,19 @@
 <script>
 import axios from "axios";
 export default {
+    head(){
+        return {
+            title: 'Login',
+            meta: [
+                { charset: 'utf-8' },
+                { name: 'viewport', content: 'width=device-width, initial-scale=1' },
+                { hid: 'description', name: 'description', content: 'um site feito em homenagem para um antigo grupo, aqui você pode assistir videos ao mesmo tempo com seus amigos, tanto pelo youtube ou você mesmo fazendo upload deles' },
+                { name: 'format-detection', content: 'telephone=no'},
+                {name:'robots', content: 'nofollow'},
+                {name: 'author', content: 'Paulo Ribas'},
+            ]
+        }
+    },
     data(){
         return {
             name: '',
@@ -37,9 +50,8 @@ export default {
             const {name, email, password} = this.$data
             this.loanding = true
             console.log(this.$config)
-            axios.post(`https://www.amigitos-espanol-api.com.br/login`,{username: name, email, password}).then(sucefful => {
+            axios.post(`https://amigitos-espanol-api.com.br/login`,{username: name, email, password}).then(sucefful => {
                 let token = sucefful.data.token
-                console.log('sucefful', token)
                 this.$store.commit('user/SET_TOKEN', 'bearer ' + token)
                 this.$store.dispatch('user/validateUser', 'bearer ' + token).then(res => {
                     let id = res.id
