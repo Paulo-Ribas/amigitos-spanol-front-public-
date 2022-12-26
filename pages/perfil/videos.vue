@@ -127,18 +127,17 @@ export default {
       this.postVideo({axiosInfos, onUploadProgress}).then(res => {
         console.log('chegou no postar ao menos')
         this.getSetVideos(this.$cookies.get('token')).then(videos => {
-          if (prossessing) {
+          if (prossesing) {
               document.querySelector('.tardis-processing').classList.toggle('hidden')
           }
+            this.countVideo = this.countVideo - 1
+            this.prossesing = false
+            this.videoErr = ''
           if (this.countVideo === 0) {
             this.uploading = false
-            this.prossessing = false
             this.completed = true
             
           }
-          this.prossesing = false
-          this.videoErr = ''
-          this.countVideo = this.countVideo - 1
         }).catch(erro => {
           console.log('talvez n esteja sendo atualizado por causa desse erro', erro)
         })
