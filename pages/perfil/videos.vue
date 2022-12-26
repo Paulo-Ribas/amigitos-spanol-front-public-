@@ -127,7 +127,7 @@ export default {
       this.postVideo({axiosInfos, onUploadProgress}).then(res => {
         console.log('chegou no postar ao menos')
         this.getSetVideos(this.$cookies.get('token')).then(videos => {
-          if (prossesing) {
+          if (this.prossesing) {
               document.querySelector('.tardis-processing').classList.toggle('hidden')
           }
             this.countVideo = this.countVideo - 1
