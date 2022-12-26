@@ -427,16 +427,16 @@ export default {
         max-width: 200px;
     }
     .img-container{
-        width: 40px;
-        height: 40px;
+        width: 50px;
+        height: 50px;
         border-radius: 10px;
         background-color: var(--cor4);
         border-bottom-left-radius: 0px;
         position: relative;
     }
       .img-container img{
-        width: 34px;
-        height: 34px;
+        width: 49px;
+        height: 49px;
         border-radius: 20px;
         position: absolute;
         top: 50%;
@@ -447,7 +447,7 @@ export default {
     .user-name-chat {
         color: var(--cor6);
         font-family: cursive;
-        font-size: 1.1em;
+        font-size: 1.2em;
         margin-left: 11px;
     }
     .msg-text {
@@ -458,6 +458,7 @@ export default {
         width: fit-content;
         min-width: 80px;
         border-radius: 29px;
+        font-size: 1.1em;
         border-top-left-radius: 0px;
         word-break: break-word;
     }
