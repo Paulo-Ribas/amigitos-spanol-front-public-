@@ -44,7 +44,7 @@
                  </Transition>
 
             </li>
-            <!-- <li>
+            <li>
                 <div class="icon-container">
                     <fa class="icon" icon="chalkboard"/>
                 </div>
@@ -52,7 +52,7 @@
                     <NuxtLink to="/videos-estudando" v-if="show">Videos Estudando</NuxtLink>
                  </Transition>
 
-            </li> -->
+            </li>
         </ul>
     </nav>
   </header>
@@ -104,7 +104,7 @@
                  </Transition>
 
             </li>
-            <!-- <li @click="toogleMobileMenu">
+            <li @click="toogleMobileMenu">
                 <div class="icon-container">
                     <fa class="icon" icon="chalkboard"/>
                 </div>
@@ -112,7 +112,7 @@
                     <NuxtLink to="/videos-estudando" v-if="show" @click="toogleMobileMenu">Videos Estudando</NuxtLink>
                  </Transition>
 
-            </li> -->
+            </li>
         </ul>
     </nav>
   </header>

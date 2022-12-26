@@ -6,7 +6,7 @@
         <h2 key="status" v-if="created">Status:{{ERROStatus}}</h2>
       </TransitionGroup>
       <Transition name="h3">
-        <h3 v-if="created">se vocês clicaram em alguma coisa tipo, assistir Doctor Who ou os videos estudando e caiu aqui, é porque a pagina não existe por culpa do gusta preguiçoso que não acaba a API dele</h3>
+        <h3 v-if="created">se vocês clicaram em alguma coisa tipo "videos estudando" e caiu aqui, é porque a pagina não existe pois tenho que recuperar uns arquivos para fazer ela, e então resolvi mostrar essa bela pagina de Erro invés de um aviso na pagina dedicada ao conteúdo</h3>
       </Transition>
     </div>
   </dir>
