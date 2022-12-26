@@ -7,7 +7,7 @@ export default {
     },
     async validateUser(context, payload){
         try {
-            let user = await this.$axios.$post(`http://localhost:3333/validate`,{},{headers:{authorization: payload}})
+            let user = await this.$axios.$post(`validate`,{},{headers:{authorization: payload}})
             return user.dates
         } 
         catch(error){
@@ -157,11 +157,8 @@ export default {
     async deleteVideo(context, payload){
         let token = payload.token
         let video = payload.video
-<<<<<<< HEAD
         let decodedName = decodeURI(video.file)
-=======
-	let decodedName = decodeURI(video.file)
->>>>>>> 1232308 (vai dar problema)
+        
         console.log('console do payload delete', payload)
         let config = {
             headers: {
