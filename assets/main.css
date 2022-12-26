@@ -39,12 +39,12 @@ html {
 
 @media screen and (max-width: 850px) {
     *{
-        font-family: monospace;
+        font-family: 'Comic Sans MS', 'Comic Sans', cursive
     }
     a {
-        font-family: 'Courier New', Courier, monospace !important;
+        font-family: 'Comic Sans MS', 'Comic Sans', cursive;
     }
-    input, textarea, label {
-        font-family: monospace !important;
+    input, textarea, label, button {
+        font-family: 'Comic Sans MS', 'Comic Sans', cursive  !important;
     }
 }
