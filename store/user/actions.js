@@ -158,7 +158,7 @@ export default {
         let token = payload.token
         let video = payload.video
         let decodedName = decodeURI(video.file)
-        
+
         console.log('console do payload delete', payload)
         let config = {
             headers: {
@@ -174,7 +174,6 @@ export default {
         } catch (error) {
             throw error
         }
-        
 
     },
     async sendRecoveryToken(context, payload){
