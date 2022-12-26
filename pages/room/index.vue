@@ -85,12 +85,7 @@ export default {
         },
         checkRooms(){
             this.socket.emit('startVerify')
-            setInterval(() => {
-                this.socket.emit('deleteRoomsWith0Members')
-            }, 10000);
-            setInterval(() => {
-                this.socket.emit('startVerify')
-            }, 14000)
+            this.socket.emit('deleteRoomsWith0Members')
         }
     }
 }
