@@ -19,7 +19,7 @@
       <TardisVerySmall v-if="!completed" class="hidden tardis-processing"></TardisVerySmall>
     </div>
     <button @click="clickInput" class="add-videos">Adicionar Video</button>
-    <input type="file" accept="video/mp4,video/wmv" hidden id="file" @change="uploadVideo"/>
+    <input type="file" accept="video/mp4" hidden id="file" @change="uploadVideo"/>
   </div>
 </template>
 

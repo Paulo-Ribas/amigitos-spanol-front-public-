@@ -435,12 +435,13 @@ export default {
         position: relative;
     }
       .img-container img{
-        width: 49px;
-        height: 49px;
+        width: 50px;
+        height: 50px;
         border-radius: 20px;
         position: absolute;
         top: 50%;
         left: 50%;
+        object-fit: cover;
         transform: translate(-50%, -50%);
         z-index: 2;
     }

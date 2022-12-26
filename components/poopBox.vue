@@ -48,7 +48,7 @@ export default {
 }
 .warn-container{
   width: 100%;
-  max-width: 400px;
+  max-width: 300px;
   height: 300px;
   display: flex;
   flex-direction: column;
