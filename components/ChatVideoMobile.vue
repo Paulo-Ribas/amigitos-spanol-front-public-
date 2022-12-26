@@ -448,7 +448,7 @@ export default {
     .user-name-chat {
         color: var(--cor6);
         font-family: cursive;
-        font-size: 1.2em;
+        font-size: 1.4em;
         margin-left: 11px;
     }
     .msg-text {
@@ -459,7 +459,7 @@ export default {
         width: fit-content;
         min-width: 80px;
         border-radius: 29px;
-        font-size: 1.1em;
+        font-size: 1.2em;
         border-top-left-radius: 0px;
         word-break: break-word;
     }
