@@ -138,6 +138,7 @@ export default {
             }
             try {
                 await this.verifySpam()
+                await this.verifyMsgSize()
                 msg.value = null
                 this.socket.emit('newMSG', dates)
                 let scroll = document.querySelector('.chat-screen')
