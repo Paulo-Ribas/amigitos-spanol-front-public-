@@ -565,8 +565,8 @@ export default {
     position: absolute;
 }
 .warn-container{
-  width: 100%;
-  max-width: 300px;
+  width: 98%;
+  max-width: 400px;
   height: 300px;
   display: flex;
   flex-direction: column;
