@@ -39,12 +39,12 @@ html {
 
 @media screen and (max-width: 850px) {
     *{
-        font-family: 'Comic Sans MS', 'Comic Sans', cursive
+        font-family:'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans Unicode', Geneva, Verdana, sans-serif;
     }
     a {
-        font-family: 'Comic Sans MS', 'Comic Sans', cursive;
+        font-family: 'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans Unicode', Geneva, Verdana, sans-serif;
     }
     input, textarea, label, button {
-        font-family: 'Comic Sans MS', 'Comic Sans', cursive  !important;
+        font-family: 'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans Unicode', Geneva, Verdana, sans-serif !important;
     }
 }

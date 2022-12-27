@@ -3,7 +3,7 @@ import colors from 'vuetify/es5/util/colors'
 export default {
   // Global page headers: https://go.nuxtjs.dev/config-head
   head: {
-    titleTemplate: '%s - amigitos-spanol-frontEnd',
+    titleTemplate: '%s - amigitos-spanol-y-sla',
     title: 'amigitos-spanol-y-sla',
     htmlAttrs: {
       lang: 'pt-br'
@@ -59,7 +59,7 @@ export default {
     defaultBreakpoint: 'sm',
     breakpoints: {
       sm: 500,
-      md: 760,
+      md: 870,
       lg: 1250,
       xl: Infinity,
     }
