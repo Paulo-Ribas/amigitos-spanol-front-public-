@@ -113,6 +113,9 @@ export default {
 </script>
 
 <style scoped>
+.opacity0 {
+    opacity: 0 !important;
+}
 .mobile-controls-container {
     position: absolute;
     width: 100%;
