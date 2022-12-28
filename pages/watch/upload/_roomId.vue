@@ -601,6 +601,7 @@ export default {
             align-items: center;
             flex-wrap: nowrap;
             overflow: auto;
+            position: relative;
         }
         .video-container-mobile {
             min-width: 360px;

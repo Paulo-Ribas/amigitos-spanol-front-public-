@@ -572,6 +572,7 @@ export default {
         align-items: center;
         flex-wrap: wrap;
         overflow: auto;
+        position: relative;
     
     }
     .wall {
