@@ -9,8 +9,8 @@
         </div>
     </div>
         <div class="confirm-container">
-            <div class="icon-container" v-if="selected">
-                <fa icon="check" @click="choiceVideo()"></fa>
+            <div class="icon-container">
+                <fa icon="check" @click="choiceVideo()" v-if="selected"></fa>
                 <fa icon="xmark" @click="cancel()"></fa>
             </div>
         </div>
@@ -183,7 +183,7 @@ export default {
             width: 99%;
             max-width: 1280px;
             margin: 0px 0px; 
-            height: 100%;
+            height: calc(100% - 50px);
             border: none;
             background: var(--scrollColor);
             display: flex;
