@@ -1,27 +1,81 @@
 <template>
-        <div class="video-menu-container">
+        <div class="video-menu-container" @mouseover="removePopUpInfo" @mouseleave="removePopUpInfo">
+            <PoopBox @confirm="emitBan($event)" @refuse="banning = false" :msgProps="'tem certeza que quer mesmo banir o ' + memberChoiced.username + '?'" btnConfirmProps="Sim" btnRefuseProps="Não" :datesProps="memberChoiced" v-if="banning"></PoopBox>
+            <PoopBox @confirm="emitAdm($event)" @refuse="givingAdm = false" :msgProps="'tem certeza que quer mesmo dar para o ' + memberChoiced.username + '?'" btnConfirmProps="Sim" btnRefuseProps="Depois" :datesProps="memberChoiced" v-if="givingAdm"></PoopBox>
             <div class="btn-container">
                 <ButtonSpecial @clicked="emitClick" btnProps="Escolher Video"/>
             </div>
-            <div class="chatMembers-container">
-                <div class="container-chat">
-                    <div class="members">
+            <div class="info-users" @mouseover="removePopUpInfo">
+                <div class="user-info" v-if="Object.keys(memberChoiced).length > 0">
+                    <fa icon="gears" class="icon-info-user" @click="settings = !settings"></fa>
+                    <div class="img-name-container">
+                        <img :src="memberChoiced.profileimg">
+                    </div>
+                </div>
+                <div class="options" v-if="settings">
+                    <fa class="close-options" icon="xmark" @click="settings = false"></fa>
+                    <h3 class="name-info"><a target="_blank" :href="'/users/' + memberChoiced.id">{{memberChoiced.username}}</a></h3>
+                    <ul @mouseleave="removePopUpInfo()">
+                        <!-- dono da sala -->
+                        <li v-if="memberChoiced.id === roomInfo.userAdm" @mouseenter="setPopUpInfo('dono')" @mouseleave="removePopUpInfo()"><fa class="icon-li" icon="chess-king"></fa><PopUpInfo textProps="dono" v-if="popUpInfo === 'dono'"/></li>
+                        <!---->
+                        <!-- remover da sala li's -->
+                        <li v-if="user.id === roomInfo.userAdm && memberChoiced.id != user.id" @mouseenter="setPopUpInfo('remover da sala')" @mouseleave="removePopUpInfo()">
+                            <fa class="icon-li" icon="person-falling-burst" @click="emitKick(memberChoiced)"/> 
+                            <PopUpInfo textProps="remover da sala" v-if="popUpInfo === 'remover da sala'"/>
+                        </li>
+                        <li v-if="adm && memberChoiced.id != user.id && memberChoiced.id != roomInfo.userAdm" @mouseenter="setPopUpInfo('remover da sala')" @mouseleave="removePopUpInfo()">
+                            <fa class="icon-li" icon="person-falling-burst" @click="emitKick(memberChoiced)"/> 
+                            <PopUpInfo textProps="remover da sala" v-if="popUpInfo === 'remover da sala'"/>
+                        </li>
+                        <!-- -->
+                        <!-- mutar usuario li's -->
+                        <li v-if="user.id === roomInfo.userAdm && user.id != memberChoiced.id && !memberChoiced.muted" @mouseenter="setPopUpInfo('mutar usuário')" @mouseleave="removePopUpInfo()">
+                            <fa class="icon-li" icon="comment-slash" @click="emitMute(memberChoiced)"/>
+                            <PopUpInfo textProps="mutar usuário" v-if="popUpInfo === 'mutar usuário'"/>
+                        </li>
+                        <li v-if="adm && user.id != memberChoiced.id && memberChoiced.id != roomInfo.userAdm && !memberChoiced.muted" @mouseenter="setPopUpInfo('mutar usuário')" @mouseleave="removePopUpInfo()">
+                            <fa class="icon-li" icon="comment-slash" @click="emitMute(memberChoiced)"/>
+                            <PopUpInfo textProps="mutar usuário" v-if="popUpInfo === 'mutar usuário'"/>
+                        </li>
+                        <!-- -->
+                        <!-- desmutar usuario li's -->
+                        <li v-if="user.id === roomInfo.userAdm && user.id != memberChoiced.id && memberChoiced.muted" @mouseenter="setPopUpInfo('desmutar usuário')" @mouseleave="removePopUpInfo()"><fa class="icon-li" icon="comment" @click="emitUnmute(memberChoiced)"></fa><PopUpInfo textProps="desmutar usuário" v-if="popUpInfo === 'desmutar usuário'"/></li>
+                        <li v-if="adm && user.id != memberChoiced.id && memberChoiced.id != roomInfo.userAdm && memberChoiced.muted" @mouseenter="setPopUpInfo('desmutar usuário')" @mouseleave="removePopUpInfo()"><fa class="icon-li" icon="comment" @click="emitUnmute(memberChoiced)"></fa><PopUpInfo textProps="desmutar usuário" v-if="popUpInfo === 'desmutar usuário'"/></li>
+                        <li v-if="user.id != roomInfo.userAdm && !adm && memberChoiced.muted" @mouseenter="setPopUpInfo('usuário mutado')" @mouseleave="removePopUpInfo()"><fa class="icon-li" icon="comment-slash"></fa><PopUpInfo textProps="usuário mutado" v-if="popUpInfo === 'usuário mutado'"/></li>
+                        <!-- -->
+                        <!-- banir usuario li-'s -->
+                        <li v-if="user.id === roomInfo.userAdm && user.id != memberChoiced.id" @mouseenter="setPopUpInfo('banir')" @click="banning = true" @mouseleave="removePopUpInfo()"><fa class="icon-li" icon="hammer"></fa><PopUpInfo textProps="banir" v-if="popUpInfo === 'banir'"/></li>
+                        <li v-if="adm && user.id != memberChoiced.id && memberChoiced.id != roomInfo.userAdm" @mouseenter="setPopUpInfo('banir')" @click="banning = true" @mouseleave="removePopUpInfo()"><fa class="icon-li" icon="hammer"></fa><PopUpInfo textProps="banir" v-if="popUpInfo === 'banir'"/></li>
+                        <!---->
+                        <!-- permitir usuario escolher videos li's -->
+                        <li v-if="user.id === roomInfo.userAdm && user.id != memberChoiced.id && !memberChoiced.choice" @mouseenter="setPopUpInfo('permitir escolher vídeos')" @click="emitAllowChoiceVideos(memberChoiced)" @mouseleave="removePopUpInfo()"><fa class="icon-li" icon="film"></fa><PopUpInfo textProps="permitir escolher vídeos" v-if="popUpInfo === 'permitir escolher vídeos'"/></li>
+                        <li v-if="adm && user.id != memberChoiced.id && memberChoiced.id != roomInfo.userAdm && !memberChoiced.choice" @mouseenter="setPopUpInfo('permitir escolher vídeos')" @click="emitAllowChoiceVideos(memberChoiced)" @mouseleave="removePopUpInfo()"><fa class="icon-li" icon="film"></fa><PopUpInfo textProps="permitir escolher vídeos" v-if="popUpInfo === 'permitir escolher vídeos'"/></li>
+                        <li v-if="user.id != roomInfo.userAdm && !adm && memberChoiced.choice && !memberChoiced.role" @mouseenter="setPopUpInfo('pode escolher videos')" @mouseleave="removePopUpInfo()"><fa class="icon-li" icon="film"></fa><PopUpInfo textProps="pode escolher videos" v-if="popUpInfo === 'pode escolher videos'"/></li>
+                        <!---->
+                        <!-- remover permissão de usuario escolher videos li-->
+                        <li v-if="user.id === roomInfo.userAdm && adm && memberChoiced.choice" @mouseenter="setPopUpInfo('remover permissão de escolher videos')" @mouseleave="removePopUpInfo()" @click="emitRemoveAllowedMemberChoice(memberChoiced)"><fa class="icon-li" icon="film"></fa><PopUpInfo textProps="remover permissão de escolher videos" v-if="popUpInfo === 'remover permissão de escolher videos'"/></li>
+                        <!---->
+                        <!-- dar admistração a usuario li's -->
+                        <li v-if="user.id === roomInfo.userAdm && user.id != memberChoiced.id && !memberChoiced.role" @mouseenter="setPopUpInfo('ser admistrador')" @click="givingAdm = true" @mouseleave="removePopUpInfo()"><fa class="icon-li" icon="screwdriver-wrench"></fa><PopUpInfo textProps="ser admistrador" v-if="popUpInfo === 'ser admistrador'"/></li>
+                        <li v-if="memberChoiced.role && user.id != roomInfo.userAdm" @mouseenter="setPopUpInfo('admistrador')" @mouseleave="removePopUpInfo()"><fa class="icon-li" icon="screwdriver-wrench"></fa><PopUpInfo textProps="admistrador" v-if="popUpInfo === 'admistrador'"/></li>
+                        <!---->
+                        <!-- remover admistração de usuario li-->
+                        <li v-if="memberChoiced.role && user.id === roomInfo.userAdm" @mouseenter="setPopUpInfo('remover admistração')" @mouseleave="removePopUpInfo()"><fa class="icon-li" icon="screwdriver-wrench"></fa><PopUpInfo textProps="remover admistração" v-if="popUpInfo === 'remover admistração'"/></li>
+                        <!---->
+                    </ul>
+                </div>
+            </div>
+            <div class="chatMembers-container" @mouseenter="removePopUpInfo">
+                <div class="container-chat" @mouseover="removePopUpInfo">
+                    <div class="members" @mouseover="removePopUpInfo">
                         <div class="member" v-for="(member, index) in membersReactive" :key="index">
-                            <div class="member-container">
+                            <div class="member-container" @click="showMemberInfo(index)">
                                 <img  :src="member.profileimg">
-                            <!-- <div class="options">
-                                <ul>
-                                    <li> <nuxt-link :to="'/users/' + user.id">Perfil</nuxt-link></li>
-                                    <li v-if="user.id === room.userAdm">Remover Da Sala</li>
-                                    <li v-if="user.id === room.userAdm">Mutar</li>
-                                    <li v-if="user.id === room.userAdm">Banir</li>
-                                    <li v-if="user.id === room.userAdm">Permitir Escolher Videos</li>
-                                </ul>
-                            </div> -->
                             </div>
                         </div>
                     </div>
-                    <div class="chat-container">
+                    <div class="chat-container" @mouseenter="removePopUpInfo">
                         <div class="chat-screen" @click="setScroll">
                             <div class="msg-container" v-for="(msg , index) in msgs" :key="index">
                                 <div class="name-img-container">
@@ -47,7 +101,7 @@
                             </div>
                         </div>
                         <div class="text-area-container">
-                            <form class="btn-form">
+                            <form class="btn-form" v-show="!muted">
                                 <textarea class="textarealol" v-show="msgErr === ''" @keydown="sendByEnter">
                                 </textarea>
                                 <div class="erro" v-show="msgErr != ''">
@@ -55,6 +109,7 @@
                                 </div>
                                 <input id="send" type="submit" value="Enviar" @click="sendMSG">
                             </form>
+                            <span v-if="muted" class="muted">você está mutado</span>
                         </div>
                     </div>
                 </div>
@@ -64,7 +119,7 @@
 
 <script>
 import io from 'socket.io-client'
-import {mapState} from 'vuex'
+import {mapState, mapActions} from 'vuex'
 export default {
       fetch(){
         console.log('tokennnnnnnnn', this.$cookies.get('token'))
@@ -76,8 +131,8 @@ export default {
          })
     },
     fetchOnServer: false,
-    mounted(){
-        this.JoinRoom()
+    async mounted(){
+        await this.JoinRoom()
         this.askChat()
     },
         data(){
@@ -88,6 +143,17 @@ export default {
                 members: [],
                 msgSent: 0,
                 msgErr: '',
+                infoMembers: false,
+                memberChoiced: {},
+                settings: false,
+                roomInfo: undefined,
+                popUpInfo: '',
+                popUp: false,
+                adm: false,
+                muted: false,
+                givingAdm: false,
+                banning: false,
+                attempts: 0,
     
             }
         },
@@ -96,17 +162,25 @@ export default {
         membersReactive(){
             return this.members
 
+        },
+    },
+    watch: {
+        roomInfo(value, payload){
+            this.checkMuted()
+            this.checkAdm()
+            this.changeMembersValues()
         }
     },
     methods:{
         connectionServer(){
-           this.socket = io.connect('https://amigitos-espanol-api.com.br/')
+           this.socket = io.connect('http://localhost:3333/')
            this.socket.on('msg', data => {
             this.renderMSG(data)
            })
            this.socket.on('listMembersUpdate', data => {
             console.log('entrou', data)
             this.updateMember(data)
+            this.attRoom()
            })
            this.socket.on('requestMsg', data => {
             this.sendChat(data)
@@ -114,17 +188,105 @@ export default {
            this.socket.on('chatRecived', data => {
             this.attChat(data)
            })
+           this.socket.on('attRoomInfo', data => {
+            this.attRoom()
+           });
+           this.socket.on('kickApply', data => {
+            this.kickApply(data)
+           })
+           this.socket.on('muteApply', data => {
+            this.muteApply(data)
+           })
+           this.socket.on('unmuteApply', data => {
+            this.unmuteApply(data)
+           })
+           this.socket.on('banApply', data => {
+            this.banApply(data)
+           })
+           this.socket.on('applyAllowChoiceVideos', data=> {
+            this.applyAllowChoiceVideos(data)
+           })
+           this.socket.on('applyAdm', data => {
+            this.applyAdm(data)
+           })
         },
-         JoinRoom(){
-            let user = this.user
-            console.log(this.user, 'user do join room')
-            let room = this.room
-            this.connectionServer()
-            this.socket.emit('joinRoom',{user,room})
+         async JoinRoom(){            
+            //document.addEventListener('load')
+            let validUser = this.validateUserDates()
+            if (validUser) {
+                let room = this.room
+                this.connectionServer()
+                this.socket.emit('joinRoom',{user,room})
+                return
+            }
+            else {
+                setTimeout(() => {
+                    if (this.attempts <= 3) {
+                        this.JoinRoom()
+                    }
+                    else {
+                        this.$router.push('/room')
+                    } 
+                }, 300);
+            }
+
+        },
+        ...mapActions({getRoom:'user/getRoom', validateUser:'user/validateUser'}),
+        async attRoom(){
+            console.log('att')
+            try {
+                let roomInfo =  await this.getRoom(this.room)
+                this.roomInfo = roomInfo.room
+            } catch (error) {
+                this.err  = error
+                throw error
+            }
+        },
+        validateUserDates(){
+            let token = this.$cookies.get('token')
+            if (!this.user.id) {
+                this.validateUser(token)
+                return false
+            }
+            return true
         },
         askChat(){
             console.log('enviei')
             this.socket.emit('requestForChatMsgs', {user: this.user.id, room: this.room})
+        },
+        showMemberInfo(index){
+            this.infoMembers = true
+            this.memberChoiced = this.membersReactive[index]
+            console.log(this.memberChoiced)
+        },
+        checkAdm(){
+            let isAdm = this.roomInfo.adms.find(users => {
+                return users.id === this.user.id
+            })
+            isAdm ? this.adm = true : this.adm = this.adm
+        },
+        changeMembersValues(){
+            for (let i = 0; i < this.membersReactive.length; i++) {
+                let user = this.membersReactive[i]
+                let muted = this.roomInfo.isMuted.find(member => {
+                    return member.id === user.id
+                })
+                let adm = this.roomInfo.adms.find(member => {
+                    return member.id === user.id
+                })
+                let canChoice = this.roomInfo.membersAllowedChoice.find(member => {
+                    return member.id === user.id
+                })
+                if(muted) this.membersReactive[i].muted = true
+                else this.membersReactive[i].muted = false
+
+                if(adm) this.membersReactive[i].role = 1
+                else this.membersReactive[i].role = 0
+
+                if(canChoice) this.membersReactive[i].choice = 1
+                else this.membersReactive[i].choice = 0
+                
+            }
         },
         async emitMsg() {
             let msg = document.querySelector('textarea')
@@ -231,11 +393,19 @@ export default {
             
         },
         sendChat(data){
-            if(this.members[0].id != this.user.id) return
             let userRequest = data.user
             let room = this.room
             let chat = this.msgs
-            console.log('enviando o chat')
+            let empty = false
+            let newUserThatSendTheChat = undefined
+            if (chat.length === 0) {
+                empty = true
+            }
+            if(this.members[0].id != this.user.id && !empty) return
+            if(empty && this.members[0].id === this.user.id && this.members.length > 2){
+                newUserThatSendTheChat = this.members[1]
+            }
+            if (newUserThatSendTheChat && this.user.id != newUserThatSendTheChat.id) return
             this.socket.emit('chatSent', {userRequest, room, chat})
         },
         attChat(data){
@@ -244,7 +414,23 @@ export default {
                 setTimeout(() => {
                     this.msgs = data.chat
                 }, 100)
+                setTimeout(() => {
+                    this.verifyChatEmpty()
+                }, 300);
             }
+        },
+        verifyChatEmpty(){
+            if (this.msgs.length === 0) {
+                this.askChat()
+            }
+        },
+        setPopUpInfo(popUp){
+            setTimeout(() => {
+                this.popUpInfo = popUp
+            }, 400);
+        },
+        removePopUpInfo(){
+            this.popUpInfo = ''
         },
         updateMember(member){
             this.members = member
@@ -254,7 +440,76 @@ export default {
         },
         emitClick(){
             this.$emit('clicked')
+        },
+        emitKick(member){
+            this.socket.emit('kickMember', {member, room: this.room})
+        },
+        kickApply(member){
+            console.log(member,' el membro sendo kickado', this.user.id, member.id, this.user.id != member.id)
+            if (this.user.id != member.id) return
+            console.log('deveria ser kickado')
+            this.$router.push('/room') 
+        },
+        emitMute(member){
+            this.socket.emit('muteMember', {member:member, room: this.room})
+        },
+        muteApply(room){
+            console.log('me auto dando mute', room)
+            this.roomInfo = room
+        },
+        checkMuted(){
+            console.log(this.roomInfo)
+            let isMuted = this.roomInfo.isMuted.find(users => {
+                return users.id === this.user.id
+            })
+            isMuted ? this.muted = true : this.muted = false
+        },
+        emitUnmute(member){
+            this.socket.emit('unmuteMember', {member, room: this.room})
+        },
+        unmuteApply(data){
+            this.roomInfo = data.room
+        },
+        emitBan(member){
+            console.log('banindo', member)
+            this.banning = false
+            this.socket.emit('banMember', {member, room: this.room})
+
+        },
+        banApply(data){
+            this.roomInfo = data.room
+            let member = data.member
+            console.log('aplicando ban')
+            this.emitKick(member)
+        },
+        emitAllowChoiceVideos(member){
+            this.socket.emit('allowChoice', {member, room: this.room})
+        },
+        applyAllowChoiceVideos(data){
+            this.roomInfo = data.room
+            console.log(this.roomInfo)
+            
+        },
+        emitRemoveAllowedMemberChoice(member){
+            this.socket.emit('removeAllowedMemberChoice', {member, room: this.room})
+        },
+        applyRemoveAllowedMemberChoice(data){
+            this.room = data.room
+        },
+        emitAdm(member){
+            this.socket.emit('giveMemberAdm', {member:member, room: this.room})
+
+        },
+        applyAdm(data){
+            this.roomInfo = data.room
+        },
+        emitRemoveMemberAdm(){
+            this.socket.emit('removeMemberAdm', {member, room: this.room})
+        },
+        applyRemoveMemberAdm(data){
+            this.roomInfo = data.room
         }
+
     }
     
 }
@@ -274,6 +529,39 @@ export default {
         justify-content: space-between;
         position: relative;
     }
+    .info-users {
+        flex: 1;
+        display: flex;
+        position: relative;
+    }
+    .icon-info-user {
+        position: absolute;
+        z-index: 2;
+        color: var(--cor4);
+        font-size: 1.9em;
+        right: 0;
+        margin-right: 8px;
+        cursor: pointer;
+    }
+    .user-info {
+        position: relative;
+        flex: 1;
+    }
+    .img-name-container {
+        position: relative;
+        display: flex;
+        height: 100%;
+        width: 100%;
+        
+    }
+    .img-name-container img {
+        width: 100%;
+        height: 100%;
+        position: absolute;
+        object-fit: cover;
+        object-position: 0px -16px;
+    }
+    
     .btn-container{
         margin: 10px 5px;
         overflow: hidden;
@@ -323,11 +611,78 @@ export default {
     }
     .options {
         position: absolute;
-        width: 80px;
-        height: 80px;
-        background-color: white;
-        border-radius: 6px;
+        width: 100%;
+        height: 100%;
+        background-color: var(--cor7);
+        border-radius: 2px;
         z-index: 2;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        display: flex;
+        flex-direction: column;
+        justify-content: space-around;
+    }
+    .options h3, a{
+        color: var(--cor8);
+        font-family: cursive;
+        text-decoration: none;
+        font-size: 1.3em;
+        text-align: center;
+        margin-top: 4px;   
+    }
+    .options ul {
+        display: flex;
+        width: 100%;
+        height: 35%;
+        max-height: 50px;
+        min-height: 30px;
+        background-color: var(--cor8);
+    }
+    .options ul li {
+        flex: 1;
+        list-style: none;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.6em;
+        border-right: 1.5px solid var(--cor6);
+        border-left: 1.5px solid var(--cor6);
+        cursor: pointer;
+        transition: 0.2s;
+        position: relative;
+    }
+    .options ul li .icon-li{
+        color: var(--cor7);
+        transition: 0.2s;
+    }
+    .options ul li:hover{
+        /* background-color: var(--cor7); */
+    }
+    .options ul li:hover > .icon-li {
+        transform: translateY(-2px);
+        /*color: var(--cor8);*/
+    }
+    .close-options {
+        color: var(--cor4);
+        font-size: 1.3em;
+        position: absolute;
+        top: 0;
+        right: 0;
+        transform: translate(-6px, 4px);
+        z-index: 3;
+        cursor: pointer;
+    }
+    .close-options:hover {
+        color: var(--cor9);
+        font-size: 1.3em;
+        position: absolute;
+        top: 0;
+        right: 0;
+        transform: translate(-6px, 4px);
+        z-index: 3;
+        cursor: pointer;
+        transition: 0.2s;
     }
     .erro {
         color: white;
@@ -338,11 +693,6 @@ export default {
         text-align: center;
         font-family: cursive;
         height: 45px;
-    }
-    .options ul {
-        width: 100%;
-        height: 100%;
-        position: absolute;
     }
     .chat-container {
         height: calc(100% - 50px);
@@ -371,7 +721,8 @@ export default {
         padding: 3px 5px;
         resize: none;
         border: 1px solid var(--cor7);
-        outline: none
+        outline: none;
+        overflow-x: none;
     }
     .msg-container {
         width: fit-content;
@@ -424,6 +775,15 @@ export default {
         padding: 10px 10px;
         color: var(--cor7);
         border-radius: 24px;
+    }
+    .muted{
+        text-align: center;
+        color: var(--cor9);
+        font-size: 1em;
+        font-family: cursive;
+        text-shadow: 0px 0px 2px var(--cor7),0px 0px 2px var(--cor7), 0px 0px 2px var(--cor7);
+        margin: 10px 0px 0px 10px;
+        display: inline-block;
     }
 
 </style>

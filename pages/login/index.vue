@@ -50,7 +50,7 @@ export default {
             const {name, email, password} = this.$data
             this.loanding = true
             console.log(this.$config)
-            axios.post(`https://amigitos-espanol-api.com.br/login`,{username: name, email, password}).then(sucefful => {
+            axios.post(`http://localhost:3333/login`,{username: name, email, password}).then(sucefful => {
                 let token = sucefful.data.token
                 this.$store.commit('user/SET_TOKEN', 'bearer ' + token)
                 this.$store.dispatch('user/validateUser', 'bearer ' + token).then(res => {

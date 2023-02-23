@@ -1,6 +1,7 @@
 <template>
   <div id="rooms-container">
     <div class="room-box-container" v-if="rooms.length > 0">
+    <Erro v-if="err" :erroProps="err"></Erro>
         <div class="box-room" v-for="room in rooms" :key="room._id">
             <div class="icon-container" v-if="room.type === 'youtube'">
                 <fa :icon="['fab','youtube']"/>
@@ -43,14 +44,23 @@ export default {
         }
     },
     layout: 'default',
-    middleware:['auth'],
+    middleware:['auth',],
     async asyncData(context){
        let rooms = await context.$axios.$get(`roomsRenderizated`)
+       let err = undefined
+       if (context.error.message) err = context.error.message
+       console.log('indo aqui', context.error.message)
+       
        return {
-        rooms: rooms.rooms
+        rooms: rooms.rooms,
+        err,
        }
 
     },
+    fetch(){
+        console.log(this.$data, 'primeira vez')
+    },
+    fetchOnServer: false,
     created(){
         this.connectionServer()
     },
@@ -60,6 +70,7 @@ export default {
     data(){
         return {
             socket: null,
+            err: undefined
         }
     },
     computed:{ 
@@ -73,7 +84,7 @@ export default {
     },
     methods: {
         connectionServer(){
-            this.socket = io.connect('https://amigitos-espanol-api.com.br/')
+            this.socket = io.connect('http://localhost:3333/')
 
             this.socket.on('roomRefresh', data => {
                 this.socket.emit('deleteRoomsWith0Members')

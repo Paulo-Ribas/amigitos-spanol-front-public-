@@ -103,7 +103,7 @@ export default {
     },
     methods:{
         connectionServer(){
-           this.socket = io.connect('https://amigitos-espanol-api.com.br/')
+           this.socket = io.connect('http://localhost:3333/')
            this.socket.on('msg', data => {
             this.renderMSG(data)
            })

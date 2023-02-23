@@ -68,14 +68,14 @@ export default {
     component: 'fa',
     icons: {
       solid: ['faHome', 'faEnvelope', 'faUser', 'faUsers', 'faChalkboard',
-        'faUpload', 'faPenToSquare', 'faCheck', 'faXmark', 'faArrowRightFromBracket', 'faArrowLeft', 'faSearch'],
+        'faUpload', 'faPenToSquare', 'faCheck', 'faXmark', 'faArrowRightFromBracket', 'faArrowLeft', 'faSearch', 'faGears', 'faFilm', 'faCommentSlash', 'faHammer', 'faPersonFallingBurst', 'faScrewdriverWrench', 'faComment', 'faChessKing'],
       brands: ['faYoutube']
     }
   },
   axios: {
-    baseURL: 'https://amigitos-espanol-api.com.br/'
+    baseURL: 'http://localhost:3333/'
 
-  },
+  }, 
 
   // Vuetify module configuration: https://go.nuxtjs.dev/config-vuetify
   vuetify: {

@@ -7,6 +7,8 @@
             v-if="!joined && pass && owner != user.id" @submitEmited="roomPassVerify($event)"
         />
         <PickVideoYT v-if="showVideos" @ChangeVideo="choiced($event)" @cancel="showVideos = false" />
+        <VideoRequestYT :requestInfoProps="requestInfo" v-if="showRequestInfo"></VideoRequestYT>
+        <RequestList :requestArrayProps="requestWarnList" v-if="requestWarnList.length > 0"></RequestList>
         <div class="youtube-VideoPlayer" @click="setFocus()" tabindex="1" @keydown="emitKeysEvents($event)" v-if="joined && !mobile" id="video">
             <div class="wall" @click="emitPlayPause(), setFocus()" @keydown="emitKeysEvents($event)"></div>
             <playerYT class="teste" @error="showError($event)" @cued="AskForSyncronization()" @ready="ready($event)" @playing="playing($event)" :player-vars="{autoplay:0, controls: 0, }" player-width="100%" player-height="100%" :video-id="videoId"></playerYT>
@@ -118,6 +120,7 @@ export default {
             showVideos: false,
             connected: false,
             err: '',
+            roomInfo: undefined,
             members: [],
             mobile: false,
             currentTime:'00:00',
@@ -125,6 +128,12 @@ export default {
             player: undefined,
             YTjoined: false,
             ytUrl: '',
+            adm: undefined,
+            choice: undefined,
+            VideoInfo: [],
+            showRequestInfo: false,
+            requestInfo: {},
+            requestWarnList: []            
 
         }
     },
@@ -134,7 +143,12 @@ export default {
             this.responsive()
             
 
-        }
+        },
+        roomInfo(value, payload){
+            this.checkAdm()
+            this.checkChoice()
+
+            }
     },
     computed:{
         ...mapState({user: state => state.user}),
@@ -151,10 +165,10 @@ export default {
             return this.$mq
         }
     },
-    middleware: ['auth', 'roomPass'],
+    middleware: ['auth', 'roomPass', 'roomBanned'],
     methods: {
         connectionServer(){
-           this.socket = io.connect('https://amigitos-espanol-api.com.br/',{ rememberTransport: false, transports: ['websocket', 'polling', 'Flash Socket', 'AJAX long-polling']})
+           this.socket = io.connect('http://localhost:3333/',{ rememberTransport: false, transports: ['websocket', 'polling', 'Flash Socket', 'AJAX long-polling']})
            this.socket.on('sendRequestForSynchronization', data => {
             this.sendVideoUrl(data)
            })
@@ -207,12 +221,51 @@ export default {
            this.socket.on('disconnect', q => {
             this.socket.emit('desconectado', q)
            })
+           this.socket.on('kickApply', data => {
+            this.attRoom(data)
+           })
+           this.socket.on('muteApply', data => {
+            this.attRoom(data)
+           })
+           this.socket.on('unmuteApply', data => {
+            this.attRoom(data)
+           })
+           this.socket.on('banApply', data => {
+            this.attRoom(data)
+           })
+           this.socket.on('applyAllowChoiceVideos', data=> {
+            this.attRoom(data)
+           })
+           this.socket.on('applyAdm', data => {
+            this.attRoom(data)
+           })
+           this.socket.on('requestAccepted', date => {
+            this.requestAccepted(data)
+           })
+           this.socket.on('userVideoRequest', data => {
+            this.showRequest(data)
+           })
         },
         ...mapActions({joinByPass: 'user/joinRoomByPassword'}),
         JoinRoom(){
             if (!this.joined) {
                 this.joined = true
             }
+        },
+        attRoom(data){
+            this.roomInfo = data.roomInfo
+        },
+        checkAdm(){
+            let isAdm = this.roomInfo.adms.find(users => {
+                return users.id === this.user.id
+            })
+            isAdm ? this.adm = true : this.adm = this.adm
+        },
+        checkChoice(){
+            let canChoice = this.roomInfo.membersAllowedChoice.find(users => {
+                return users.id === this.user.id
+            })
+            canChoice ? this.choice = true : this.choice = this.choice
         },
         updateMemberRoom(member){
             this.members = member
@@ -237,6 +290,28 @@ export default {
         showError(event){
             console.log('deu erro no player lol', event)
         },
+        verifyPermissions(){
+            if(this.roomInfo.rulesType === 2) {
+                if(this.adm || this.choice) return true
+                else {
+                    this.socket.emit('videoRequest', {userId: this.user.id, userName: this.username, video: this.ytUrl, room: this.room})
+                    this.saveRequestForVideo(this.ytUrl)
+                    return false
+                }
+            }
+            if(this.roomInfo.rulesType === 3){
+                if(!this.adm || !this.choice) return false
+                return true
+            }
+            return true
+        }
+        showRequest(data){
+            this.btnRequest = true,
+            this.videoRequest = data
+        }
+        acceptedRequest(data){
+            this.socket.emmit('requestAccepted', this.videoRequest)
+        }
         sendVideoUrl(id){ 
             if(this.members[0].id === this.user.id && this.user.id != id.id) {
                 let Url = this.ytUrl
@@ -267,6 +342,26 @@ export default {
             this.setTimeVideo()
 
         },
+        saveRequestForVideo(video){
+            return new Promise((resolve, reject) =>{
+                this.videoInfo.push(resolve)
+                resolve({choiced: this.choiced, video})
+            })
+        },
+        requestAccepted(data){
+            if(data.userId != this.user.id) return
+            Promise.all(this.videoInfo).then(done => {
+                done.choiced(done.video, true)
+                this.videoInfo.length = 0
+            }).catch(err => {
+                console.log('nunca vai vir aqui')
+            })
+        },
+        showRequest(data){
+            if(this.user.id != RoomAdm || !adm) return
+            let newRequest = data.video
+            this.requestWarnList.push(newRequest)
+        }
         async setVideoUrl(data){
             console.log('esse sim é o video que to recebendo lol', data)
             let dates = {
@@ -327,9 +422,6 @@ export default {
                     this.player.seekTo(dates.videoStats.currentTime)
                     play.src = '/svg/botao_pause.svg'
                 }
-                
-                    
-                
                 
             }
         },
@@ -427,11 +519,16 @@ export default {
         showObject(event){
             console.log(event)
         },
-        choiced(video){
+        choiced(video, canSend = undefined){
             console.log(video, 'esse é o video enviado')
             this.showVideos = false
             video === '' ? video = "https://www.youtube.com/embed/hNGrGGbFX2s" : video
             this.ytUrl = video
+            let hasPermision = this.verifyPermissions(video)
+            canSend === undefined ? canSend = hasPermision : canSend = canSend
+            if (!hasPermision){
+                if(!canSend) return
+            }
             this.socket.emit('changeVideoToAll', {video: video, room: this.room})
         },
         changeSrc(data){
@@ -451,7 +548,7 @@ export default {
             let minutos = Math.floor(tempVideo / 60)
             let segundos = Math.floor(tempVideo % 60)
             let horas = Math.floor(minutos / 60)
-            minutos >= 60 ? minutos -= minutos : minutos
+            console.log(minutos, minutos / 60)
             let time
             if (horas <= 0){
                 time = `${String(minutos).padStart(2, '0')}:${String(segundos).padStart(2, '0')}`

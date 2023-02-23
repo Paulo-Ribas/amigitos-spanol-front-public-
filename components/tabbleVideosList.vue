@@ -1,5 +1,6 @@
 <template>
   <div class="tabble">
+    <ButtonSpecial btnProps="Selecionar Tudo" @clicked="selectedAll()"/>
       <table>
          <tbody>
           <tr v-for="(video, index) in videos" :key="video.name">
@@ -38,7 +39,10 @@ export default {
         const index = parseInt(indexValue)
         const video = this.videos[index]
         this.$emit('selected',{video: video, target: event.target, father: event.target.parentElement})
-      }
+      },
+      selectedAll(event){
+        const videos =  event.targe
+      },
     },
     computed: {
       ...mapState({

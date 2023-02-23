@@ -146,7 +146,7 @@ export default {
     middleware: ['auth', 'roomPass'],
     methods: {
         connectionServer(){
-           this.socket = io.connect('https://amigitos-espanol-api.com.br/',{ rememberTransport: false, transports: ['websocket', 'polling', 'Flash Socket', 'AJAX long-polling']})
+           this.socket = io.connect('http://localhost:3333/',{ rememberTransport: false, transports: ['websocket', 'polling', 'Flash Socket', 'AJAX long-polling']})
            this.socket.on('sendRequestForSynchronization', data => {
             this.sendVideoUrl(data)
            })
@@ -416,7 +416,10 @@ export default {
             let minutos = Math.floor(tempVideo / 60)
             let segundos = Math.floor(tempVideo % 60)
             let horas = Math.floor(minutos / 60)
-            minutos >= 60 ? minutos -= minutos : minutos
+            console.log(minutos / 60, minutos)
+            if (minutos > 59) {
+                console.log(minutos / 60)
+            }
             let time
             if (horas <= 0){
                 time = `${String(minutos).padStart(2, '0')}:${String(segundos).padStart(2, '0')}`

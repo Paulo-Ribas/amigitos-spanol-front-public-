@@ -1,10 +1,10 @@
 <template>
-  <div class="container-box-poop" v-if="showAlgo" @ask="showAlgo = true" @click="close">
+  <div class="container-box-poop" @click="close()">
       <div class="warn-container">
         <h2>{{msg}}</h2>
         <div class="btn-container">
-            <button class="confirm" @click="yes">{{confirm}}</button>
-            <button class="refuse" @click="close">{{refuse}}</button>
+            <button class="confirm" @click="yes($event)">{{confirm}}</button>
+            <button class="refuse" @click="no($event)">{{refuse}}</button>
         </div>
       </div>
     </div>
@@ -16,20 +16,26 @@ export default {
         return {
             msg: this.$props.msgProps,
             confirm: this.$props.btnConfirmProps,
-            refuse: this.$props.btnRefuseProps
-        }
+            refuse: this.$props.btnRefuseProps,
+            dates: this.$props.datesProps        
+            }
     },
     props: {
         msgProps: String,
         btnConfirmProps: String,
         btnRefuseProps: String,
+        datesProps: Object,
     },
     methods: {
-        confirm(){
-
+        yes(){
+            console.log(this.dates)
+            this.$emit('confirm', this.dates)
         },
-        refuse(){
-
+        no(){
+            this.$emit('refuse', this.refuse)
+        },
+        close(){
+            this.$emit('close')
         }
     }
 }
@@ -37,9 +43,9 @@ export default {
 
 <style scoped>
 .container-box-poop {
-    width: 106%;
-    height: 100vh;
-    z-index: 1;
+    width: 100%;
+    height: 100%;
+    z-index: 4;
     display: flex;
     justify-content: center;
     align-items: center;
@@ -56,6 +62,7 @@ export default {
   align-items: center;
   background-color: var(--cor7);
   border-radius: 25px;
+  text-align: center;
   
 }
 .warn-container h2 {
@@ -66,7 +73,6 @@ export default {
     width: 100%;
     display: flex;
     justify-content: space-around;
-    pointer-events: none;
 }
 .confirm{
     padding: 10px 30px;
@@ -74,6 +80,7 @@ export default {
     font-family: cursive;
     color: wheat;
     border-radius: 10px;
+    cursor: pointer !important;
 }
 .refuse{
     padding: 10px 30px;
@@ -81,5 +88,6 @@ export default {
     font-family: cursive;
     color: wheat;
     border-radius: 10px;
+    cursor: pointer !important;
 }
 </style>
