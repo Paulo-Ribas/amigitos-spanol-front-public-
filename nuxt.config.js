@@ -68,7 +68,7 @@ export default {
     component: 'fa',
     icons: {
       solid: ['faHome', 'faEnvelope', 'faUser', 'faUsers', 'faChalkboard',
-        'faUpload', 'faPenToSquare', 'faCheck', 'faXmark', 'faArrowRightFromBracket', 'faArrowLeft', 'faSearch', 'faGears', 'faFilm', 'faCommentSlash', 'faHammer', 'faPersonFallingBurst', 'faScrewdriverWrench', 'faComment', 'faChessKing'],
+        'faUpload', 'faPenToSquare', 'faCheck', 'faXmark', 'faArrowRightFromBracket', 'faArrowLeft', 'faSearch', 'faGears', 'faFilm', 'faCommentSlash', 'faHammer', 'faPersonFallingBurst', 'faScrewdriverWrench', 'faComment', 'faChessKing', 'faExclamation'],
       brands: ['faYoutube']
     }
   },

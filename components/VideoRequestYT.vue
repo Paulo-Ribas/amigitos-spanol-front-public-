@@ -5,14 +5,14 @@
                 {{videoName}}
             </h2>
             <div class="videoImg">
-                {{videoImg}}
+                <img :src="videoImg">
             </div>
         </div>
         <div class="user-request-info">
             <p>pedido feito por: <span class="name">{{userRequestName}}</span></p>
         </div>
         <div class="btn-container">
-            <button @click="accept()">Aceitar</button> <button @click="reject()">Rejeitar</button>
+            <button @click="acceptRequest()">Aceitar</button> <button @click="rejectRequest()">Rejeitar</button>
         </div>
     </div>
 </template>
@@ -20,30 +20,54 @@
 <script>
 import axios from 'axios'
 export default {
-    beforeMount(){
-         axios.get(`https://www.youtube.com/oembed?url=${this.requestInfo.video.}&format=json`).then(video=> {
-                    this.thumb = video.data.thumbnail_url
-                    this.title = video.data.title
+    created(){
+        console.log(this.requestInfo)
+         axios.get(`https://www.youtube.com/oembed?url=${this.requestInfo.video}&format=json`).then(video=> {
+                    this.videoImg = video.data.thumbnail_url
+                    this.videoName = video.data.title
          }).catch(err => {
             console.log(err)
          })
+    },
+    mounted(){
+        this.userRequestName = this.requestInfo.userName
+        console.log(this.requestInfo, 'informação')
+        this.id = this.requestInfo.id
     },
     data(){
         return {
             requestInfo: this.$props.requestInfoProps,
             videoName: undefined,
-            videoImg: undefined
+            videoImg: undefined,
+            userRequestName: '',
+            id: undefined,
         }
     },
     props: {
         requestInfoProps: Object,
     },
-    methods: {
-        accept(){
-            this.$emit('accepted', this.requestInfo)
+    watch:{
+        requestInfoProps(value, payload){
+            this.requestInfo = value
+            console.log(value, 'valor do coisa')
+
         },
-        reject(){
-            this.$emit('rejected', this.requestInfo)
+    },
+    methods: {
+        acceptRequest(){
+            let videoInfo = {
+                requestInfo: this.requestInfo,
+                id: this.id
+            }
+            console.log(this.requestInfo, 'request info clicado', videoInfo, this.videoInfo2)
+            this.$emit('accepted', videoInfo )
+        },
+        rejectRequest(){
+            let videoInfo = {
+                requestInfo: this.requestInfo,
+                id: this.id
+            }
+            this.$emit('rejected', videoInfo)
         }
 
     }
@@ -53,9 +77,9 @@ export default {
 <style scoped>
     .box-container-yt-request{
         width: 100%;
-        heigth: 100%;
+        height: 100%;
         max-width: 300px;
-        max-heigth: 400px;
+        max-height: 400px;
         position: absolute;
         z-index: 7;
         display: flex;

@@ -54,14 +54,15 @@
                         <li v-if="user.id != roomInfo.userAdm && !adm && memberChoiced.choice && !memberChoiced.role" @mouseenter="setPopUpInfo('pode escolher videos')" @mouseleave="removePopUpInfo()"><fa class="icon-li" icon="film"></fa><PopUpInfo textProps="pode escolher videos" v-if="popUpInfo === 'pode escolher videos'"/></li>
                         <!---->
                         <!-- remover permissão de usuario escolher videos li-->
-                        <li v-if="user.id === roomInfo.userAdm && adm && memberChoiced.choice" @mouseenter="setPopUpInfo('remover permissão de escolher videos')" @mouseleave="removePopUpInfo()" @click="emitRemoveAllowedMemberChoice(memberChoiced)"><fa class="icon-li" icon="film"></fa><PopUpInfo textProps="remover permissão de escolher videos" v-if="popUpInfo === 'remover permissão de escolher videos'"/></li>
+                        <li v-if="user.id === roomInfo.userAdm && memberChoiced.choice" @mouseenter="setPopUpInfo('remover permissão de escolher videos')" @mouseleave="removePopUpInfo()" @click="emitRemoveAllowedMemberChoice(memberChoiced)"><fa class="icon-li" icon="film"></fa><PopUpInfo textProps="remover permissão de escolher videos" v-if="popUpInfo === 'remover permissão de escolher videos'"/></li>
+                        <li v-if="adm && memberChoiced.choice" @mouseenter="setPopUpInfo('remover permissão de escolher videos')" @mouseleave="removePopUpInfo()" @click="emitRemoveAllowedMemberChoice(memberChoiced)"><fa class="icon-li" icon="film"></fa><PopUpInfo textProps="remover permissão de escolher videos" v-if="popUpInfo === 'remover permissão de escolher videos'"/></li>
                         <!---->
                         <!-- dar admistração a usuario li's -->
                         <li v-if="user.id === roomInfo.userAdm && user.id != memberChoiced.id && !memberChoiced.role" @mouseenter="setPopUpInfo('ser admistrador')" @click="givingAdm = true" @mouseleave="removePopUpInfo()"><fa class="icon-li" icon="screwdriver-wrench"></fa><PopUpInfo textProps="ser admistrador" v-if="popUpInfo === 'ser admistrador'"/></li>
                         <li v-if="memberChoiced.role && user.id != roomInfo.userAdm" @mouseenter="setPopUpInfo('admistrador')" @mouseleave="removePopUpInfo()"><fa class="icon-li" icon="screwdriver-wrench"></fa><PopUpInfo textProps="admistrador" v-if="popUpInfo === 'admistrador'"/></li>
                         <!---->
                         <!-- remover admistração de usuario li-->
-                        <li v-if="memberChoiced.role && user.id === roomInfo.userAdm" @mouseenter="setPopUpInfo('remover admistração')" @mouseleave="removePopUpInfo()"><fa class="icon-li" icon="screwdriver-wrench"></fa><PopUpInfo textProps="remover admistração" v-if="popUpInfo === 'remover admistração'"/></li>
+                        <li v-if="memberChoiced.role && user.id === roomInfo.userAdm" @click="emitRemoveMemberAdm(memberChoiced)" @mouseenter="setPopUpInfo('remover admistração')" @mouseleave="removePopUpInfo()"><fa class="icon-li" icon="screwdriver-wrench"></fa><PopUpInfo textProps="remover admistração" v-if="popUpInfo === 'remover admistração'"/></li>
                         <!---->
                     </ul>
                 </div>
@@ -133,6 +134,7 @@ export default {
     fetchOnServer: false,
     async mounted(){
         await this.JoinRoom()
+        this.chatAttempts = 0
         this.askChat()
     },
         data(){
@@ -154,6 +156,7 @@ export default {
                 givingAdm: false,
                 banning: false,
                 attempts: 0,
+                chatAttempts: 0,
     
             }
         },
@@ -206,17 +209,26 @@ export default {
            this.socket.on('applyAllowChoiceVideos', data=> {
             this.applyAllowChoiceVideos(data)
            })
+           this.socket.on('applyRemoveAllowedMemberChoice', data => {
+            console.log('data, por que é tão complicado?', data)
+            this.applyRemoveAllowedMemberChoice(data)
+           })
            this.socket.on('applyAdm', data => {
             this.applyAdm(data)
            })
+           this.socket.on('applyRemoveAdm', data => {
+            this.applyRemoveMemberAdm(data)
+           })
         },
          async JoinRoom(){            
-            //document.addEventListener('load')
             let validUser = this.validateUserDates()
+            this.verifyEmptyMembers()
             if (validUser) {
                 let room = this.room
                 this.connectionServer()
-                this.socket.emit('joinRoom',{user,room})
+                this.socket.emit('joinRoom',{user: this.user,room})
+                await this.awaitUserJoinConfirm()
+                console.log('esperando')
                 return
             }
             else {
@@ -230,6 +242,24 @@ export default {
                 }, 300);
             }
 
+        },
+        awaitUserJoinConfirm(){
+            return new Promise((resolve, reject) => {
+                this.socket.on('userJoinConfirmed', data => {
+                    console.log('userJoinConfirmed')
+                    return resolve()
+                })
+            })
+        },
+        verifyEmptyMembers(){
+            setTimeout( async () => {
+                if(!this.members || this.members.length === 0) {
+                    let room = await this.getRoom(this.room)
+                    this.roomInfo = room.room
+                    this.members = room.members
+                }
+                
+            }, 1000);
         },
         ...mapActions({getRoom:'user/getRoom', validateUser:'user/validateUser'}),
         async attRoom(){
@@ -252,6 +282,7 @@ export default {
         },
         askChat(){
             console.log('enviei')
+            if(!this.socket) return
             this.socket.emit('requestForChatMsgs', {user: this.user.id, room: this.room})
         },
         showMemberInfo(index){
@@ -266,6 +297,7 @@ export default {
             isAdm ? this.adm = true : this.adm = this.adm
         },
         changeMembersValues(){
+            if(!this.membersReactive) return
             for (let i = 0; i < this.membersReactive.length; i++) {
                 let user = this.membersReactive[i]
                 let muted = this.roomInfo.isMuted.find(member => {
@@ -411,17 +443,16 @@ export default {
         attChat(data){
             console.log(data, 'att chat')
             if (this.user.id === data.userRequest) {
-                setTimeout(() => {
-                    this.msgs = data.chat
-                }, 100)
+                this.msgs = data.chat
                 setTimeout(() => {
                     this.verifyChatEmpty()
-                }, 300);
+                }, 3000);
             }
         },
         verifyChatEmpty(){
-            if (this.msgs.length === 0) {
+            if (this.msgs.length === 0 && this.chatAttempts < 3) {
                 this.askChat()
+                this.chatAttempts++
             }
         },
         setPopUpInfo(popUp){
@@ -491,22 +522,26 @@ export default {
             
         },
         emitRemoveAllowedMemberChoice(member){
+            console.log('por que tão complicado?', member)
             this.socket.emit('removeAllowedMemberChoice', {member, room: this.room})
         },
         applyRemoveAllowedMemberChoice(data){
-            this.room = data.room
+            this.roomInfo = data.room
         },
         emitAdm(member){
             this.socket.emit('giveMemberAdm', {member:member, room: this.room})
+            this.givingAdm = false
 
         },
         applyAdm(data){
             this.roomInfo = data.room
         },
-        emitRemoveMemberAdm(){
-            this.socket.emit('removeMemberAdm', {member, room: this.room})
+        emitRemoveMemberAdm(member){
+            console.log('emitindo remove adm')
+            this.socket.emit('removeMemberAdm', {member:member, room: this.room})
         },
         applyRemoveMemberAdm(data){
+            console.log('removendo adm', data)
             this.roomInfo = data.room
         }
 

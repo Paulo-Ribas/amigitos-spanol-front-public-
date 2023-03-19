@@ -70,7 +70,7 @@ export default {
             this.canMakeRequest++
         },
         choiceVideo(){
-            this.$emit('ChangeVideo', this.videoPicked)
+            this.$emit('ChangeVideo', {embed: this.videoPicked, original: this.url})
         },
         cancel(){
             this.selected = false

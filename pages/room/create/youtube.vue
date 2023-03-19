@@ -2,6 +2,8 @@
   <div id="creating">
     <Erro :erroProps="erro" v-if="erro != ''"></Erro>
     <div class="container" v-show="!showAlgo">
+        <Rules @ruleSelected="changeRulesType($event)" @error="erro = $event.err" v-if="changeRules"/>
+        <fa icon="gears" class="icon-info-user" @click="changeRules = true" v-if="!changeRules"></fa>
         <form @submit="preventSubmit($event), sendRoomData()">
             <div class="container-1">
                 <div class="name">
@@ -68,6 +70,8 @@ export default {
             showAlgo: false,
             erro: '',
             loanding: false,
+            changeRules: false,
+            rulesType: 1,
         }
     },
     components: { 
@@ -99,6 +103,10 @@ export default {
         preventSubmit(e) {
             e.preventDefault()
         },
+        changeRulesType(event){
+            this.changeRules = false
+            this.rulesType = event.ruleType
+        },
         filter(e) {
             const value = document.querySelector('#maxMembers')
             if (e.data === ' ') {
@@ -124,6 +132,7 @@ export default {
                     filesVideos: [], 
                     maxMembers: this.qtd,
                     type: 'youtube',
+                    rulesType: this.rulesType,
                 } 
             }
             this.postRoom(axiosConfig).then(res => {
@@ -152,6 +161,7 @@ export default {
         background-color: var(--corMenu);
         border-top-right-radius: 10%;
         padding: 0px;
+        position: relative;
     }
     .container-1 {
         width: 100%;
@@ -283,6 +293,14 @@ export default {
     border-radius: 10px;
     cursor: pointer;
     pointer-events: all;
+}
+.gears {
+    position: absolute;
+    right: 0;
+    bottom: 0;
+    transform: translate(10px, 10px);
+    z-index: 2;
+    cursor: pointer;
 }
 @media screen and (max-width: 670px) {
     .container {

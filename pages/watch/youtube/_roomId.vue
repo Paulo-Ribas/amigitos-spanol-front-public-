@@ -7,8 +7,8 @@
             v-if="!joined && pass && owner != user.id" @submitEmited="roomPassVerify($event)"
         />
         <PickVideoYT v-if="showVideos" @ChangeVideo="choiced($event)" @cancel="showVideos = false" />
-        <VideoRequestYT :requestInfoProps="requestInfo" v-if="showRequestInfo"></VideoRequestYT>
-        <RequestList :requestArrayProps="requestWarnList" v-if="requestWarnList.length > 0"></RequestList>
+        <VideoRequestYT :requestInfoProps="requestInfo" v-if="showRequestInfo" @accepted="acceptedRequest($event)" @rejected="rejectedRequest($event)"></VideoRequestYT>
+        <RequestList :requestArrayProps="requestWarnList" v-if="requestWarning" @requestSelected="showRequest($event)" ></RequestList>
         <div class="youtube-VideoPlayer" @click="setFocus()" tabindex="1" @keydown="emitKeysEvents($event)" v-if="joined && !mobile" id="video">
             <div class="wall" @click="emitPlayPause(), setFocus()" @keydown="emitKeysEvents($event)"></div>
             <playerYT class="teste" @error="showError($event)" @cued="AskForSyncronization()" @ready="ready($event)" @playing="playing($event)" :player-vars="{autoplay:0, controls: 0, }" player-width="100%" player-height="100%" :video-id="videoId"></playerYT>
@@ -57,7 +57,6 @@ export default {
                 roomMembers: res.room.members,
                 pass: res.room.pass,
                 owner: res.room.userAdm,
-                roomAdm:[{userAdm: res.room.userAdm}]
             }
         }
         else {
@@ -120,7 +119,7 @@ export default {
             showVideos: false,
             connected: false,
             err: '',
-            roomInfo: undefined,
+            roomInfo: {},
             members: [],
             mobile: false,
             currentTime:'00:00',
@@ -130,10 +129,11 @@ export default {
             ytUrl: '',
             adm: undefined,
             choice: undefined,
-            VideoInfo: [],
+            videoInfo: [],
             showRequestInfo: false,
             requestInfo: {},
-            requestWarnList: []            
+            requestWarnList: [],
+            requestWarning: false,            
 
         }
     },
@@ -145,10 +145,15 @@ export default {
 
         },
         roomInfo(value, payload){
+            console.log(value, payload, 'room sendo atualizada')
             this.checkAdm()
             this.checkChoice()
 
-            }
+            },
+        requestWarnList(value,payload){
+            console.log(value, 'requestWARN 11111', payload)
+            value.length === 0 ? this.requestWarning = false : this.requestWarning = true
+        }
     },
     computed:{
         ...mapState({user: state => state.user}),
@@ -205,11 +210,11 @@ export default {
             this.setCurrentTime(data)
            })
            this.socket.on('playerStateRecived', data => {
-            console.log('recebi o player', data)
+            //console.log('recebi o player', data)
             this.verifyVideoState(data)
            })
            this.socket.on('signal', data => {
-            console.log("o sinal chegou até aqui")
+           // console.log("o sinal chegou até aqui")
             this.socket.emit('answeredSignal', {roomUrl: this.room})
            })
            this.socket.on('userAskingCurrentTime',data => {
@@ -221,51 +226,66 @@ export default {
            this.socket.on('disconnect', q => {
             this.socket.emit('desconectado', q)
            })
-           this.socket.on('kickApply', data => {
-            this.attRoom(data)
+           this.socket.on('kickApply', async data => {
+            await this.attRoom()
            })
-           this.socket.on('muteApply', data => {
-            this.attRoom(data)
+           this.socket.on('muteApply', async data => {
+            await this.attRoom()
            })
-           this.socket.on('unmuteApply', data => {
-            this.attRoom(data)
+           this.socket.on('unmuteApply', async data => {
+            await this.attRoom()
            })
-           this.socket.on('banApply', data => {
-            this.attRoom(data)
+           this.socket.on('banApply', async data => {
+            await this.attRoom()
            })
-           this.socket.on('applyAllowChoiceVideos', data=> {
-            this.attRoom(data)
+           this.socket.on('applyAllowChoiceVideos', async data=> {
+            await this.attRoom()
            })
-           this.socket.on('applyAdm', data => {
-            this.attRoom(data)
+           this.socket.on('applyRemoveAllowedMemberChoice', async data => {
+            await this.attRoom()
            })
-           this.socket.on('requestAccepted', date => {
+           this.socket.on('applyAdm', async data => {
+            await this.attRoom()
+           })
+           this.socket.on('applyRemoveAdm',async  data => {
+            await this.attRoom()
+           })
+           this.socket.on('requestAllowed', data => {
+            console.log(data, 'la data')
             this.requestAccepted(data)
            })
            this.socket.on('userVideoRequest', data => {
-            this.showRequest(data)
+            console.log('como assim undefined?', data)
+            this.addRequest(data)
            })
         },
-        ...mapActions({joinByPass: 'user/joinRoomByPassword'}),
+        ...mapActions({joinByPass: 'user/joinRoomByPassword', getRoom: 'user/getRoom'}),
         JoinRoom(){
             if (!this.joined) {
                 this.joined = true
+                this.attRoom(this.room)
             }
         },
-        attRoom(data){
-            this.roomInfo = data.roomInfo
+        async attRoom(){
+            console.log('el room sendo att')
+            let room = await this.getRoom(this.room)
+            console.log(room, 'o room', room.room)
+            this.roomInfo = room.room
         },
         checkAdm(){
+            console.log(this.roomInfo, 'infos')
             let isAdm = this.roomInfo.adms.find(users => {
                 return users.id === this.user.id
             })
-            isAdm ? this.adm = true : this.adm = this.adm
+            isAdm ? this.adm = true : this.adm = false
         },
         checkChoice(){
             let canChoice = this.roomInfo.membersAllowedChoice.find(users => {
+                console.log(users.id)
                 return users.id === this.user.id
             })
-            canChoice ? this.choice = true : this.choice = this.choice
+            
+            canChoice ? this.choice = true : this.choice = false
         },
         updateMemberRoom(member){
             this.members = member
@@ -290,28 +310,59 @@ export default {
         showError(event){
             console.log('deu erro no player lol', event)
         },
-        verifyPermissions(){
+        verifyPermissions(video){
+            console.log(this.roomInfo)
             if(this.roomInfo.rulesType === 2) {
-                if(this.adm || this.choice) return true
+                console.log('rooomInfo2', this.adm, this.choice)
+                if(this.adm || this.choice || this.owner === this.user.id) return true
                 else {
-                    this.socket.emit('videoRequest', {userId: this.user.id, userName: this.username, video: this.ytUrl, room: this.room})
-                    this.saveRequestForVideo(this.ytUrl)
+                    let videoId = this.saveRequestForVideo(this.ytUrl)
+                    this.socket.emit('videoRequest', {userId: this.user.id, userName: this.user.userName, video, room: this.room, id: videoId})
                     return false
                 }
             }
             if(this.roomInfo.rulesType === 3){
-                if(!this.adm || !this.choice) return false
+                console.log('rooomInfo2', this.adm, this.choice,)
+                if(!this.adm || !this.choice || this.owner === this.user.id) return false
                 return true
             }
             return true
-        }
-        showRequest(data){
-            this.btnRequest = true,
-            this.videoRequest = data
-        }
+        },
+        addRequest(data){
+            console.log('chegou no add request', this.user.id, this.owner, this.adm, data)
+            if(this.user.id != this.owner) return
+            console.log('passou do if')
+            let newRequest = data
+            this.requestWarnList.push(newRequest)
+            console.log(this.requestWarnList,'puxado')
+            
+        },
+        showRequest($event){
+            console.log($event, ' evento show request')
+            this.showRequestInfo = true
+            this.requestInfo = $event
+        },
         acceptedRequest(data){
-            this.socket.emmit('requestAccepted', this.videoRequest)
-        }
+            this.socket.emit('requestAccepted', data)
+            this.showRequestInfo = false
+            this.removeWarn(data)
+        },
+        rejectedRequest(data){
+            this.showRequestInfo = false
+            this.removeWarn(data)
+        },
+        removeWarn(warn){
+            let newWarnList = this.requestWarnList.filter(video => {
+                console.log(warn.id,video.id, 'filter')
+                return video.id !== warn.id
+            })
+            console.log(warn, newWarnList, 'resultado warn list')
+           
+             this.requestWarnList = newWarnList
+            
+            console.log(this.requestWarnList,'era para ter sidozerado')
+                
+        },
         sendVideoUrl(id){ 
             if(this.members[0].id === this.user.id && this.user.id != id.id) {
                 let Url = this.ytUrl
@@ -342,26 +393,44 @@ export default {
             this.setTimeVideo()
 
         },
+        createVideoRequestId(){
+            let Uint32idArray = new Uint32Array(1)
+            crypto.getRandomValues(Uint32idArray)
+            return Uint32idArray[0].toString(10)
+        },
         saveRequestForVideo(video){
-            return new Promise((resolve, reject) =>{
-                this.videoInfo.push(resolve)
-                resolve({choiced: this.choiced, video})
+            console.log('salvando', video)
+            let promise = new Promise((resolve, reject) =>{
+                return resolve({choiced: this.choiced,video: video})
             })
+            let id = this.createVideoRequestId()
+            this.videoInfo.push({id, promise})
+            return id
         },
         requestAccepted(data){
-            if(data.userId != this.user.id) return
-            Promise.all(this.videoInfo).then(done => {
-                done.choiced(done.video, true)
-                this.videoInfo.length = 0
-            }).catch(err => {
-                console.log('nunca vai vir aqui')
+            console.log('data do request aceito', data)
+            if(data.requestInfo.userId != this.user.id) return
+            console.log(data)
+            console.log(this.videoInfo)
+            this.videoInfo.forEach(video => {
+                console.log(video.id, data.id)
+                if(video.id != data.id) return 
+                console.log(video, ' videooou')
+                video.promise.then(result => {
+                    console.log(result,'resultado')
+                    result.choiced(result.video, true)
+                }).catch(err => {
+                    console.log('chegamos no erro final')
+                })
+
             })
         },
-        showRequest(data){
-            if(this.user.id != RoomAdm || !adm) return
-            let newRequest = data.video
-            this.requestWarnList.push(newRequest)
-        }
+        removeVideoFromVideoInfo(video){
+            const newArray = this.videoInfo.filter(videoInfo => {
+                return videoInfo.id != video.id
+            })
+            this.videoInfo = newArray
+        },
         async setVideoUrl(data){
             console.log('esse sim é o video que to recebendo lol', data)
             let dates = {
@@ -456,10 +525,10 @@ export default {
 
         },
         sendPlayerState(){
-            console.log('era para eu enviar o player')
-            console.log(this.user.id, this.members[0].id)
+            //console.log('era para eu enviar o player')
+            //console.log(this.user.id, this.members[0].id)
             if(this.user.id === this.members[0].id){
-                console.log('chegou no sendPlayer')
+               //console.log('chegou no sendPlayer')
                 let playerState = this.player.getPlayerState()
                 this.socket.emit('playerState', {room: this.room, playerState})
             }
@@ -486,10 +555,10 @@ export default {
             }
         },
         verifyVideoState(playerStateData){
-            console.log('agora vou rerificar o state', playerStateData)
+            //console.log('agora vou rerificar o state', playerStateData)
             if (this.user.id != this.members[0].id) {
                 let playerState = this.player.getPlayerState()
-                console.log('o requisitante', playerState, 'o que mandou', playerStateData.playerState)
+                //console.log('o requisitante', playerState, 'o que mandou', playerStateData.playerState)
                 if (playerStateData.playerState === 1 && playerState === 2) {
                     this.player.playVideo()
                 }
@@ -521,15 +590,20 @@ export default {
         },
         choiced(video, canSend = undefined){
             console.log(video, 'esse é o video enviado')
+             console.log(this.roomInfo, 'INFOOOOOOOOO', this.roomInfo)
             this.showVideos = false
-            video === '' ? video = "https://www.youtube.com/embed/hNGrGGbFX2s" : video
-            this.ytUrl = video
-            let hasPermision = this.verifyPermissions(video)
+            let videoEmbed = video.embed || video
+            videoEmbed === '' ? video = "https://www.youtube.com/embed/hNGrGGbFX2s" : video
+            this.ytUrl = video.embed
+            let hasPermision = undefined
+            canSend === undefined ? hasPermision = this.verifyPermissions(video.original) : hasPermision = canSend
             canSend === undefined ? canSend = hasPermision : canSend = canSend
             if (!hasPermision){
+                console.log('entrou no if que deveria parar', canSend)
                 if(!canSend) return
             }
-            this.socket.emit('changeVideoToAll', {video: video, room: this.room})
+            console.log('estou enviando o video', video)
+            this.socket.emit('changeVideoToAll', {video: video.embed || video, room: this.room})
         },
         changeSrc(data){
             console.log('video que recebi quando entrei', data)
@@ -538,6 +612,7 @@ export default {
         },
         GaloFilhoDaPuta(){
             const barra = document.querySelector('.progress-bar')
+            if(!this.player()) return
             if(barra){
                 barra.style.width = `${this.player.getCurrentTime() / this.player.getDuration() * 100}%`
             }
@@ -548,7 +623,7 @@ export default {
             let minutos = Math.floor(tempVideo / 60)
             let segundos = Math.floor(tempVideo % 60)
             let horas = Math.floor(minutos / 60)
-            console.log(minutos, minutos / 60)
+            //console.log(minutos, minutos / 60)
             let time
             if (horas <= 0){
                 time = `${String(minutos).padStart(2, '0')}:${String(segundos).padStart(2, '0')}`
