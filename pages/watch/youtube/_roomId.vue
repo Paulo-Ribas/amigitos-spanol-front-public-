@@ -40,7 +40,7 @@
         <ChatVideo v-if="joined && !mobile" @clicked="showVideos = !showVideos"/>
         <ChatVideoMobile v-show="!showVideos" v-if="joined && mobile" @clicked="showVideos = !showVideos"/>
     </div>
-
+    
 </template>
 <script>
 import io from 'socket.io-client'
