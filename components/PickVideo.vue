@@ -3,9 +3,9 @@
     <div class="video-box-container">
         <div class="video-box" data-video-box v-for="video in videos" :key="video._id" @click="setVideoPicked(video), definePinkClass($event)">
             <div class="video-img">
-                <img :src="user.profileimg" alt="img logo">
+                <img :src="video.thumbnail" alt="img logo">
             </div>
-            <div class="video-name"><h3>{{video.fileName}}</h3></div>
+            <div class="video-name"><h3 class="name">{{video.fileName}}</h3></div>
         </div>
     </div>
         <div class="confirm-container">
@@ -43,7 +43,7 @@ export default {
             event.target.hasAttribute('data-video-box') ? videoSelected = event.target : videoSelected = event.target.parentElement
             videoSelected.classList.add('pink-border')
             videos.forEach(video => {
-                console.log(videoSelected === video)
+                 
                 if (video != videoSelected) {
                     video.classList.remove('pink-border')
                 }
@@ -51,7 +51,7 @@ export default {
 
         },
         setVideoPicked(video){
-            console.log('video set picked', video)
+             
             this.selected = true
             this.videoPicked = video
 
@@ -113,6 +113,9 @@ export default {
         border: 3px solid var(--corMenuMobile);
         transition: 0.1s;
         word-break: break-word;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
     }
     .video-box:hover {
         border: 3px solid var(--cor6);
@@ -121,25 +124,30 @@ export default {
         color: var(--cor2);
     }
     .video-img {
-        height: 70%;
-        width: 100%;
+        height: 80%;
+        width: 94%;
         position: relative;
     }
     .video-img img {
         width: 100%;
         height: 100%;
         position: absolute;
-        object-fit: contain;
+        object-fit: cover;
+        object-position: 5px -45px;
         pointer-events: none;
     }
     .video-name {
-        display: flex;
+    display: flex;
     justify-content: center;
     align-items: center;
     width: 100%;
+    max-width: 320px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
     text-align: center;
-    height: 30%;
-    color: black;
+    height: 20%;
+    color: var(--cor3);
     text-shadow: 0px 0px 6px var(--corAzul);
     pointer-events: none;
     }
@@ -148,6 +156,7 @@ export default {
         word-break: break-all;
         font-size: 1em;
         pointer-events: none;
+        
     }
     .pink-border {
         border: 3px solid var(--cor6);

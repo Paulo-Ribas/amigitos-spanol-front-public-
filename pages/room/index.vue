@@ -49,7 +49,7 @@ export default {
        let rooms = await context.$axios.$get(`roomsRenderizated`)
        let err = undefined
        if (context.error.message) err = context.error.message
-       console.log('indo aqui', context.error.message)
+        
        
        return {
         rooms: rooms.rooms,
@@ -58,7 +58,7 @@ export default {
 
     },
     fetch(){
-        console.log(this.$data, 'primeira vez')
+         
     },
     fetchOnServer: false,
     created(){

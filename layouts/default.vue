@@ -19,7 +19,6 @@ export default {
 <style scoped>
   .app {
     display: flex;
-    overflow: none;
     background: var(--background);
   }
 </style>

@@ -5,22 +5,29 @@ export default {
             path: '/',
             maxAge:  60 * 60 * 24 * 4,
         })
-        console.log('token setado = ', this.$cookies.getAll('token'))
+         
     },
     REMOVE_TOKEN(state, payload){
-        console.log('apagando o token', this.$cookies.getAll('token'))
+         
         this.$cookies.removeAll()
     },
     SET_VIDEOS(state, payload){
         state.videos = payload
     },
     SET_USER_INFO(state, payload){
-        let { username, email, profileimg, emoji, id} = payload
+        let { username, email, profileimg, emoji, id, description} = payload
         state.id = id
         state.userName = username,
         state.email = email,
         state.profileimg = profileimg,
         state.emoji = emoji
+        state.description = description
+        state.friends = []
+        return 
         
+    },
+    SET_USER_FRIENDS(state, payload){
+        let friends = payload
+        state.friends = friends
     }
 }

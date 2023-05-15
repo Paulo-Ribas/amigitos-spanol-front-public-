@@ -13,7 +13,7 @@ export default function(context) {
             return context.redirect('/room/create')
         }
     }).catch(nao => {
-        console.log('nao', nao)
+        throw nao
     })
 
 

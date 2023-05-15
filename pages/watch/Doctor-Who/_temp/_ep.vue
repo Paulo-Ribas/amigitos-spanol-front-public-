@@ -87,9 +87,9 @@ export default {
     methods: {
         PlayPauseVideo(){
             const video = document.getElementById('video')
-            console.log(video.duration, video.currentTime)
+             
             const play = document.querySelector('.play-pause-icon')
-            console.log(play)
+             
             if (video.paused) {
                 video.play()
                 play.src = '/svg/botao_pause.svg'
@@ -133,7 +133,7 @@ export default {
         },
         keysEvents(key){
             const video = document.getElementById('video')
-            console.log(key)
+             
             if (key.code === 'Space') {
                 this.PlayPauseVideo()
             } 
@@ -163,7 +163,7 @@ export default {
         },
         aprenderMatematica($event){
             const video = document.getElementById('video')
-            console.log($event)
+             
             let position = ($event.offsetX / $event.target.offsetWidth) * video.duration
             video.currentTime = position
             
@@ -176,7 +176,7 @@ export default {
         mouseEventHandler($event){
             const progress = document.querySelector('.progress')
             if (progress.classList.contains('focus')) {
-                console.log('funcão')
+                 
                 const video = document.getElementById('video')
                 let position = ($event.offsetX / $event.target.offsetWidth) * video.duration
                 video.currentTime = position
@@ -207,7 +207,7 @@ export default {
                 volumeIcon.src = '/svg/sem_som.svg'    
             }
             else {
-                console.log(this.oldVolume)
+                 
                 video.volume = this.oldVolume
                 volumeValue.value = this.oldVolume * 100
                 volumeIcon.src = '/svg/com_som.svg'    

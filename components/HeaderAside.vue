@@ -2,6 +2,24 @@
   <header :class="{header:'header'}" id="header-menu" v-if="!mobile" @mouseover="showTrue" @mouseleave="showOff">
     <nav>
         <ul>
+            <li class="friend-request" v-if="friends.requests.length > 0">
+                <div class="icon-container">
+                    <fa class="icon friend-request-icon" icon="user-group"></fa>
+                    <span class="amount">{{ friends.requests.length }}</span>
+                </div>
+                <Transition name="friendRequestLink">
+                    <NuxtLink to="/friendsRequest" v-if="show">Solicitações</NuxtLink>
+                </Transition>
+            </li>
+            <li class="room-invite" v-if="roomInvite.length > 0">
+                <div class="incon-container">
+                    <fa class="icon room-invited" icon="people-roof"></fa>
+                    <span class="amount">{{ roomInvite.length }}</span>
+                </div>
+                <Transition name="invitedToRoom">
+                    <NuxtLink to="/roomInvited" v-if="show">Convites De Salas</NuxtLink>
+                </Transition>
+            </li>
             <li>
                 <div class="icon-container">
                     <fa class="icon" icon="house"/>
@@ -56,12 +74,20 @@
         </ul>
     </nav>
   </header>
-  <header :class="{mobile:'mobile', width100}" id="header--mobile" v-else>
-    <div :class="{'tardis-icon-menu': 'tardis-icon-menu', move, 'vertical-mobile-tardis-icon': vertical }" @click="toogleMobileMenu">
-        <img src="/svg/tardis.svg" :class="{spinTardis , tardisNormal}"/>
+  <header :class="{mobile:'mobile', width100}" id="header-mobile" v-else>
+    <div :class="{'tardis-icon-menu': 'tardis-icon-menu', move, horizontal}" @click="toogleMobileMenu()">
+        <img src="/svg/tardis.svg" :class="{spinTardis , tardisNormal}">
+        <div class="icon-container-notification" v-if="friends.requests.length > 0">
+            <span class="amount">{{ friends.requests.length }}</span>
+        </div>
     </div>
     <nav>
         <ul>
+            <li class="friend-request" v-if="friends.requests.length > 0">
+                    <Transition name="friendRequestLink">
+                        <NuxtLink to="/friendsRequest" v-if="show">Solicitações</NuxtLink>
+                    </Transition>
+                </li>
             <li @click="toogleMobileMenu">
                 <div class="icon-container">
                     <fa class="icon" icon="house"/>
@@ -119,7 +145,31 @@
 </template>
 
 <script>
+import {mapActions, mapState} from 'vuex'
+import io from 'socket.io-client'
 export default {
+    async fetch(){
+        try {
+            await this.setState()
+             
+            await this.attFriendsInfoState(this.user.id)
+             
+            
+        } catch (error) {
+            throw error
+        }
+    },
+    fetchOnServer: false,
+    async beforeMount(){
+        let token = this.$cookies.get('token')
+        await this.validateUser(token).then(userId => { 
+            this.userId = `${userId.id}`
+            this.connectionServer()
+        }).catch(err =>  {
+            
+        }
+        )
+    },
     data(){
         return {
             show: false,
@@ -128,15 +178,30 @@ export default {
             spinTardis: false,
             move: false,
             tardisNormal: true,
-            vertical: false
+            vertical: false,
+            userId: undefined,
+            socket: undefined,
+            amount: 0,
+            roomInvite: [],
+            horizontal: false,
             
         }
     },
     created(){
         this.responsive()
     },
-    mounted(){
+    async mounted(){
+         
         this.checkVerticalMobile()
+        let token = this.$cookies.get('token')
+        let axiosConfig = {
+            headers: {
+                authorization: token
+            }
+        }
+        let requests = await this.getUserRequests({userId: this.userId, axiosConfig})
+         
+        this.amount = requests.length
     },
     beforeDestroy(){
         this.responsive()
@@ -144,17 +209,25 @@ export default {
     watch: {
         mediaQuery(value, payload){
             this.responsive()
-        }
+            this.checkHorizontalMobile()
+            
+        },
     },
     computed: {
         mediaQuery(){
             return this.$mq
-        }
+        },
+        ...mapState({friends: state => state.friends, user: state => state.user})
+
     },
     methods:{
+        ...mapActions({
+            validateUser: 'user/validateUser', verifyAmount: 'user/verifyAmount',
+            getUserRequests:'friends/getUserRequests', setState:'user/setState',
+            attFriendsInfoState: 'friends/attFriendsInfoState'
+        }),
         toggleShow(){
             this.show ? this.show = false : this.show = true
-          
         },
         showTrue(){
                 this.show = true
@@ -169,27 +242,45 @@ export default {
             !this.spinTardis ? this.spinTardis = true : this.spinTardis = false
             !this.move ? this.move = true : this.move = false
             !this.tardisNormal ? this.tardisNormal = true : this.tardisNormal = false
-            console.log('clicado')
-            this.checkVerticalMobile()
         },
         responsive(){
-            console.log(this.$mq)
+             
             if (this.$mq === 'sm' || this.$mq === "md") {
                 this.mobile = true
+                if (this.$mq === 'md') {
+                    this.show ? this.horizontal = true : this.horizontal = false 
+                }
+                if (this.$mq === 'sm'){
+                    this.horizontal = false
+                }
             }
             else {
+                this.horizontal = false
                 this.mobile = false
             }
         },
-        checkVerticalMobile(){
-            console.log('indo no if')
+        checkHorizontalMobile(){
+             
             if (this.$mq === "md" && this.move) {
-                this.vertical = true
+                this.horizontal = true
             }
             else {
-                console.log('tirando o coisa', document.querySelector('.tardis-icon-menu'))
-            this.vertical = false
+                 
+            this.horizontal = false
             }
+        },
+        connectionServer(){
+             
+             this.socket = this.socket = io.connect('http://localhost:3333/', { rememberTransport: false, transports: ['websocket', 'polling', 'Flash Socket', 'AJAX long-polling'] })
+             this.socket.emit('joinFriendRequestsRoom', `${this.userId}`)
+             this.socket.on('notification', async data => {
+                 
+                await this.attFriendsInfoState()
+             })
+             this.socket.on('roomNotification', data => {
+                this.roomInvite.push(data)
+                 
+             })
         }
 
     }
@@ -225,6 +316,13 @@ export default {
     transition: width 1s;
         
 }
+.horizontal {
+    top: calc(0% + 29px) !important;
+    left: 95% !important;
+    transform: translate(-95%, 0%) !important;
+}
+#header-mobile {
+}
 .mobile {
     background: var(--corMenuMobile);
     height: 100vh;
@@ -237,6 +335,7 @@ export default {
 }
 .width100 {
     width: 100% !important;
+    overflow-y: auto;
 }
 .header:hover{
     width: 280px;
@@ -267,6 +366,14 @@ export default {
     text-align: center;
     height: 25px;
     
+}
+.friend-request{
+    list-style: none;
+    margin: -20px 0px 5px 0px !important;
+    position: relative;
+    width: 100%;
+    text-align: center;
+    height: 25px;
 }
 .mobile li {
     list-style: none;
@@ -308,6 +415,9 @@ export default {
 .mobile li a:active {
     color: var(--cor5);
 }
+.friendRequestLink-enter-active, .friendRequestLink-leave-active {
+    transition: 0.6s;
+} 
 .inicio-enter-active, .inicio-leave-active {
     transition: 0.7s;
 }
@@ -326,22 +436,22 @@ export default {
 .videosEstudando-enter-active, .videosEstudando-leave-active {
     transition: 1.3s;
 }
-.inicio-enter, .perfil-enter, .conversor-enter, 
+.friendRequestLink, .inicio-enter, .perfil-enter, .conversor-enter, 
 .assistirJuntos-enter, .assistirSolo-enter, .videosEstudando-enter{
     transform: translate(-174%, -50%) !important;
     opacity: 0;
 }
-.inicio-enter-to, .perfil-enter-to, .conversor-enter-to,
+.friendRequestLink, .inicio-enter-to, .perfil-enter-to, .conversor-enter-to,
 .assistirJuntos-enter-to, .assistirSolo-enter-to, .videosEstudando-enter-to{
     opacity: 1;
     transform: translate(-50%, -50%) !important;
 }
-.inicio-leave, .perfil-leave, .conversor-leave, 
+.friendRequestLink, .inicio-leave, .perfil-leave, .conversor-leave, 
 .assistirJuntos-leave, .assistirSolo-leave, .videosEstudando-leave{
     transform: translate(-50%,-50%) !important;
     opacity: 1;
 }
-.inicio-leave-to, .perfil-leave-to, .conversor-leave-to,
+.friendRequestLink, .inicio-leave-to, .perfil-leave-to, .conversor-leave-to,
 .assistirJuntos-leave-to, .assistirSolo-leave-to, .videosEstudando-leave-to{
     opacity: 0;
     transform: translate(-174%, -50%) !important;
@@ -356,9 +466,27 @@ export default {
     max-width: 50px;
     height: 100%;
 }
+.icon-container-notification {
+    width: 100%;
+    height: 100%;
+    position: relative;
+}
+.icon-container-notification .amount {
+    position: absolute;
+    top: 100%;
+    left: 100%;
+    transform: translate(-50%, -60%);
+    color: var(--cor6);
+    text-shadow: 1px 1px 6px var(--cor7), 0px 0px 6px var(--cor7), -1px -1px 6px var(--cor7);
+    font-size: 1.6em;
+    font-weight: bolder;
+    z-index: 4;
+    font-weight: bolder;
+}
 .mobile .icon-container {
     display: none;
 }
+
 .icon {
     color: white;
     font-size: 1.1em;
@@ -368,6 +496,23 @@ export default {
     top: 50%;
     transform: translate(-50%, -50%);
 
+}
+.friend-request-icon {
+    position: absolute;
+    top: 50%;
+    left: 100%;
+    transform: translate(14%, -50%);
+    color: var(--cor9)
+}
+.amount {
+    position: absolute;
+    top: 50%;
+    left: 100%;
+    transform: translate(135%, -30%);
+    color: white;
+    font-size: 1.5em;
+    font-weight: bolder;
+    z-index: 4;
 }
 li a:hover .icon {
     color: var(--cor5) !important;

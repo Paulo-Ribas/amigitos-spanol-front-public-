@@ -51,7 +51,7 @@ export default {
             }
 
             this.$store.dispatch('user/changePasswordByToken',{email: this.email, password: this.confirmPassword, token: this.token}).then(done => {
-                console.log(done)
+                 
                 this.sucess = "senha alterada com sucesso"
                 setTimeout(() => {
                     this.$router.push({name:'login'})

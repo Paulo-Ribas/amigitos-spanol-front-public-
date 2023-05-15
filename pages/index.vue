@@ -32,7 +32,7 @@ export default {
         this.$router.push({name:'users'})
       }).catch(err => {
         this.show = true
-        console.log(err)
+         
       })
     }
     else {

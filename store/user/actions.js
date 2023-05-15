@@ -1,42 +1,94 @@
 export default {
     getUserData(context, payload) {
         let {srcImg,email, userName, emoji } = context.state
-        let user = {token, srcImg, email, userName, emoji}
+        let user = {token, srcImg, email, userName, emoji, description}
         return user
 
     },
     async validateUser(context, payload){
+         
+        let token = payload
+         
         try {
-            let user = await this.$axios.$post(`validate`,{},{headers:{authorization: payload}})
+            let user = await this.$axios.$post(`validate`,{},{headers:{authorization: token}})
             return user.dates
         } 
         catch(error){
+             
             context.commit('REMOVE_TOKEN')
-            throw new Error(error)
+            throw error
           
         }
     },
+    async setState(context, payload){
+        const token = this.$cookies.get('token')
+        try {
+            let user = await context.dispatch('validateUser', token)
+            context.commit('SET_USER_INFO', user)
+            return user
+        } catch (error) {
+            throw error
+        }
+    },
+    async createThumbnail(context, payload){
+        let headers = payload.axiosInfos.getprogressAndSetHeaders.headers
+        try {
+            let thumbnail = await this.$axios.$post('makeThumbnail', payload.axiosInfos.file, { headers, responseType: 'blob' })
+            return thumbnail
+        } catch (error) {
+            throw error
+        }
+    },
+    async saveThumbnail(context, payload){
+        let headers = payload.headers
+        let { name, thumbnail } = payload
+        let dates = {
+            name,
+            thumb: thumbnail
+            
+        }
+         
+        try {
+            let thumbnailResponse = await this.$axios.$post('thumbnail',dates, headers)
+             
+            return thumbnailResponse.thumbnail
+        } catch (error) {
+             
+            throw error
+        }
+    },
+    async convertVideo(context, payload){
+        let headers = payload.axiosInfos.getprogressAndSetHeaders.headers
+         
+        try {
+            let video = await this.$axios.$post('convertVideo', payload.axiosInfos.file, {headers, responseType: 'blob' })
+            return video
+        } catch (error) {
+            throw error
+        }
+    },
     async postVideo(context, payload){
+         
         let headers = payload.axiosInfos.getprogressAndSetHeaders.headers
         let onUploadProgress = payload.onUploadProgress
         try {
-            let post = this.$axios.$post(`video`, payload.axiosInfos.file, {headers, onUploadProgress})
+            let post = await this.$axios.$post('video', payload.axiosInfos.file, {headers, onUploadProgress})
+             
             return post
             
         } catch (error) {
-            return error
+            throw error
         }
     },
     async getSetVideos(context,payload){
         try {
             let res = await this.$axios.$get(`videos`, {headers: { authorization: payload}})
-            console.log('res', res)
             let videosArray = res.videos
             context.commit('SET_VIDEOS', videosArray)
             return videosArray
             
         } catch (error) {
-            console.log(error, 'qual o erro? lol');
+             
             
         }
     },
@@ -51,12 +103,12 @@ export default {
         }
         try{
             let res = await this.$axios.$put(`userName`,{username, email}, config)
-            console.log('por que aqui?', res)
+             
             return res.token
             
         }
         catch(error) {
-            console.log("ué???????")
+             
             throw new Error(error.response.data); //20/08/2022, try/catch, then.catch/ throw error, tudo dominado agora.
         }
     },
@@ -72,12 +124,12 @@ export default {
         }
         try {
             let res = await this.$axios.$put(`profileImg`, {imagem}, config)
-            console.log('por que aqui?', res)
+             
             return res.token
 
         }
         catch (error) {
-            console.log("ué???????")
+             
             throw error.response.data; //20/08/2022, try/catch, then.catch/ throw error, tudo dominado agora.
         }
     },
@@ -92,12 +144,12 @@ export default {
         }
         try {
             let res = await this.$axios.$put(`email`, {email, newEmail}, config)
-            console.log('por que aqui?', res)
+             
             return res.token
 
         }
         catch (error) {
-            console.log("ué???????")
+             
             throw new Error(error.response.data); //20/08/2022, try/catch, then.catch/ throw error, tudo dominado agora.
         }
     },
@@ -112,12 +164,12 @@ export default {
         }
         try {
             let res = await this.$axios.$put(`password`, { password, email }, config)
-            console.log('por que aqui?', res)
+             
             return res.token
 
         }
         catch (error) {
-            console.log("ué???????")
+             
             throw error.response.data; //20/08/2022, try/catch, then.catch/ throw error, tudo dominado agora.
         }
     },
@@ -137,7 +189,7 @@ export default {
         }
     },
     async getRoom(context, payload) {
-        console.log(payload, 'room')
+         
         try {
             let room = await this.$axios.$get('room/' + `${payload}`)
             return room
@@ -159,16 +211,16 @@ export default {
         let video = payload.video
         let decodedName = decodeURI(video.file)
 
-        console.log('console do payload delete', payload)
+         
         let config = {
             headers: {
                 authorization: token
             }
         }
         try {
-            console.log('entrou aqui')
+             
             let deleted = await this.$axios.$delete(`video/${decodedName}`,config)
-            console.log(deleted, 'to recebendo resposta?')
+             
             return deleted
             
         } catch (error) {
@@ -196,6 +248,100 @@ export default {
         catch(err){
             throw err
         }
-    }
+    },
+    async getUserFriends(context, payload){
+        let userId = payload.userId
+        let friends = await this.$axios.$get(`friends/${userId}`)
+         
+        return friends.friendList
+    },
+    async isFriend(context, payload) {
+        let friendId = payload.friendId
+        let userId = payload.userId
+        let getFriend = await this.$axios.$get(`friends/${userId}`)
+         
+        let friendList = getFriend.friendList
+         
+        let isFriend = false
+        friendList.forEach(friends => {
+             if(friends.user_id == friendId || friends.friendsentrequest == friendId) return isFriend = true             
+        });
+         
+        return isFriend
+
+    },
+    async verifyIfRequestExist(context, payload){
+        let axiosConfig = payload.axiosConfig
+        let friendId = payload.friendId
+        try {
+            let res = await this.$axios.get(`isPeding/${friendId}`, axiosConfig)
+            let data = res.data.request
+             
+            if(data) return true
+            else return false
+            
+        } catch (error) {
+             
+            throw error
+        }
+    },
+    async verifyIfUserIsTheRequestedUser(context, payload){
+        let axiosConfig = payload.axiosConfig
+        let friendId = payload.friendId
+        let userId = payload.userId
+        try {
+            let res = await this.$axios.get(`friendRequest/${friendId}`, axiosConfig)
+            let data = res.data.request
+             
+             
+            if(!data) return false
+            if (data.friend_id == userId) return true
+            else return false
+
+        } catch (error) {
+             
+        }
+    
+    },
+    async verifyAmount(context, payload) {
+        let amount = await this.$axios.$get(`friendsAmount/${userId}`)
+         
+        return amount.friendsAmount 
+    },
+    async getUserFriendsRequests(context, payload){
+        let {userId, axiosConfig} = payload
+        let request = await this.$axios.$get(`isPeding/${userId}`, axiosConfig)
+         
+        return request.request
+    },
+    async acceptFriendRequest(context, payload){
+        let { friendId, axiosConfig } = payload
+        try {
+            let accepted = await this.$axios.$post('friend', { friendId: friendId }, axiosConfig)
+            return accepted
+        }
+        catch(error) {
+            throw error
+        }
+    },
+    async removeFriend(context, payload){
+        let {friendId, axiosConfig} = payload
+        try {
+            let removed = await this.$axios.$delete(`friend/${friendId}`, axiosConfig)
+            return removed
+            
+        } catch (error) {
+            throw error
+        }
+    },
+    async refuseRequest(context, payload){
+        let { friendId, axiosConfig } = payload
+        try {
+            let refused = await this.$axios.$delete(`request/${friendId}`, axiosConfig)
+            return refused
+        } catch (error) {
+            throw error
+        }
+    },
 
 }

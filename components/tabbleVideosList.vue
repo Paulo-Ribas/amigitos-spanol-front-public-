@@ -1,11 +1,12 @@
 <template>
   <div class="tabble">
-    <ButtonSpecial btnProps="Selecionar Tudo" @clicked="selectedAll()"/>
+    <ButtonSpecial v-if="selectAll" btnProps="Selecionar Tudo" @clicked="selectedAll()"/>
+    <ButtonSpecial v-if="deselectAll" btnProps="Remover Tudo" @clicked="deselectedAll()"></ButtonSpecial>
       <table>
          <tbody>
           <tr v-for="(video, index) in videos" :key="video.name">
-            <td class="img"><img :src="user.profileimg" /></td>
-            <td colspan="1"> {{ video.fileName }}</td>
+            <td class="img"><img :src="video.thumbnail" /></td>
+            <td colspan="1" class="videoName"> {{ video.fileName }}</td>
             <td class="btn" :data-video="index" @click="areYouSure($event)">{{btn}}</td>
           </tr> 
           </tbody>
@@ -19,16 +20,19 @@ export default {
     data(){
         return {
             videos: this.$props.videosProps,
-            btn: this.$props.btnProps
+            btn: this.$props.btnProps,
+            selectAll: this.$props.selectAllProps,
+            deselectAll: false,
         }
     },
     props: {
         videosProps: Array,
-        btnProps: String
+        btnProps: String,
+        selectAllProps: Boolean,
     },
     watch: {
       videosProps(value, payload){
-        console.log(value, 'ta mudando')
+         
         this.videos = value
 
       }
@@ -41,8 +45,20 @@ export default {
         this.$emit('selected',{video: video, target: event.target, father: event.target.parentElement})
       },
       selectedAll(event){
-        const videos =  event.targe
+        this.selectedAll = false,
+        this.deselectAll = true
+        this.$emit('selectedAll')
+         
       },
+      deselectedAll(event){
+        this.deselectAll = false
+        this.selectedAll = true
+        this.$emit('deselectAll"')
+      },
+      createImgUrl(base64){
+        let arrayBlob = Buffer.from(base64, 'base64')
+        let blob = new Blob(arrayBlob)
+      }
     },
     computed: {
       ...mapState({
@@ -91,6 +107,13 @@ td img {
   padding: 0px 5px;
   font-family: cursive;
   max-height: 230px;
+}
+*>>> .videoName{
+  max-height: 50px;
+  max-width: 360px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 *>>> table {
   width: 100%;

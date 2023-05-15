@@ -37,6 +37,8 @@ export default {
         height: 40px;
         color: white;
         font-size: 1.2em;
-        font-family:'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        font-family: cursive,'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        left: 50%;
+        transform: translateX(-50%);
     }
 </style>

@@ -18,7 +18,11 @@
         <div class="timer">{{currentTime}}</div>
         <div class="volume-container">
             <img src="/svg/com_som.svg" @click="emitMuteUnmute()" class="volume-icon">
-            <input type="range" value="100" max="100" min="0" class="volume" @change="setVolume"/>
+            <div class="volume" @mousedown="setVolume($event), addMovimentListener()" @mouseup="removeMovimentListener()">
+                <div id="volume-bar">
+                    <div class="ball"></div>
+                </div>
+            </div>
         </div>
       </div>
       <div class="btn-fudno">
@@ -79,20 +83,42 @@ export default {
     methods: {
         PlayPauseVideo($event){
             this.$emit('PlayPauseVideo', $event)
-            console.log('evento emitido')
+             
         },
         mouseSegura($event){
             this.$emit('mouseSegura', $event)
         },
-        setVolume($event){
-            this.$emit('setVolume', $event)
+        setVolume($event) {
+            let width = $event.offsetX
+            let volumeBar = document.getElementById('volume-bar')
+            volumeBar.style.width = `${width}%`
+            let volume = width / 100
+            this.$emit('setVolume', volume)
         },
+        addMovimentListener() {
+            let volumeContainer = document.querySelector('.volume')
+            volumeContainer.addEventListener('mousemove', this.moveVolumeBar)
+        },
+        moveVolumeBar(element) {
+            let volumeBar = document.getElementById('volume-bar')
+            let width = element.offsetX
+            volumeBar.style.width = `${width}%`
+            let volume = width / 100
+
+            this.$emit('setVolume', volume)
+
+        },
+        removeMovimentListener() {
+            let volumeContainer = document.querySelector('.volume')
+            volumeContainer.removeEventListener('mousemove', this.moveVolumeBar)
+        },
+
         aprenderMatematica($event){
             this.$emit('aprenderMatematica', $event)
         },
         keysEvents($event){
             let event = {code:$event}
-            console.log(event, $event, 'evento')
+             
             this.$emit('keysEvents', event)
         },
         fullScreamToggle($event){
@@ -145,7 +171,7 @@ export default {
     }
     .controls {
         width: 100%;
-        height: 44px;
+        height: 48px;
         z-index: 2;
         color: white;
         position: absolute;
@@ -174,6 +200,7 @@ export default {
         width: 100%;
         height: calc(100% - 8px);
         display: flex;
+        padding-top: 10px;
         justify-content: space-between;
         align-items: center;
     }
@@ -193,6 +220,36 @@ export default {
     }
     .volume-container {
         display: flex;
+        align-items: center;
+    }
+    .volume {
+        width: 100px;
+        height: 10px;
+        background-color: var(--corMenu);
+        position: relative;
+        cursor: pointer;
+        border-radius: 10px;
+        margin: 0px 3px;
+    }
+    .ball {
+        width: 13.5px;
+        height: 13.5px;
+        border-radius: 50%;
+        left: 100%;
+        top: 50%;
+        transform: translate(-75%,-50%);
+        position: absolute;
+        background-color: var(--cor4);
+        pointer-events: none;
+    }
+    #volume-bar {
+        position: absolute;
+        width: 100%;
+        height: 100%;
+        background-color: var(--cor7);
+        border-radius: 10px
+
+
     }
      .play-pause-icon, .skip-icon, .return-icon {
         height: 42px;
@@ -206,9 +263,6 @@ export default {
     .fullScreem-icon {
         width: 43px;
         height: 43px;
-    }
-    .volume-container input {
-        width: 75px;
     }
 
 </style>

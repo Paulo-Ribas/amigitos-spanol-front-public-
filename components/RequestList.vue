@@ -11,7 +11,7 @@
 <script>
 export default {
     mounted(){
-        console.log(this.requestArray, 'montei o coisa boyee')
+         
     },
     data(){
         return {
@@ -25,12 +25,12 @@ export default {
     watch:{
         requestArrayProps(value, payload){
             this.requestArray = value
-            console.log(value)
+             
         },
     },
     methods:{
         emitVideoSelected($event){
-            console.log('evento enviado emit selected', $event)
+             
             this.$emit('requestSelected', $event)
         },
 
@@ -44,7 +44,7 @@ export default {
         max-width: 200px;
         position: absolute;
         height: 100%;
-        z-index: 10;
+        z-index: 6;
         right: 0;
         display: flex;
         flex-direction: column;
@@ -69,6 +69,20 @@ export default {
         font-weight: bolder;
         font-family: cursive;
     }
+    @media screen and (max-width: 600px) {
+        .list-container {
+            display: flex;
+            flex-direction: row !important;
+            height: 56px;
+            max-width: 99% !important;
+            overflow-x: auto;
+            align-items: center;
+                        
+        }
+        .warning {
+            margin: 0px 3px !important;
+        }
+    }
 
-
+     
 </style>

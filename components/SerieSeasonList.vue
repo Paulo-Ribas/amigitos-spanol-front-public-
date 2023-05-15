@@ -27,9 +27,9 @@ import {mapActions} from 'vuex'
 export default {
     middleware: ['auth'],
     async fetch(){
-        console.log('indo?')
+         
         let eps = await this.$store.dispatch('series/getTemps')
-        console.log(eps)
+         
         this.temps = eps.Dw
     },
     beforeMount(){
@@ -62,9 +62,9 @@ export default {
             selectSeasom: 'series/getTemp',
         }),
         async seasonSelected(season = 0){
-            console.log("cadeeeeeee", season)
+             
             let selectedTemp = await this.selectSeasom({temp: season})
-            console.log(selectedTemp)
+             
             season === 0? this.showTardis = true : this.showTardis = false
             this.selectedTemp = season
             this.seasonList = selectedTemp.data
@@ -73,11 +73,11 @@ export default {
 
         },
         async setTemp(){
-            console.log(this.selectedTemp, this.selectedEp, 'foi?')
+             
             if (this.selectedTemp && this.selectedEp) {
                 let selectedSeason = await this.selectSeasom(this.selectedTemp)
                 this.seasonSelected(this.selectedTemp)
-                console.log(selectedSeason, this.selectedTemp, 'setarei setado')
+                 
             }
         },
         closeSelect(){

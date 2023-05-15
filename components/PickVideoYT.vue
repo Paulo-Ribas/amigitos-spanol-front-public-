@@ -27,7 +27,7 @@
 import axios from "axios";
 export default {
     mounted(){
-        console.log(this.videos)
+         
     },
     data(){
         return {
@@ -59,9 +59,9 @@ export default {
                     this.title = video.data.title
                     this.dataSet = true
                     this.selected = true
-                    console.log(embedUrl)
+                     
                 }).catch(err => {
-                    console.log(err)
+                     
                 })
             }
         },

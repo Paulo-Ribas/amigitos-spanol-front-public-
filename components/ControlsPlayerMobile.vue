@@ -46,7 +46,7 @@ export default {
                 return timeOut
         }
         let interval = setInterval(() => {
-            console.log(controls)
+             
             MouseVerify()
         }, 7000);
         document.querySelector('.video-container').addEventListener('click', function (){
@@ -80,7 +80,7 @@ export default {
     methods: {
         PlayPauseVideo($event){
             this.$emit('PlayPauseVideo', $event)
-            console.log('evento emitido')
+             
         },
         mouseSegura($event){
             this.$emit('mouseSegura', $event)
@@ -93,7 +93,7 @@ export default {
         },
         keysEvents($event){
             let event = {code:$event}
-            console.log(event, $event, 'evento')
+             
             this.$emit('keysEvents', event)
         },
         fullScreamToggle($event){

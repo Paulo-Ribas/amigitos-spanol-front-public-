@@ -20,8 +20,10 @@
             @setVolume="setVolume"
             @keysEvents="emitKeysEvents($event)"
             @fullScreamToggle="fullScreamToggle($event)"
+            @theaterMode="fullScreamToggle($event), theaterModeToggle()"
             @muteUnmute="muteUnmute()"
             :time="currentTime"></ControlsPlayerLiveYT>
+            <ChatFullScreen v-show="theater"></ChatFullScreen>
         </div>
         <div class="youtube-VideoPlayer-mobile" tabindex="1" id="video" @keydown="emitKeysEvents($event)" v-if="joined && mobile">
             <div class="wall" @click="emitPlayPause(), setFocus()" @keydown="emitKeysEvents($event)"></div>
@@ -37,7 +39,7 @@
             @muteUnmute="muteUnmute()"
             :time="currentTime"></ControlsPlayerLiveYtMobile>
         </div>
-        <ChatVideo v-if="joined && !mobile" @clicked="showVideos = !showVideos"/>
+        <ChatVideo v-show="joined && !mobile && !theater" @clicked="showVideos = !showVideos"/>
         <ChatVideoMobile v-show="!showVideos" v-if="joined && mobile" @clicked="showVideos = !showVideos"/>
     </div>
     
@@ -51,7 +53,7 @@ export default {
     layout: 'defualt',
     async asyncData(context){
         let res = await context.store.dispatch('user/getRoom',context.params.roomId)
-        console.log(res, 'a room')
+         
         if (res.room) {
             return {
                 roomMembers: res.room.members,
@@ -66,14 +68,12 @@ export default {
             }
         }
     },
-    fetch(){
-        console.log('videos', this.filesVideos)
-         this.$store.dispatch('user/validateUser', this.$cookies.get('token')).then(res => {
-            this.$store.commit('user/SET_USER_INFO', res)
-            console.log('agr virou promise com then', res)
-         }).catch(err => {
-            console.log('console do erro por virar primisse com then', err)
-         })
+    async fetch() {
+        try {
+            await this.setState()
+        } catch (error) {
+            throw error
+        }
     },
     fetchOnServer: false,
     beforeMount(){
@@ -82,10 +82,11 @@ export default {
     mounted(){
         this.videoId = this.$youtube.getIdFromURL('https://www.youtube.com/embed/hNGrGGbFX2s')
         window.addEventListener('beforeunload', this.emitUserDisconected)
-        console.log(this.$youtube, 'el uout')
-
         window.addEventListener('message', event => {
             this.timeUpdateSimulation(event)
+        })
+        document.addEventListener('fullscreenchange', event => {
+            if(!document.fullscreenElement && this.theater) return this.theaterModeToggle()
         })
         setInterval(() => {
             this.sendPlayerState()
@@ -133,25 +134,32 @@ export default {
             showRequestInfo: false,
             requestInfo: {},
             requestWarnList: [],
-            requestWarning: false,            
+            requestWarning: false,
+            theater: false,
+            
 
         }
     },
     watch:{
         mediaQuery(value, payload){
-            console.log(value)
+             
             this.responsive()
             
 
         },
         roomInfo(value, payload){
-            console.log(value, payload, 'room sendo atualizada')
-            this.checkAdm()
-            this.checkChoice()
+             try{
+                 this.checkAdm()
+                 this.checkChoice()
+
+             }
+             catch(err){
+                this.$router.push('/room')
+             }
 
             },
         requestWarnList(value,payload){
-            console.log(value, 'requestWARN 11111', payload)
+             
             value.length === 0 ? this.requestWarning = false : this.requestWarning = true
         }
     },
@@ -181,7 +189,6 @@ export default {
             this.updateMemberRoom(data)
            })
            this.socket.on('msg', data => {
-               this.renderMSG(data)
            })
            this.socket.on('setVideoUrl', data => {
             this.setVideoUrl(data)
@@ -190,7 +197,7 @@ export default {
             this.setVideoStatus(data)
            })
            this.socket.on('PlayPause', data => {
-            console.log('foi dado play')
+             
             this.PlayPauseVideo()
            })
            this.socket.on('keysEvents', key => {
@@ -200,7 +207,7 @@ export default {
             this.aprenderMatematica(data)
            })
            this.socket.on('changeVideo', data => {
-            console.log("video que estou enviando", data)
+             
             this.changeSrc(data)
            })
            this.socket.on('userAskingForSyncronization', data => {
@@ -210,11 +217,11 @@ export default {
             this.setCurrentTime(data)
            })
            this.socket.on('playerStateRecived', data => {
-            //console.log('recebi o player', data)
+            // 
             this.verifyVideoState(data)
            })
            this.socket.on('signal', data => {
-           // console.log("o sinal chegou até aqui")
+           //  
             this.socket.emit('answeredSignal', {roomUrl: this.room})
            })
            this.socket.on('userAskingCurrentTime',data => {
@@ -251,15 +258,15 @@ export default {
             await this.attRoom()
            })
            this.socket.on('requestAllowed', data => {
-            console.log(data, 'la data')
+             
             this.requestAccepted(data)
            })
            this.socket.on('userVideoRequest', data => {
-            console.log('como assim undefined?', data)
+             
             this.addRequest(data)
            })
         },
-        ...mapActions({joinByPass: 'user/joinRoomByPassword', getRoom: 'user/getRoom'}),
+        ...mapActions({joinByPass: 'user/joinRoomByPassword', getRoom: 'user/getRoom', setState: 'user/setState'}),
         JoinRoom(){
             if (!this.joined) {
                 this.joined = true
@@ -267,13 +274,14 @@ export default {
             }
         },
         async attRoom(){
-            console.log('el room sendo att')
+             
             let room = await this.getRoom(this.room)
-            console.log(room, 'o room', room.room)
+             
             this.roomInfo = room.room
+            this.members = room.room.members
         },
         checkAdm(){
-            console.log(this.roomInfo, 'infos')
+             
             let isAdm = this.roomInfo.adms.find(users => {
                 return users.id === this.user.id
             })
@@ -281,7 +289,7 @@ export default {
         },
         checkChoice(){
             let canChoice = this.roomInfo.membersAllowedChoice.find(users => {
-                console.log(users.id)
+                 
                 return users.id === this.user.id
             })
             
@@ -291,11 +299,11 @@ export default {
             this.members = member
         },
         AskForSyncronization(){
-            console.log('enviei lol pelo coiso do yt')
+             
             this.socket.emit('requestYTsynchronization', {room: this.room, user: this.user})
         },
         responsive(){
-            console.log(this.$mq)
+             
             if (this.$mq === 'sm' || this.$mq === "md") {
                 this.mobile = true
             }
@@ -308,12 +316,12 @@ export default {
             video.focus()
         },
         showError(event){
-            console.log('deu erro no player lol', event)
+             
         },
         verifyPermissions(video){
-            console.log(this.roomInfo)
+             
             if(this.roomInfo.rulesType === 2) {
-                console.log('rooomInfo2', this.adm, this.choice)
+                 
                 if(this.adm || this.choice || this.owner === this.user.id) return true
                 else {
                     let videoId = this.saveRequestForVideo(this.ytUrl)
@@ -322,23 +330,23 @@ export default {
                 }
             }
             if(this.roomInfo.rulesType === 3){
-                console.log('rooomInfo2', this.adm, this.choice,)
+                 
                 if(!this.adm || !this.choice || this.owner === this.user.id) return false
                 return true
             }
             return true
         },
         addRequest(data){
-            console.log('chegou no add request', this.user.id, this.owner, this.adm, data)
+             
             if(this.user.id != this.owner) return
-            console.log('passou do if')
+             
             let newRequest = data
             this.requestWarnList.push(newRequest)
-            console.log(this.requestWarnList,'puxado')
+             
             
         },
         showRequest($event){
-            console.log($event, ' evento show request')
+             
             this.showRequestInfo = true
             this.requestInfo = $event
         },
@@ -353,21 +361,21 @@ export default {
         },
         removeWarn(warn){
             let newWarnList = this.requestWarnList.filter(video => {
-                console.log(warn.id,video.id, 'filter')
+                 
                 return video.id !== warn.id
             })
-            console.log(warn, newWarnList, 'resultado warn list')
+             
            
              this.requestWarnList = newWarnList
             
-            console.log(this.requestWarnList,'era para ter sidozerado')
+             
                 
         },
         sendVideoUrl(id){ 
             if(this.members[0].id === this.user.id && this.user.id != id.id) {
                 let Url = this.ytUrl
                 Url === "" ? Url = 'https://www.youtube.com/embed/hNGrGGbFX2s' : Url
-                console.log(this.ytUrl, 'estou enviando essa url')
+                 
                     let dates = {
                         room: this.room, 
                         userId: id.id,
@@ -378,7 +386,7 @@ export default {
             if(this.members[0].id === id.id && this.members.length > 1 && this.members[1].id === this.user.id) {
                     let Url = this.ytUrl
                     Url === "" ? Url = 'https://www.youtube.com/embed/hNGrGGbFX2s' : Url
-                    console.log(this.ytUrl, 'estou enviando essa url 2')
+                     
                     let dates = {
                         room: this.room, 
                         userId: id.id,
@@ -388,7 +396,7 @@ export default {
             }
         },
         playing(event){
-            console.log(event.target, 'ta vindo aq?, não')
+             
             this.player = event.target
             this.setTimeVideo()
 
@@ -399,7 +407,7 @@ export default {
             return Uint32idArray[0].toString(10)
         },
         saveRequestForVideo(video){
-            console.log('salvando', video)
+             
             let promise = new Promise((resolve, reject) =>{
                 return resolve({choiced: this.choiced,video: video})
             })
@@ -408,19 +416,19 @@ export default {
             return id
         },
         requestAccepted(data){
-            console.log('data do request aceito', data)
+             
             if(data.requestInfo.userId != this.user.id) return
-            console.log(data)
-            console.log(this.videoInfo)
+             
+             
             this.videoInfo.forEach(video => {
-                console.log(video.id, data.id)
+                 
                 if(video.id != data.id) return 
-                console.log(video, ' videooou')
+                 
                 video.promise.then(result => {
-                    console.log(result,'resultado')
+                     
                     result.choiced(result.video, true)
                 }).catch(err => {
-                    console.log('chegamos no erro final')
+                     
                 })
 
             })
@@ -432,7 +440,7 @@ export default {
             this.videoInfo = newArray
         },
         async setVideoUrl(data){
-            console.log('esse sim é o video que to recebendo lol', data)
+             
             let dates = {
                 room: this.room,
                 userId:this.user.id
@@ -451,16 +459,18 @@ export default {
             this.player = event.target
             if (!this.YTjoined) {
                 this.connectionServer()
-                console.log(this.user.state, 'user')
+                 
                 this.socket.emit('joinRoom', {user: this.user, room: this.room})
-                console.log(this.YTjoined, 'me juntei boy, qq')
+                 
                 this.YTjoined = true
             }
             this.AskForSyncronization()
         },
         timeUpdateSimulation(event){
+             
                 if(!event) return
                 let data = JSON.parse(event.data)
+                 
                 if (data.event === 'infoDelivery' && data.info && data.info.currentTime) {
                     this.setTimeVideo()
                     this.GaloFilhoDaPuta()
@@ -484,9 +494,9 @@ export default {
         setCurrentTime(dates){
             const play = document.querySelector('.play-pause-icon')
             if (this.user.id === dates.user) {
-                console.log(dates)
+                 
                 if (dates.videoStats.paused === 1){
-                    console.log('dei play lol')
+                     
                     this.player.playVideo()
                     this.player.seekTo(dates.videoStats.currentTime)
                     play.src = '/svg/botao_pause.svg'
@@ -496,13 +506,13 @@ export default {
         },
         roomPassVerify(event){
             this.joinByPass({password: event.password,roomUrl: this.room, token: this.$cookies.get('token')}).then(correct => {
-                console.log('correto?', correct)
+                 
                 if(correct.correct === true) {
                     this.JoinRoom()
                     this.err = ''
                 }
             }).catch(err => {
-                console.log(err)
+                 
                 this.err = err.response.data.err
             })
 
@@ -525,10 +535,10 @@ export default {
 
         },
         sendPlayerState(){
-            //console.log('era para eu enviar o player')
-            //console.log(this.user.id, this.members[0].id)
+            // 
+            // 
             if(this.user.id === this.members[0].id){
-               //console.log('chegou no sendPlayer')
+               // 
                 let playerState = this.player.getPlayerState()
                 this.socket.emit('playerState', {room: this.room, playerState})
             }
@@ -548,21 +558,21 @@ export default {
         setOnlyCurrentTime(data){
             if (this.user.id === data.userId) {
                 let timeCalc = parseFloat((this.player.getCurrentTime() - data.currentTime).toFixed(3)) * 1000
-                console.log('esse log é pra voce gusta', timeCalc)
+                 
                 if (timeCalc >= 600 || timeCalc <= -600) {
                     this.player.seekTo(data.currentTime)
                 }
             }
         },
         verifyVideoState(playerStateData){
-            //console.log('agora vou rerificar o state', playerStateData)
+            // 
             if (this.user.id != this.members[0].id) {
                 let playerState = this.player.getPlayerState()
-                //console.log('o requisitante', playerState, 'o que mandou', playerStateData.playerState)
+                // 
                 if (playerStateData.playerState === 1 && playerState === 2) {
                     this.player.playVideo()
                 }
-                if(playerStateData.playerState === 2 && playerState === 1){
+                if(playerStateData.playerState === 2){
                     this.player.pauseVideo()
                 }     
                 
@@ -572,25 +582,25 @@ export default {
         },
         PlayPauseVideo(){
             const play = document.querySelector('.play-pause-icon')
-            console.log(this.player.getPlayerState(),'cadeeeeee', this.player.getVideoData())
+             
             if (this.player.getPlayerState() === 2 || this.player.getPlayerState() === 5 || this.player.getPlayerState() === -1) {
                 this.player.playVideo()
 
-                console.log('vou dar play?', this.player)
+                 
                 play.src = '/svg/botao_pause.svg'
             }
             else {
                 this.player.pauseVideo()
                 play.src = '/svg/botao_play_.svg'
             }
-            console.log('saudades')
+             
         },
         showObject(event){
-            console.log(event)
+             
         },
         choiced(video, canSend = undefined){
-            console.log(video, 'esse é o video enviado')
-             console.log(this.roomInfo, 'INFOOOOOOOOO', this.roomInfo)
+             
+              
             this.showVideos = false
             let videoEmbed = video.embed || video
             videoEmbed === '' ? video = "https://www.youtube.com/embed/hNGrGGbFX2s" : video
@@ -599,20 +609,20 @@ export default {
             canSend === undefined ? hasPermision = this.verifyPermissions(video.original) : hasPermision = canSend
             canSend === undefined ? canSend = hasPermision : canSend = canSend
             if (!hasPermision){
-                console.log('entrou no if que deveria parar', canSend)
+                 
                 if(!canSend) return
             }
-            console.log('estou enviando o video', video)
+             
             this.socket.emit('changeVideoToAll', {video: video.embed || video, room: this.room})
         },
         changeSrc(data){
-            console.log('video que recebi quando entrei', data)
+             
             this.videoId = this.$youtube.getIdFromURL(data)
             this.ytUrl = data
         },
         GaloFilhoDaPuta(){
             const barra = document.querySelector('.progress-bar')
-            if(!this.player()) return
+            if(!this.player) return
             if(barra){
                 barra.style.width = `${this.player.getCurrentTime() / this.player.getDuration() * 100}%`
             }
@@ -620,15 +630,16 @@ export default {
         setTimeVideo(){
             if(this.player === undefined) return
             let tempVideo = Math.floor(this.player.getCurrentTime())
-            let minutos = Math.floor(tempVideo / 60)
+            let horas = Math.floor(tempVideo / 3600)
+            let minutos = Math.floor((tempVideo % 3600) / 60)
             let segundos = Math.floor(tempVideo % 60)
-            let horas = Math.floor(minutos / 60)
-            //console.log(minutos, minutos / 60)
-            let time
-            if (horas <= 0){
-                time = `${String(minutos).padStart(2, '0')}:${String(segundos).padStart(2, '0')}`
-            }else{
+            let time = '00:00'
+             
+            if (horas > 0) {
                 time = `${String(horas).padStart(2, '0')}:${String(minutos).padStart(2, '0')}:${String(segundos).padStart(2, '0')}`
+            }
+            else {
+                time = `${String(minutos).padStart(2, '0')}:${String(segundos).padStart(2, '0')}`
             }
             this.currentTime = time
         },
@@ -636,12 +647,12 @@ export default {
             const eventEmit = {
                 code: $event.code
             }
-            console.log(eventEmit, ' cade o coiso')
+             
             this.socket.emit('keysEvents', {event: eventEmit, room: this.room})
 
         },
         keysEvents(key){
-            console.log(key)
+             
             if (key.code === 'Space') {
                 this.PlayPauseVideo()
             } 
@@ -653,10 +664,11 @@ export default {
                 this.return5Seconds()
             }
         },
-        setVolume(){
-            const volumeValue = parseInt(document.querySelector('.volume').value)
-            this.player.setVolume(volumeValue)
-            this.oldVolume = (volumeValue)
+        setVolume(volume){
+            volume > 1 ? volume = 1 : volume < 0 ? volume = 0 : volume = volume
+             
+            this.player.setVolume(volume * 100)
+            this.oldVolume = volume
         },
         skip5Seconds(){
             this.player.seekTo(this.player.getCurrentTime() + 5)
@@ -674,7 +686,7 @@ export default {
             this.socket.emit('aprenderMatematica', {room: this.room, event: eventEmit})
         },
         aprenderMatematica($event){
-            console.log($event)
+             
             let position = ($event.offsetX / $event.target.offsetWidth) * this.player.getDuration()
             this.player.seekTo(position)
             
@@ -687,7 +699,7 @@ export default {
         mouseEventHandler($event){
             const progress = document.querySelector('.progress')
             if (progress.classList.contains('focus')) {
-                console.log('funcão')
+                 
                 let position = ($event.offsetX / $event.target.offsetWidth) * video.duration
                 video.currentTime = position
                 const barra = document.querySelector('.progress-bar')
@@ -705,12 +717,16 @@ export default {
             else {
                 fullscreenIcon.src = '/svg/tela_cheia.svg'
                 document.exitFullscreen()
+                this.theater = false
             }
+        },
+        theaterModeToggle(){
+            !this.theater ? this.theater = true : this.theater = false 
         },
         muteUnmute(){
             const volumeValue = document.querySelector('.volume')
             const volumeIcon = document.querySelector('.volume-icon')
-            console.log('o volume', this.player.getVolume())
+             
             if (this.player.getVolume() > 0) {
                 this.player.mute()
                 this.player.setVolume(0)
@@ -718,7 +734,7 @@ export default {
                 volumeIcon.src = '/svg/sem_som.svg'    
             }
             else {
-                console.log(this.oldVolume)
+                 
                 this.player.unMute()
                 this.player.setVolume(this.oldVolume * 100)
                 volumeValue.value = this.oldVolume * 100
@@ -728,6 +744,7 @@ export default {
         emitUserDisconected(){
             if (this.socket) {
                 this.socket.emit('desconectado', {user: this.user, room: this.room})
+                this.disconnectRoom()
             }
         }
         

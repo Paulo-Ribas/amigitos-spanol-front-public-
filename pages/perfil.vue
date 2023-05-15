@@ -1,5 +1,5 @@
 <template>
-  <div class="perfil" @teste="console.log('teste')">
+  <div class="perfil"> 
     <Erro v-if="errImg != ''" :erroProps="errImg"></Erro>
     <div class="areYouSure" v-if="showAlgo" @ask="showAlgo = true">
       <div class="warn-container">
@@ -94,14 +94,15 @@ import {mapState, mapActions, mapMutations} from 'vuex'
 
 export default {
     fetch(){
-        console.log('tokennnnnnnnn', this.$cookies.get('token'))
+        this.setState()
+        /*  
          this.$store.dispatch('user/validateUser', this.$cookies.get('token')).then(res => {
-            console.log('o user', res)
+             
             this.$store.commit('user/SET_USER_INFO', res)             
-            console.log('agr virou promise com then', res)
+             
          }).catch(err => {
-            console.log('console do erro por virar primisse com then', err)
-         })/*-------------------------------------- isso é interessante, por alguma razão, eu não conseguia setar os headers caso
+             
+         }) *//*-------------------------------------- isso é interessante, por alguma razão, eu não conseguia setar os headers caso
      ey recarregasse a pagina, usando esse código que é o mesmo que está no action, se eu tentar setar o header, seja pelo auth
      ou por asyncData ou até mesmo fetch, ele não irá ser setado, a menos que eu navegue de forma spa, nesse caso o header é setado
      sem nenhum problema de qualquer forma, mas se eu recarregar a pagina, não funciona.
@@ -120,15 +121,15 @@ export default {
     fetchOnServer: false,
     name:'',
     /* beforeMount(){
-        console.log(this.$store.state.localStorage.token)
+         
         let token = localStorage.getItem('token')
         this.token = token
         axios.post('http://localhost:3333/validate', {}, {headers:{authorization: 'bearer ' + token}}).then(response => {
             const id = response.data.dates.id
             this.id = id
-            console.log(response.data.dates)
+             
             axios.get('http://localhost:3333/user/' + id).then(response => {
-                console.log(response, 'eae')
+                 
                 const {username, email, profileimg} = response.data.user[0]
                 this.userName = username,
                 this.email = email
@@ -149,8 +150,8 @@ export default {
     },
     mounted(){
         this.loanding = false
-        console.log(this.$store.state.user)
-        console.log(this.$mq)
+         
+         
         this.loanding = false
     },
     middleware: ['auth'],
@@ -213,7 +214,7 @@ export default {
             }
         },
         newEmail(value, payload){
-            console.log(value)
+             
             if (value != this.email && value != '') {
                 this.saveEmail = true
                 
@@ -234,7 +235,7 @@ export default {
     },
     methods: {
         verifyMobile(){
-            console.log(this.$route.fullPath)
+             
             if (this.$route.fullPath === '/perfil/videos' && this.$mq === 'sm') {
                 this.mobile = true
             }
@@ -249,7 +250,8 @@ export default {
         ...mapActions({
                 getToken: 'user/getToken', editUserName: 'user/editUserName', 
                 validateUser:'user/validateUser', editImg: 'user/editImg',
-                editUserEmail: 'user/editUserEmail', editUserPassword: 'user/editUserPassword'
+                editUserEmail: 'user/editUserEmail', editUserPassword: 'user/editUserPassword',
+                setState: 'user/setState'
                 }),
         sendFile(){
             let fileBtn = document.getElementById('btn-file')
@@ -281,12 +283,12 @@ export default {
                     this.changing = false
                     this.SET_TOKEN('bearer ' + token)
                     this.validateUser(this.$cookies.get('token')).then(user => {
-                        console.log('o usuario q estou a receber lol', user)
+                         
                         this.SET_USER_INFO(user)
                         this.imgUploading = false
                         this.errImg = ''
                     }).catch(res => {
-                        console.log('a resposta do erro lol', res)
+                         
                         this.imgUploading = false
                         this.errImg = res.err
                     })
@@ -294,7 +296,7 @@ export default {
                 }).catch(res => {
                     this.imgUploading = false
                     this.errImg = res.err
-                    console.log('o erro lol ', res)
+                     
                 })
 
             })
@@ -324,17 +326,17 @@ export default {
                 email: res.email,
             }
                 this.editUserName(axiosInfos).then(token => {
-                    console.log('é o token', token)
+                     
                     this.SET_TOKEN('bearer ' + token)
                     this.validateUser(this.$cookies.get('token')).then(user => {
                         this.SET_USER_INFO(user)
                         this.newUserName = undefined
                         
                     }).catch(err => {
-                        console.log('como tratar esse erro?', err)
+                         
                     })
                 }).catch(err => {
-                    console.log('o erro', err)
+                     
                     this.errName = err
                 })
             }).catch(erro => {
@@ -350,16 +352,16 @@ export default {
                 newEmail: this.newEmail,
             }
                 this.editUserEmail(axiosInfos).then(token => {
-                    console.log('é o token', token)
+                     
                     this.SET_TOKEN('bearer ' + token)
                     this.validateUser(this.$cookies.get('token')).then(user => {
                         this.SET_USER_INFO(user)
                         this.newEmail = undefined
                     }).catch(err => {
-                        console.log('como tratar esse erro?', err)
+                         
                     })
                 }).catch(err => {
-                    console.log('o erro', err)
+                     
                     this.errName = err
                 })
             }).catch(erro => {
@@ -374,16 +376,16 @@ export default {
                 password: this.newPassword,
             }
                 this.editUserPasswordl(axiosInfos).then(token => {
-                    console.log('é o token', token)
+                     
                     this.SET_TOKEN('bearer ' + token)
                     this.validateUser(this.$cookies.get('token')).then(user => {
                         this.SET_USER_INFO(user)
                         this.newPassword = undefined
                     }).catch(err => {
-                        console.log('como tratar esse erro?', err)
+                         
                     })
                 }).catch(err => {
-                    console.log('o erro', err)
+                     
                     this.errName = err
                 })
             }).catch(erro => {
@@ -401,7 +403,7 @@ export default {
         sendQuestion($event){
             this.showAlgo = true
             this.deleteVideo = $event.video
-            console.log(this.deleteVideo)
+             
         },
         close(){
             this.showAlgo = false
@@ -410,15 +412,15 @@ export default {
         yes(){
            let token = this.$cookies.get('token')
            this.$store.dispatch('user/deleteVideo', {token: token, video: this.deleteVideo}).then(res => {
-            console.log('resposta do apagar', res)
+             
             this.$store.dispatch('user/getSetVideos', this.$cookies.get('token')).then(res => {
-                console.log('deu certo?', res)
+                 
                 this.showAlgo = false
             }).catch(err => {
-                console.log('o erro da atualização em tempo real', err)
+                 
             })
            }).catch(naofoi => {
-            console.log(naofoi,' nao foi')
+             
            })
         }
     }
@@ -438,7 +440,7 @@ export default {
     .user-config {
         flex: 1;
         max-width: 500px;
-        min-width: 396px;
+        min-width: 360px;
         margin: 0px 20px;
         background-color: var(--corMenu);
         border-radius: 10px;
@@ -662,5 +664,14 @@ export default {
     top: -1%;
     opacity: 0;
 }
-
+@media screen and (max-width: 400px) {
+    .user-config {
+        flex: 1;
+        max-width: 500px;
+        min-width: 340px;
+        margin: 0px 0px;
+        background-color: var(--corMenu);
+        border-radius: 10px;
+    }
+}
 </style>

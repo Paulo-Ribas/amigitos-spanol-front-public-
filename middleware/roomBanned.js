@@ -7,19 +7,17 @@ export default async function (context) {
         let isBanned = room.banneds.find(member => {
              return member.id === user.dates.id
         })
-        console.log(user, isBanned, room, room.banneds)
 
         if(!user.dates) return context.redirect('/')
         if(isBanned) throw  {message: 'você foi banido dessa sala'}
 
         
     } catch (error) {
-        console.log('o erro',error.message);
         let err = error.message
         context.redirect('/room', {
             statusCode: 302,
             query: {
-                data: err
+                data: 'banido'
             }
 })
     }

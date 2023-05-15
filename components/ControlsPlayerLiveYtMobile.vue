@@ -79,7 +79,7 @@ export default {
     methods: {
         PlayPauseVideo($event){
             this.$emit('PlayPauseVideo', $event)
-            console.log('evento emitido')
+             
         },
         mouseSegura($event){
             this.$emit('mouseSegura', $event)
@@ -92,7 +92,7 @@ export default {
         },
         keysEvents($event){
             let event = {code:$event}
-            console.log(event, $event, 'evento')
+             
             this.$emit('keysEvents', event)
         },
         fullScreamToggle($event){

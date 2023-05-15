@@ -6,6 +6,12 @@
 html {
     overflow-y: auto !important;
 }
+@font-face {
+    font-family: 'Josefin Sans';
+    src: url('/fonts/JosefinSans-Italic-VariableFont_wght.tff') format('truetype'),
+        url('/fonts/JosefinSans-VariableFont_wght.tff') format('truetype');
+    /* Outras propriedades da fonte, como font-weight e font-style, podem ser adicionadas aqui */
+}
 ::-webkit-scrollbar {
     width: 8px;
     height: 10px;
@@ -30,6 +36,7 @@ html {
     --cor6: #9e3766;
     --cor7: #011031;
     --corMenu: #011031b4;
+    --chatOpacity: #01103142;
     --corMenuMobile: #011031fd;
     --cor8: #D94B67;
     --cor9: #E75464;
@@ -39,12 +46,12 @@ html {
 
 @media screen and (max-width: 850px) {
     *{
-        font-family:'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans Unicode', Geneva, Verdana, sans-serif !important;
+        font-family:'Josefin Sans' !important;
     }
     a {
-        font-family: 'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans Unicode', Geneva, Verdana, sans-serif !important;
+        font-family: 'Josefin Sans' !important;
     }
     input, textarea, label, button {
-        font-family: 'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans Unicode', Geneva, Verdana, sans-serif !important;
+        font-family: 'Josefin Sans' !important;
     }
 }

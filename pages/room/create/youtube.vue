@@ -3,7 +3,7 @@
     <Erro :erroProps="erro" v-if="erro != ''"></Erro>
     <div class="container" v-show="!showAlgo">
         <Rules @ruleSelected="changeRulesType($event)" @error="erro = $event.err" v-if="changeRules"/>
-        <fa icon="gears" class="icon-info-user" @click="changeRules = true" v-if="!changeRules"></fa>
+        <fa icon="gears" class="icon-gear" @click="changeRules = true" v-if="!changeRules"></fa>
         <form @submit="preventSubmit($event), sendRoomData()">
             <div class="container-1">
                 <div class="name">
@@ -81,7 +81,7 @@ export default {
             this.name.length > 33 ? this.name = payload : this.name = value
         },
         qtd(value, payload) {
-            console.log(value)
+             
             value === '' || value === undefined ? value = '0' : value
             value == '0' ? this.inBetween10And20 = false : this.inBetween10And20
             isNaN(value) ? this.qtd = value.replace(/[^0-9]/g, '') : this.qtd = value
@@ -94,7 +94,7 @@ export default {
         
         },
         inBetween10And20(value, payload) {
-            console.log('true')
+             
             this.qtd = 1
         }
     },
@@ -136,10 +136,10 @@ export default {
                 } 
             }
             this.postRoom(axiosConfig).then(res => {
-                console.log(res)
+                 
                 this.$router.push({name: 'watch-youtube-roomId', params:{ roomId: res.url}})
             }).catch(err => {
-                console.log(err, 'o erro')
+                 
                 this.erro = err
             })
         }
@@ -302,6 +302,17 @@ export default {
     z-index: 2;
     cursor: pointer;
 }
+.icon-gear {
+    color: var(--cor3);
+    font-size: 1.8em;
+    position: absolute;
+    right: 0;
+    cursor: pointer;
+    transition: 0.2s;
+}
+.icon-gear:hover {
+    font-size: 2em;
+}
 @media screen and (max-width: 670px) {
     .container {
         width: 100%;
@@ -340,6 +351,17 @@ export default {
         margin: 10px 0px;
         max-width: 550px;
     }
+    .icon-gear {
+    color: var(--cor3);
+    font-size: 1.8em;
+    position: absolute;
+    right: 0;
+    cursor: pointer;
+    transition: 0.2s;
+}
+.icon-gear:hover {
+    font-size: 2em;
+}
     
     
 }

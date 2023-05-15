@@ -18,11 +18,11 @@ export default{
     async getEp(context,payload){
         let Ep = payload.ep
         let temp = payload.temp 
-        console.log(payload, Ep)
+         
         temp === undefined ? temp = '' : temp
         try {
             let ep = await this.$axios.$get(`https://dw-api.com.br/ep/${Ep}/${temp}`)
-            console.log('a resposta', ep, ep.data, ep.data[0])
+             
             return ep.data[0]
         } catch (error) {
             throw error

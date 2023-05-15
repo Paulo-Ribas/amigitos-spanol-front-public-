@@ -4,7 +4,7 @@
     <div class="container-box-poop" v-show="showAlgo">
       <div class="warn-container">
         <h2>Selecione Os Videos</h2>
-            <TabbleVideosList class="tableWarn" btnProps="Selecionar" :videosProps="videos" @selected="addOrRemoveVideo($event)"/>
+            <TabbleVideosList class="tableWarn" btnProps="Selecionar" :selectAllProps="true" :videosProps="videos" @selected="addOrRemoveVideo($event)" @selectedAll="addAll()" @deselectAll="removeAll()"/>
         <div class="btn-container">
             <button class="yes" @click="yes">Pronto</button>
             <button class="no" @click="close">Cancelar</button>
@@ -12,6 +12,8 @@
       </div>
     </div>
     <div class="container" v-show="!showAlgo">
+        <Rules @ruleSelected="changeRulesType($event)" @error="erro = $event.err" v-if="changeRules"/>
+        <fa icon="gears" class="icon-gear" @click="changeRules = !changeRules" v-if="!changeRules"></fa>
         <form @submit="preventSubmit($event), sendRoomData()">
             <div class="container-1">
                 <div class="name">
@@ -81,6 +83,8 @@ export default {
             showAlgo: false,
             erro: '',
             loanding: false,
+            changeRules: false,
+            rulesType: 1,
         }
     },
     components: { 
@@ -90,7 +94,7 @@ export default {
             this.name.length > 33 ? this.name = payload : this.name = value
         },
         qtd(value, payload) {
-            console.log(value)
+             
             value === '' || value === undefined ? value = '0' : value
             value == '0' ? this.inBetween10And20 = false : this.inBetween10And20
             isNaN(value) ? this.qtd = value.replace(/[^0-9]/g, '') : this.qtd = value
@@ -103,7 +107,7 @@ export default {
         
         },
         inBetween10And20(value, payload) {
-            console.log('true')
+             
             this.qtd = 1
         }
     },
@@ -131,10 +135,33 @@ export default {
             event.target.previousElementSibling.classList.toggle('selected')
             let isInArray = this.checkIfVideoIsInArray(event.video._id)
             isInArray ? this.RemoveVideoFromArray(event.video._id) : this.addVideoInArray(event.video)
-            console.log(this.videosAdded)
+             
         },
         addVideoInArray(video) {
             this.videosAdded.push(video)
+        },
+        addAll(){
+            this.videosAdded = this.videos
+            let selecteds = document.querySelectorAll('tr')
+            selecteds.forEach(selected => {
+                selected.lastElementChild.innerHTML === "Cancelar" ? selected.lastElementChild.innerHTML = 'Selecionar' : selected.lastElementChild.innerHTML = 'Cancelar'
+                selected.lastElementChild.classList.add('selected')
+                selected.lastElementChild.previousElementSibling.classList.add('selected')
+            })
+        },
+        removeAll(){
+            this.videosAdded = []
+            let selecteds = document.querySelectorAll('tr')
+            selecteds.forEach(selected => {
+                selected.lastElementChild.innerHTML === "Cancelar" ? selected.lastElementChild.innerHTML = 'Selecionar' : selected.lastElementChild.innerHTML = 'Cancelar'
+                selected.lastElementChild.classList.remove('selected')
+                selected.lastElementChild.previousElementSibling.classList.remove('selected')
+            })
+        },
+        changeRulesType(event) {
+            this.changeRules = false
+            this.rulesType = event.ruleType
+             
         },
         RemoveVideoFromArray(id) {
             let newArray = this.videosAdded.filter(video => {
@@ -151,6 +178,7 @@ export default {
         sendRoomData(){
             let token = this.$cookies.get('token')
             this.erro = ""
+             
             let axiosConfig = {
                 token: token,
                 roomData: {
@@ -159,14 +187,15 @@ export default {
                     roomName:this.name, 
                     filesVideos: this.videosAdded, 
                     maxMembers: this.qtd,
-                    type: 'upload', 
+                    type: 'upload',
+                    rulesType: this.rulesType, 
                 } 
             }
             this.postRoom(axiosConfig).then(res => {
-                console.log(res)
+                 
                 this.$router.push({name: 'watch-upload-roomId', params:{ roomId: res.url}})
             }).catch(err => {
-                console.log(err, 'o erro')
+                 
                 this.erro = err
             })
         }
@@ -188,6 +217,7 @@ export default {
         background-color: var(--corMenu);
         border-top-right-radius: 10%;
         padding: 0px;
+        position: relative;
     }
     .container-1 {
         width: 100%;
@@ -319,6 +349,17 @@ export default {
     border-radius: 10px;
     cursor: pointer;
     pointer-events: all;
+}
+.icon-gear {
+    color: var(--cor3);
+    font-size: 1.8em;
+    position: absolute;
+    right: 0;
+    cursor: pointer;
+    transition: 0.2s;
+}
+.icon-gear:hover {
+    font-size: 2em;
 }
 @media screen and (max-width: 670px) {
     .container {

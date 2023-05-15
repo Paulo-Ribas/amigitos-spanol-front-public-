@@ -10,8 +10,10 @@
       <TabbleVideosList :btnProps="'deletar'" :videosProps="user.videos" @selected="areYouSure($event)"></TabbleVideosList>
     <div class="progress-bar" v-if="!completed">
       <span class="completed" v-if="completed">completo</span>
-      <span class="status" v-if="uploading && !prossesing && videoErr === ''">enviando arquivo</span>
       <span class="status" v-if="prossesing && videoErr === ''">processando...</span>
+      <span class="status" v-if="converting && videoErr === ''">convertendo...</span>
+      <span class="status" v-if="uploading && !prossesing && !converting && !salving && videoErr === ''">enviando arquivo</span>
+      <span class="status" v-if="salving && videoErr === ''">salvando...</span>
       <span class="erro_video" v-if="videoErr">{{videoErr}}</span>
       <span class="porcent" v-if="uploading && !prossesing"></span>
       <span class="videosUploading" v-if="countVideo > 0">{{countVideo}}</span>
@@ -19,11 +21,12 @@
       <TardisVerySmall v-if="!completed" class="hidden tardis-processing"></TardisVerySmall>
     </div>
     <button @click="clickInput" class="add-videos">Adicionar Video</button>
-    <input type="file" accept="video/mp4" hidden id="file" @change="uploadVideo"/>
+    <input type="file" accept="video/*" hidden id="file" @change="uploadVideo"/>
   </div>
 </template>
 
 <script>
+import axios from 'axios'
 import {mapState, mapActions, mapMutations} from 'vuex'
 export default {
   name: "qeqw",
@@ -75,6 +78,9 @@ export default {
       videoErr: '',
       countVideo: 0,
       mobile: false,
+      socket: undefined,
+      salving: false,
+      converting: false,
     };
   },
   computed: {
@@ -83,86 +89,170 @@ export default {
     })
   },
   methods: {
-    ...mapActions({postVideo: 'user/postVideo', getSetVideos: 'user/getSetVideos'}),
+    ...mapActions({
+      postVideo: 'user/postVideo', getSetVideos: 'user/getSetVideos', processVideo:'user/convertVideo',
+      saveThumbnail:'user/saveThumbnail', createThumbnail:'user/createThumbnail'
+    }),
     ...mapMutations({SET_VIDEOS: 'user/SET_VIDEOS'}),
     clickInput() {
       let input = document.getElementById("file");
       input.click();
     },
-    uploadVideo() {
-      const Form = new FormData();
-      let file = document.getElementById("file");
-      Form.append("video", file.files[0]);
+    setPropertyForVideoUpload(){
       this.completed = false
       this.uploading = true
       this.prossesing = false
       this.videoErr = ''
-      this.countVideo += 1 
-      let axiosInfos = {
-        file: Form,
-        getprogressAndSetHeaders:{
-          onUploadProgress(event){
-            document.querySelector('.tardis-processing').classList.add('hidden')
-              let progress = Math.round((event.loaded * 100) / event.total)
-              console.log(this.countVideo, 'teste teste ')
-              let progressBar = document.querySelector('.progress')
-              let progressPorcent = document.querySelector('.porcent')
-              let status = document.querySelector('.status')
-              //status.innerHTML === 'enviando arquivo' ? status.innerHTML = status.innerHTML : status.innerHTML = 'enviando arquivo'
-              progressBar.style.width = `${progress}%`
-              progressPorcent.innerHTML = `${progress}%` //inner para matar as saudades
-              this.videoErr = ''
-              this.uploading = true
-              if (progress === 100) {
-                this.prossesing = true
-                this.videoErr = ''
-                document.querySelector('.tardis-processing').classList.toggle('hidden')
-                
-              }
-          },
-          headers: { authorization: this.$cookies.get('token')}
+      this.countVideo += 1
+    },
+    readAsDataURLForUpload(blob){
+       
+      return new Promise((resolve, reject) => {
+        let reader = new FileReader()
+        let base64String = ''
+        reader.onload = function (event) {
+          base64String = event.currentTarget.result.split(',')[1]
         }
-      }
-      let onUploadProgress = axiosInfos.getprogressAndSetHeaders.onUploadProgress.bind(this)
-      this.postVideo({axiosInfos, onUploadProgress}).then(res => {
-        console.log('chegou no postar ao menos')
-        this.getSetVideos(this.$cookies.get('token')).then(videos => {
-          if (this.prossesing) {
-              document.querySelector('.tardis-processing').classList.toggle('hidden')
-          }
-            this.countVideo = this.countVideo - 1
-            this.prossesing = false
-            this.videoErr = ''
-          if (this.countVideo === 0) {
-            this.uploading = false
-            this.completed = true
-            
-          }
-        }).catch(erro => {
-          console.log('talvez n esteja sendo atualizado por causa desse erro', erro)
-        })
-      }).catch(err =>{
-        let status = document.querySelector('.status')
-        console.log(err)
-        document.querySelector('.tardis-processing').classList.toggle('hidden')
-        if (this.countVideo === 0) {
-          this.uploading = true,
-          this.completed = false
+        reader.readAsDataURL(blob)
+        reader.onloadend = function (end) {
+          resolve(base64String)
           
         }
-        this.videoErr = err.response.data.err
-        this.prossesing = false
-        this.countVideo = this.countVideo - 1
-        console.log(this.videoErr)
+        reader.onerror = function (err) {
+          reject()
+        }
       })
+    },
+    async uploadVideo(){
+      //let ConvertProgress = new EventSource('http://localhost:3333/convertVideo')
+     /*  ConvertProgress.onmessage = function (data){
+         
+      } */
+      const Form = new FormData();
+      let file = document.getElementById("file");
+      if(file.files.length < 1) return 
+      let teste = file.files[0]
+      Form.append("video", file.files[0]);
+      this.setPropertyForVideoUpload()
+      let headers = this.getAxiosHeaders()
+      let axiosInfos = this.getAxiosConfigForUploadVideo(Form)
+      let onUploadProgress = axiosInfos.getprogressAndSetHeaders.onUploadProgress.bind(this)
+      try {
+         
+        this.prossesing = true
+        let thumbnail = await this.createThumbnail({axiosInfos})
+        this.prossesing = false
+        let thumbnailName = Form.get('video').name
+         
+        let base64String = await this.readAsDataURLForUpload(thumbnail)
+         
+        axiosInfos.getprogressAndSetHeaders.headers.thumb = await this.saveThumbnail({name: thumbnailName, thumbnail: base64String, headers})
+         
+        if(Form.get('video').type !== 'video/mp4') {
+          this.converting = true
+          let done = await this.processVideo({ axiosInfos })
+          this.converting = false
+            let name = Form.get('video').name
+            let file = new File([done], name, { type: 'video/mp4' })
+            Form.delete('video')
+            Form.append('video', file)
+             
+            axiosInfos.file = Form
+             
+        }  
+          this.postVideo({axiosInfos, onUploadProgress}).then(res => {
+             
+            this.getSetVideos(this.$cookies.get('token')).then(videos => {
+              if (this.salving) {
+                  document.querySelector('.tardis-processing').classList.toggle('hidden')
+              }
+                this.countVideo = this.countVideo - 1
+                this.prossesing = false
+                this.videoErr = ''
+              if (this.countVideo === 0) {
+                this.uploading = false
+                this.completed = true
+                
+              }
+            }).catch(erro => {
+               this.videoErr = erro
+              this.countVideo = this.countVideo - 1
 
+            })
+          }).catch(err =>{
+            let status = document.querySelector('.status')
+             
+            document.querySelector('.tardis-processing').classList.toggle('hidden')
+            if (this.countVideo === 0) {
+              this.uploading = true,
+              this.completed = false
+              
+            }
+            this.videoErr = err.response.data.err
+            this.prossesing = false
+            this.prossesing = false
+          this.salving = false
+          this.converting = false
+            this.countVideo = this.countVideo - 1
+             
+          }) 
+      }
+      catch(err) {
+        this.prossesing = false
+        this.salving = false
+        this.converting = false
+        this.videoErr = err.err
+        this.countVideo = this.countVideo - 1
 
+      }
+
+    },
+    getAxiosHeaders(){
+      return {
+        headers: {
+          authorization: this.$cookies.get('token'),
+
+        }
+      }
+    },
+    getAxiosConfigForUploadVideo(Form) {
+      let axiosInfos = {
+        file: Form,
+        thumb: {},
+        getprogressAndSetHeaders: {
+          onUploadProgress(event) {
+            document.querySelector('.tardis-processing').classList.add('hidden')
+            let progress = Math.round((event.loaded * 100) / event.total)
+            // 
+            let progressBar = document.querySelector('.progress')
+            let progressPorcent = document.querySelector('.porcent')
+            let status = document.querySelector('.status')
+            //status.innerHTML === 'enviando arquivo' ? status.innerHTML = status.innerHTML : status.innerHTML = 'enviando arquivo'
+            progressBar.style.width = `${progress}%`
+            progressPorcent.innerHTML = `${progress}%` //inner para matar as saudades
+            this.videoErr = ''
+            this.uploading = true
+            if (progress === 100) {
+              this.salving = true
+              this.videoErr = ''
+              document.querySelector('.tardis-processing').classList.toggle('hidden')
+
+            }
+          },
+          headers: {
+            authorization: this.$cookies.get('token'),
+            "content-type": "multipart/form-data",
+
+          }
+        }
+      }
+      return axiosInfos
     },
     areYouSure($event){
       this.$emit('question', $event)
     },
     deleteVideo(){
-      console.log('deletei kkkk')
+       
     }
   },
 };
@@ -276,5 +366,19 @@ export default {
   cursor: pointer;
   color: var(--cor6);
   
+}
+@media screen and (max-width: 400px) {
+    #videos {
+          flex: 1;
+          max-width: 500px;
+          min-width: 350px;
+          margin: 0px 0px;
+          background-color: var(--corMenu);
+          min-height: 396px;
+          display: flex;
+          flex-direction: column;
+          justify-content: space-between;
+          position: relative;
+        }
 }
 </style>

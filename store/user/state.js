@@ -4,4 +4,6 @@ export default () => ({
     email: undefined,
     userName: undefined,
     videos: [],
+    description: undefined,
+    friends: undefined,
 })

@@ -41,7 +41,7 @@ export default {
             let email = document.getElementById('email').value
             this.loadTardis = true
             this.$store.dispatch('user/sendRecoveryToken',email).then(done => {
-                console.log(done)
+                 
                 this.sucess = "Email Enviado Com Sucesso"
             }).catch(err => {
                 this.err = err.response.data.err
@@ -59,6 +59,7 @@ export default {
         flex-direction: column;
         justify-content: center;
         align-items: center;
+        text-align: center;
     }
     form {
         width: 100%;

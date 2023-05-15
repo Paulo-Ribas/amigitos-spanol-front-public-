@@ -42,12 +42,12 @@ export default {
             selectSeasom: 'series/getTemp'
         }),
         async seasonSelected(season){
-            console.log("cadeeeeeee")
+             
             let select = document.getElementById('temp').selectedIndex
             const temp = select
             let selectedTemp = await this.selectSeasom({temp})
-            console.log(select)
-            console.log(selectedTemp)
+             
+             
             select === 0? this.showTardis = true : this.showTardis = false
             this.selectedTemp = temp
             this.seasonList = selectedTemp.data

@@ -45,8 +45,6 @@ export default {
     .rules-container {
         width: 100%;
         height: 100%;
-        max-height: 500px;
-        max-width: 500px;
         display: flex;
         flex-direction: column;
         position: absolute;
@@ -54,6 +52,10 @@ export default {
         left: 50%;
         transform: translate(-50%, -50%);
         z-index: 5;
+        background-color: var(--corMenu);
+        border-top-right-radius: 10%;
+        overflow: hidden;
+        
     }
     .rules-info {
         display: flex;
@@ -66,6 +68,14 @@ export default {
         display: flex;
         justify-content: center;
         align-items: center;
+        background-color: var(--corMenu);
+        font-size: 1.2em;
+        font-family: cursive;
+        text-transform:capitalize;
+        text-align: center;
+        color: white;
+        
+        
     }
     .rules-info ul {
         display: flex;
@@ -73,13 +83,60 @@ export default {
         width: 30%;
         min-width: 50px;
         flex-direction: column;
+        list-style: none;
+        justify-content: space-evenly;
     }
     .rules-info li {
         font-family: cursive;
         font-size: 1.6em;
         color: white;
-        height: 30px;
-        margin: 5px 0px;
         width: 100%;
+        text-align: center;
+        border: 3px solid var(--cor7);
+        display: flex;
+        height: 33%;
+        border-radius: 7px;
+        justify-content: center;
+        align-items: center;
+        background-color: var(--cor3);
+        cursor: pointer;
+        transition: 0.3s;
     }
+    .rules-info li:hover {
+        font-family: cursive;
+        font-size: 1.6em;
+        color: var(--cor7);
+        width: 100%;
+        text-align: center;
+        border: 3px solid var(--cor7);
+        display: flex;
+        height: 33%;
+        border-radius: 7px;
+        justify-content: center;
+        align-items: center;
+        background-color: var(--cor2);
+        cursor: pointer;
+        transform: scale(1.080);
+    }
+    @media screen and (max-width: 420px) {
+        ul {
+            height: 70px !important;
+            width: 100% !important;
+            flex-direction: row !important;
+        }
+        .rules-info {
+            flex-direction: column;
+        }
+        .rules-info p {
+            width: 100%;
+            height: 100%;
+        }
+        li {
+            width: 33% !important;
+            height: 100% !important;
+        }
+      
+        
+    }
+
 </style>

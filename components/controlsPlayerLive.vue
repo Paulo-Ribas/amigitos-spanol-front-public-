@@ -9,11 +9,16 @@
         <div class="timer">{{currentTime}}</div>
         <div class="volume-container">
             <img src="/svg/com_som.svg" @click="emitMuteUnmute()" class="volume-icon">
-            <input type="range" value="100" max="100" min="0" class="volume" @change="setVolume"/>
+            <div class="volume" @mousedown="setVolume($event), addMovimentListener()" @mouseup="removeMovimentListener()">
+                <div id="volume-bar">
+                    <div class="ball"></div>
+                </div>
+            </div>
         </div>
       </div>
-      <div class="btn-fudno">
+      <div class="btn-fundo">
         <img src="/svg/tela_cheia.svg" class="fullScreem-icon" @click="fullScreamToggle">
+         <fa icon ='masks-theater' @click="emitTheaterMode()" class="theater-icon"></fa>
       </div>
     </div>
   </div>
@@ -29,7 +34,7 @@ export default {
                     control.classList.add('opacity0')
                             
                 } catch (error) {
-                        console.log(error, 'errooo')
+                         
                 }   
             }, 7000);
             return timeOut
@@ -69,13 +74,35 @@ export default {
     methods: {
         PlayPauseVideo($event){
             this.$emit('PlayPauseVideo', $event)
-            console.log('evento emitido')
+             
         },
         mouseSegura($event){
             this.$emit('mouseSegura', $event)
         },
         setVolume($event){
-            this.$emit('setVolume', $event)
+             
+            let width = $event.offsetX
+            let volumeBar = document.getElementById('volume-bar')
+            volumeBar.style.width = `${width}%`
+            let volume = width / 100
+            this.$emit('setVolume', volume)
+        },
+        addMovimentListener(){
+            let volumeContainer = document.querySelector('.volume')
+            volumeContainer.addEventListener('mousemove', this.moveVolumeBar)
+        },
+        moveVolumeBar(element){
+            let volumeBar = document.getElementById('volume-bar')
+            let width = element.offsetX
+            volumeBar.style.width = `${width}%`
+            let volume = width / 100
+
+            this.$emit('setVolume', volume)
+
+        },
+        removeMovimentListener(){
+            let volumeContainer = document.querySelector('.volume')
+            volumeContainer.removeEventListener('mousemove', this.moveVolumeBar)
         },
         aprenderMatematica($event){
             this.$emit('aprenderMatematica', $event)
@@ -89,6 +116,10 @@ export default {
         emitMuteUnmute(){
             this.$emit('muteUnmute')
         },
+        emitTheaterMode() {
+            this.$emit('theaterMode')
+            this.fullScreamToggle()
+        },
         teste($event){
             if ($event.type === 'mousedown') {
                 this.clicado = true
@@ -101,8 +132,8 @@ export default {
             if (this.clicado === true) {
                 this.aprenderMatematica($event)
             }
-            console.log(this.clicado)
-        },
+             
+        }, 
         setFalse(){
             this.clicado = false
         }
@@ -155,6 +186,11 @@ export default {
         margin-left: 6px;
     
     }
+    .btn-fundo {
+        height: 100%;
+        display: flex;
+        align-items: center;
+    }
     .btn-primary img {
         margin: 0px 2px;
     }
@@ -165,6 +201,7 @@ export default {
     }
     .volume-container {
         display: flex;
+        align-items: center;
     }
     .play-pause-icon {
         height: 20px;
@@ -172,6 +209,40 @@ export default {
     .fullScreem-icon {
         width: 45px;
         height: 45px;
+    }
+    .volume {
+        width: 100px;
+        height: 10px;
+        background-color: var(--corMenu);
+        position: relative;
+        cursor: pointer;
+        border-radius: 10px;
+        margin: 0px 3px;
+    }
+    #volume-bar {
+        position: absolute;
+        width: 100%;
+        height: 100%;
+        background-color: var(--cor7);
+        border-radius: 10px
+
+
+    }
+    .ball {
+        width: 13.5px;
+        height: 13.5px;
+        border-radius: 50%;
+        left: 100%;
+        top: 50%;
+        transform: translate(-75%,-50%);
+        position: absolute;
+        background-color: var(--cor4);
+        pointer-events: none;
+    }
+    .theater-icon {
+        font-size: 1.3em;
+        margin-right: 5px;
+        cursor: pointer;
     }
 
 </style>

@@ -3,7 +3,7 @@ import colors from 'vuetify/es5/util/colors'
 export default {
   // Global page headers: https://go.nuxtjs.dev/config-head
   head: {
-    titleTemplate: '%s - amigitos-spanol-y-sla',
+    titleTemplate: '%s amigitos-spanol-y-sla',
     title: 'amigitos-spanol-y-sla',
     htmlAttrs: {
       lang: 'pt-br'
@@ -27,7 +27,7 @@ export default {
 
   // Global CSS: https://go.nuxtjs.dev/config-css
   css: [
-    '@/assets/main.css'
+    '@/assets/main.css',
   ],
 
   // Plugins to run before rendering page: https://go.nuxtjs.dev/config-plugins
@@ -67,8 +67,8 @@ export default {
   fontawesome: {
     component: 'fa',
     icons: {
-      solid: ['faHome', 'faEnvelope', 'faUser', 'faUsers', 'faChalkboard',
-        'faUpload', 'faPenToSquare', 'faCheck', 'faXmark', 'faArrowRightFromBracket', 'faArrowLeft', 'faSearch', 'faGears', 'faFilm', 'faCommentSlash', 'faHammer', 'faPersonFallingBurst', 'faScrewdriverWrench', 'faComment', 'faChessKing', 'faExclamation'],
+      solid: ['faUserGroup','faHome', 'faEnvelope', 'faUser', 'faUsers', 'faChalkboard',
+        'faUpload', 'faPenToSquare', 'faCheck', 'faXmark', 'faArrowRightFromBracket', 'faArrowLeft', 'faSearch', 'faGears', 'faFilm', 'faCommentSlash', 'faHammer', 'faPersonFallingBurst', 'faScrewdriverWrench', 'faComment', 'faChessKing', 'faExclamation', 'faEllipsis', 'faScrewdriver', 'faClapperboard', 'faMasksTheater', 'faUserPlus', 'faPeopleRoof'],
       brands: ['faYoutube']
     }
   },
