@@ -290,12 +290,13 @@ https://www.amigitos-espanol-api.com.br/user/' + id).then(response => {
                         this.imgUploading = false
                         this.errImg = ''
                     }).catch(res => {
-                         
+                         console.log(res, 'o erro 1')
                         this.imgUploading = false
                         this.errImg = res.err
                     })
 
                 }).catch(res => {
+                    console.log(res, 'o erro 2')
                     this.imgUploading = false
                     this.errImg = res.err
                      

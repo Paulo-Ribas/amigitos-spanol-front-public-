@@ -115,6 +115,7 @@ export default {
     async editImg(context, payload) {
         let token = payload.token
         let imagem = payload.imagem
+        console.log('indo editar')
         let config = {
             headers: {
                 "Content-Type": "multipart/form-data",
@@ -129,7 +130,7 @@ export default {
 
         }
         catch (error) {
-             
+             console.log('o  grande erro', error)
             throw error.response.data; //20/08/2022, try/catch, then.catch/ throw error, tudo dominado agora.
         }
     },
