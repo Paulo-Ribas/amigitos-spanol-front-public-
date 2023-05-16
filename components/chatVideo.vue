@@ -24,8 +24,8 @@
                         <li v-if="memberChoiced.id === roomInfo.userAdm" @mouseenter="setPopUpInfo('dono')" @mouseleave="removePopUpInfo()"><fa class="icon-li" icon="chess-king"></fa><PopUpInfo textProps="dono" v-if="popUpInfo === 'dono'"/></li>
                         <!---->
                         <!--próprio user-->
-                        <li v-if="memberChoiced.id === user.id" @mouseenter="setPopUpInfo('convidar amigos')" @mouseleave="removePopUpInfo()"> <fa class="icon-li" icon="user-plus" @click="showFriendList = true"><PopUpInfo textProps="convidar amigos" v-if="popUpInfo === 'convidar amigos'"/></fa></li>
-                        <!-- -->
+<!--                         <li v-if="memberChoiced.id === user.id" @mouseenter="setPopUpInfo('convidar amigos')" @mouseleave="removePopUpInfo()"> <fa class="icon-li" icon="user-plus" @click="showFriendList = true"><PopUpInfo textProps="convidar amigos" v-if="popUpInfo === 'convidar amigos'"/></fa></li>
+ -->                        <!-- -->
                         <!-- remover da sala li's -->
                         <li v-if="removeFromRoom" @mouseenter="setPopUpInfo('remover da sala')" @mouseleave="removePopUpInfo()">
                             <fa class="icon-li" icon="person-falling-burst" @click="emitKick(memberChoiced)"/> 
@@ -360,6 +360,7 @@ export default {
             try {
                 let roomInfo =  await this.getRoom(this.room)
                 this.roomInfo = roomInfo.room
+                this.members = roomInfo.room.members
             } catch (error) {
                 this.err  = error
                 throw error
@@ -533,13 +534,13 @@ export default {
             if (chat.length === 0) {
                 chatEmpty = true
             }
-            if(this.roomInfo.members[0].id != this.user.id) return
-            if(this.roomInfo.members[0].id === userRequest  && this.roomInfo.members.length < 2) return
-            if(this.roomInfo.members[0].id === userRequest && this.roomInfo.members.length >= 2) {
-                newUserThatSendTheChat = this.roomInfo.members[1].id
+            if(this.members[0].id != this.user.id) return
+            if(this.members[0].id === userRequest  && this.members.length < 2) return
+            if(this.members[0].id === userRequest && this.members.length >= 2) {
+                newUserThatSendTheChat = this.members[1].id
             }
-            if(chatEmpty && this.roomInfo.members.length >= 2){
-                newUserThatSendTheChat = this.roomInfo.members[1].id
+            if(chatEmpty && this.members.length >= 2){
+                newUserThatSendTheChat = this.members[1].id
             }
              
             if(!newUserThatSendTheChat) return this.socket.emit('chatSent', {userRequest, room, chat, empty: false})

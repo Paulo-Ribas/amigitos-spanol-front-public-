@@ -353,6 +353,7 @@ export default {
                 try {
                     let roomInfo = await this.getRoom(this.room)
                     this.roomInfo = roomInfo.room
+                    this.members = roomInfo.room.members
                 } catch (error) {
                     this.err = error
                     throw error
@@ -527,13 +528,13 @@ export default {
                 if (chat.length === 0) {
                     chatEmpty = true
                 }
-                if (this.roomInfo.members[0].id != this.user.id) return
-                if (this.roomInfo.members[0].id === userRequest && this.roomInfo.members.length < 2) return
-                if (this.roomInfo.members[0].id === userRequest && this.roomInfo.members.length >= 2) {
-                    newUserThatSendTheChat = this.roomInfo.members[1].id
+                if (this.members[0].id != this.user.id) return
+                if (this.members[0].id === userRequest && this.members.length < 2) return
+                if (this.members[0].id === userRequest && this.members.length >= 2) {
+                    newUserThatSendTheChat = this.members[1].id
                 }
-                if (chatEmpty && this.roomInfo.members.length >= 2) {
-                    newUserThatSendTheChat = this.roomInfo.members[1].id
+                if (chatEmpty && this.members.length >= 2) {
+                    newUserThatSendTheChat = this.members[1].id
                 }
                  
                 if (!newUserThatSendTheChat) return this.socket.emit('chatSent', { userRequest, room, chat, empty: false })
