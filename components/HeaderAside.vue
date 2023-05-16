@@ -192,7 +192,7 @@ export default {
     },
     async mounted(){
          
-        this.checkVerticalMobile()
+        this.checkHorizontalMobile()
         let token = this.$cookies.get('token')
         let axiosConfig = {
             headers: {
