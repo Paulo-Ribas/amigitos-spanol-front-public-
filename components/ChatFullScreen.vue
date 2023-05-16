@@ -98,8 +98,7 @@ export default {
     },
     methods:{
         connectionServer(){
-           this.socket = io.connect(' 
-https://www.amigitos-espanol-api.com.br/')
+           this.socket = io.connect('https://www.amigitos-espanol-api.com.br/')
            this.socket.on('msg', data => {
             this.renderMSG(data)
            })
