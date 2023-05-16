@@ -124,11 +124,13 @@ export default {
          
         let token = localStorage.getItem('token')
         this.token = token
-        axios.post('http://localhost:3333/validate', {}, {headers:{authorization: 'bearer ' + token}}).then(response => {
+        axios.post(' 
+https://www.amigitos-espanol-api.com.br/validate', {}, {headers:{authorization: 'bearer ' + token}}).then(response => {
             const id = response.data.dates.id
             this.id = id
              
-            axios.get('http://localhost:3333/user/' + id).then(response => {
+            axios.get(' 
+https://www.amigitos-espanol-api.com.br/user/' + id).then(response => {
                  
                 const {username, email, profileimg} = response.data.user[0]
                 this.userName = username,

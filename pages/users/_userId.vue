@@ -40,7 +40,7 @@ export default {
     name:'',
     async fetch(){
         await this.setState()
-        axios.get(`http://localhost:3333/user/${this.$route.params.userId}`).then(dates => {
+        axios.get(`https://www.amigitos-espanol-api.com.br/user/${this.$route.params.userId}`).then(dates => {
             this.name = dates.data.user[0].username
             this.emoji = dates.data.user[0].emoji
             this.description = dates.data.user[0].description
@@ -163,7 +163,7 @@ export default {
                     authorization:token
                 }
             }
-            axios.put('http://localhost:3333/description', {description: this.description}, headersConfig)
+            axios.put('https://www.amigitos-espanol-api.com.br/description', {description: this.description}, headersConfig)
             .then(done => {
                 this.description = done.data.description,
                 this.oldDescription = done.data.description
@@ -189,7 +189,7 @@ export default {
                 }
             }
              
-            axios.post('http://localhost:3333/request',{friendId}, axiosConfig).then(async result => {
+            axios.post('https://www.amigitos-espanol-api.com.br/request',{friendId}, axiosConfig).then(async result => {
                 await this.setIsPeding(friendId, axiosConfig)
                 await this.setShowBtnAddToRequestedUser(friendId, axiosConfig)
                 await this.setIsFriend()
@@ -208,7 +208,7 @@ export default {
                 }
             }
             let friendId = this.$route.params.userId
-            axios.post('http://localhost:3333/friend',{friendId:friendId}, axiosConfig).then(async done => {
+            axios.post('https://www.amigitos-espanol-api.com.br/friend',{friendId:friendId}, axiosConfig).then(async done => {
                 await this.setIsPeding(friendId, axiosConfig)
                 await this.setShowBtnAddToRequestedUser(friendId, axiosConfig)
                 await this.setIsFriend()
@@ -246,7 +246,7 @@ export default {
                 }
             }
             let friendId = this.$route.params.userId
-            axios.delete(`http://localhost:3333/friend/${friendId}`,axiosConfig).then(async res => {
+            axios.delete(`https://www.amigitos-espanol-api.com.br/friend/${friendId}`,axiosConfig).then(async res => {
                 await this.setIsPeding( friendId, axiosConfig)
                 await this.setShowBtnAddToRequestedUser(friendId, axiosConfig)
                 await this.setIsFriend()
@@ -265,11 +265,11 @@ export default {
             this.friend = await this.isFriend({ friendId: this.$route.params.userId, userId: this.user.id })
         },
         async setAmount(){
-            let amount = await axios.get(`http://localhost:3333/friendsAmount/${this.$route.params.userId}`)
+            let amount = await axios.get(`https://www.amigitos-espanol-api.com.br/friendsAmount/${this.$route.params.userId}`)
             this.friends = amount.data.friendsAmount
         },
         async connectServer(){
-            this.socket = io.connect('http://localhost:3333/')
+            this.socket = io.connect('https://www.amigitos-espanol-api.com.br/')
         },
         sendNotification(){
             this.socket.emit('friendRequestSent', {userId: this.userId, room: this.$route.params.userId})

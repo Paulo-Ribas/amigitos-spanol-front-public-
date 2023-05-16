@@ -46,7 +46,7 @@ export default {
         sendUser($event) {
             $event.preventDefault()
             const {name, email, password} = this
-            axios.post('http://localhost:3333/user',{username: name, email, password}).then(sucefful => {
+            axios.post('https://www.amigitos-espanol-api.com.br/user',{username: name, email, password}).then(sucefful => {
                  
                 this.$router.push({name: 'login'})
             }).catch(err => {
