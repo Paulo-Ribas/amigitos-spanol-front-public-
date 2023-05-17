@@ -439,7 +439,7 @@ export default {
                 let scroll = document.querySelector('.chat-screen')
                 setTimeout(() => {
                     scroll.scrollTop = scroll.scrollHeight
-                 }, 100);
+                 }, 200);
 
             } catch (error) {
                 return

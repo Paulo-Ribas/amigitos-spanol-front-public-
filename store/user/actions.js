@@ -164,13 +164,14 @@ export default {
             }
         }
         try {
+            console.log('indo editar', password, email)
             let res = await this.$axios.$put(`password`, { password, email }, config)
              
             return res.token
 
         }
         catch (error) {
-             
+             console.log(error, 'grande erro')
             throw error.response.data; //20/08/2022, try/catch, then.catch/ throw error, tudo dominado agora.
         }
     },

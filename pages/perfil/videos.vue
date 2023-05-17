@@ -133,6 +133,7 @@ export default {
       if(file.files.length < 1) return 
       let teste = file.files[0]
       Form.append("video", file.files[0]);
+      console.log(Form, ' o form')
       this.setPropertyForVideoUpload()
       let headers = this.getAxiosHeaders()
       let axiosInfos = this.getAxiosConfigForUploadVideo(Form)

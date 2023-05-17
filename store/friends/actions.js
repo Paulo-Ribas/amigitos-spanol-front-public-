@@ -45,6 +45,7 @@ export default {
         }
          
         try {
+            console.log('fazendo requisição', axiosConfig)
             let request = await this.$axios.$get('usersRequests', axiosConfig)
              
             return request.users
