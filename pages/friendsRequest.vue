@@ -49,7 +49,7 @@ export default {
         await this.setState()
         await this.attFriendsInfoState(this.user.id)
         this.loaded = true
-        const token = this.$cookies.get('token')
+        let token = this.$cookies.get('token')
         this.axiosConfig = {
             headers: {
                 authorization: token
@@ -76,7 +76,11 @@ export default {
     },
     data(){
         return {
-            axiosConfig: undefined,
+            axiosConfig: {
+                headers: {
+                    authorization: this.$cookies.get('token')
+                }
+            },
             mobile: false,
             loaded: false
         }
