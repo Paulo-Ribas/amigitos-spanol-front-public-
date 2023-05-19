@@ -353,6 +353,7 @@ export default {
         text-overflow: clip;
         overflow-y:auto;
         margin-bottom: 5px;
+        padding-right: 33px;
     }
     .description p {
         color: white;

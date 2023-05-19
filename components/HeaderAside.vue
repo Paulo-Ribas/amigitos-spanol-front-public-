@@ -85,7 +85,7 @@
         <ul>
             <li class="friend-request" v-if="friends.requests.length > 0">
                     <Transition name="friendRequestLink">
-                        <NuxtLink to="/friendsRequest" v-if="show">Solicitações</NuxtLink>
+                        <NuxtLink to="/friendsRequest" v-if="show" @click="toggleMobileMenu">Solicitações</NuxtLink>
                     </Transition>
                 </li>
             <li @click="toogleMobileMenu">
@@ -238,24 +238,17 @@ export default {
         },
         toogleMobileMenu(){
             !this.width100 ? this.width100 = true : this.width100 = false
+            this.checkHorizontalMobile()
             this.toggleShow()
             !this.spinTardis ? this.spinTardis = true : this.spinTardis = false
             !this.move ? this.move = true : this.move = false
             !this.tardisNormal ? this.tardisNormal = true : this.tardisNormal = false
         },
         responsive(){
-             
             if (this.$mq === 'sm' || this.$mq === "md") {
                 this.mobile = true
-                if (this.$mq === 'md') {
-                    this.show ? this.horizontal = true : this.horizontal = false 
-                }
-                if (this.$mq === 'sm'){
-                    this.horizontal = false
-                }
             }
             else {
-                this.horizontal = false
                 this.mobile = false
             }
         },
@@ -263,10 +256,11 @@ export default {
              
             if (this.$mq === "md" && this.move) {
                 this.horizontal = true
+                this.move = false
             }
             else {
-                 
             this.horizontal = false
+            this.move = true
             }
         },
         connectionServer(){

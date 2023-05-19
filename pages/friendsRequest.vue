@@ -325,7 +325,17 @@ export default {
     z-index: 2 !important;
 }
 }
-@media screen and (max-width: 400px) {
+@media screen and (max-width: 500px) {
+    .friends-request-container {
+        flex-direction:row;
+        flex-wrap: wrap;
+        overflow-y: auto;
+        justify-content: flex-start;
+    }
+    .friend-box {
+        max-height: 250px;
+        overflow: unset;
+    }
     .accept-refuse-container {
     width: 0% ;
     opacity: 0;

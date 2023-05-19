@@ -738,6 +738,7 @@ export default {
         width: 100%;
         height: 100%;
         outline: none;
+        background-color: var(--chatOpacity);
         
     }
 
@@ -755,13 +756,13 @@ export default {
         height: 480px;
         max-height: 480px;
     }
-    @media screen and (max-width: 740px) {
+    @media screen and (max-width: 870px) {
         .video-container-mobile {
-            flex: 2;
             width: 100%;
             min-height: 200px;
             position: relative;
             height: 97vh;
+            flex: 1.5;
         }
         #video{
             width: 95%;
@@ -769,7 +770,7 @@ export default {
             transform: translateX(-50%)
         }
     }
-    @media screen and (max-width: 560px) {
+    @media screen and (max-width: 500px) {
         .container-app{
             flex: 1;
             height: 100vh;
@@ -782,11 +783,12 @@ export default {
             position: relative;
         }
         .video-container-mobile {
+            flex: 2;
             min-width: 360px;
             width: 100%;
         }
         .video-container-mobile #video {
-           width: 100%;
+            width: 100%;
         }
         
     }

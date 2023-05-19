@@ -514,7 +514,7 @@ export default {
                 if ((scroll.scrollHeight - scroll.scrollTop) <= 260 && user != this.user.id) {
                     setTimeout(() => {
                         scroll.scrollTop = scroll.scrollHeight
-                    }, 100);
+                    }, 200);
 
                 }
 
@@ -976,10 +976,10 @@ export default {
         color: var(--cor7);
         border-radius: 24px;
     }
-    @media screen and (max-width: 760px){
+    @media screen and (max-width: 500px){
         .video-menu-container{
             margin-top: 0px;
-            flex: 0.980;
+            flex: 2.5;
             height: 97vh;
             max-height: 480px;
         }

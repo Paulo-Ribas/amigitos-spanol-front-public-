@@ -126,6 +126,7 @@ td img {
   font-family: cursive;
   max-height: 230px;
 }
+
 .img {
   display: flex;
   justify-content: center;
@@ -142,5 +143,12 @@ td img {
 }
 .selected{
   color: var(--cor9)
+}
+@media screen and (max-width: 500px) {
+  .videoName {
+    max-height: 50px;
+    max-width: 224px !important;
+  }
+  
 }
 </style>

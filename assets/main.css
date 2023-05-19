@@ -8,8 +8,8 @@ html {
 }
 @font-face {
     font-family: 'Josefin Sans';
-    src: url('/fonts/JosefinSans-Italic-VariableFont_wght.tff') format('truetype'),
-        url('/fonts/JosefinSans-VariableFont_wght.tff') format('truetype');
+    src: url('/fonts/JosefinSans-Italic-VariableFont_wght.tff'),
+        url('/fonts/JosefinSans-VariableFont_wght.tff');
     /* Outras propriedades da fonte, como font-weight e font-style, podem ser adicionadas aqui */
 }
 ::-webkit-scrollbar {
@@ -44,7 +44,7 @@ html {
     --scrollColor: linear-gradient(var(--scrollButton), var(--cor4));
 }
 
-@media screen and (max-width: 850px) {
+@media screen and (max-width: 870px) {
     *{
         font-family:'Josefin Sans' !important;
     }

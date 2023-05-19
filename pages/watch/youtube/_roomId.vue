@@ -786,6 +786,7 @@ export default {
         position: absolute;
         width: 100%;
         height: 100%;
+        background-color: var(--chatOpacity);
         
     }
 
@@ -808,7 +809,7 @@ export default {
         width: 100% !important;
         height: 100% !important;
     }
-    @media screen and (max-width: 760px) {
+    @media screen and (max-width: 870px) {
         .youtube-VideoPlayer-mobile {
             flex: 2;
             width: 100%;
@@ -824,7 +825,7 @@ export default {
         }
         
     }
-    @media screen and (max-width: 560px) {
+    @media screen and (max-width: 500px) {
         .container-app{
             flex: 1;
             height: 100vh;
@@ -839,6 +840,7 @@ export default {
             min-width: 360px;
             width: 100%;
             position: relative;
+            flex: 2;
         }
         .youtube-VideoPlayer-mobile #video {
            width: 100%;

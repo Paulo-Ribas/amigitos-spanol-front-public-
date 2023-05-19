@@ -25,7 +25,7 @@
             </div>
         </div>
       </div>
-      <div class="btn-fudno">
+      <div class="btn-fundo">
         <img src="/svg/tela_cheia.svg" class="fullScreem-icon" @click="fullScreamToggle">
       </div>
     </div>
@@ -260,9 +260,14 @@ export default {
         transform: translate(-50%, -50%);
         z-index: 3;
     }
+    .btn-fundo {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
     .fullScreem-icon {
         width: 43px;
-        height: 43px;
+        height: 37px;
     }
 
 </style>
