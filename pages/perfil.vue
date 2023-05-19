@@ -378,21 +378,24 @@ https://www.amigitos-espanol-api.com.br/user/' + id).then(response => {
                 email: user.email,
                 password: this.newPassword,
             }
-                this.editUserPasswordl(axiosInfos).then(token => {
+                this.editUserPassword(axiosInfos).then(token => {
                      
                     this.SET_TOKEN('bearer ' + token)
                     this.validateUser(this.$cookies.get('token')).then(user => {
                         this.SET_USER_INFO(user)
                         this.newPassword = undefined
                     }).catch(err => {
-                         
+                         console.log(err, 'primeiro erro')
+                         throw err
                     })
                 }).catch(err => {
-                     
+                     console.log(err, 'erro ao editar')
                     this.errName = err
+                    throw err
                 })
             }).catch(erro => {
-
+                console.log(erro, 'sla que erro é esse')
+                throw erro
             })
         },
         async signOut(){

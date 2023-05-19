@@ -258,9 +258,13 @@ export default {
                 this.horizontal = true
                 this.move = false
             }
+            if(this.$mq === "md" && !this.move) {
+                this.move = true
+                this.horizontal = false
+
+            }
             else {
-            this.horizontal = false
-            this.move = true
+                this.horizontal = false
             }
         },
         connectionServer(){

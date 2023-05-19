@@ -49,6 +49,12 @@ export default {
         await this.setState()
         await this.attFriendsInfoState(this.user.id)
         this.loaded = true
+        const token = this.$cookies.get('token')
+        this.axiosConfig = {
+            headers: {
+                authorization: token
+            }
+        }
          
     },
     fetchOnServer: false,

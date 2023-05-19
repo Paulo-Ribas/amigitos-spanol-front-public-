@@ -215,7 +215,7 @@ export default {
                 await this.setAmount()
                 await this.attFriendsInfoState(this.user.id)
             }).catch(err => {
-                 
+                 this.errRequest = err.response.data.err
             })
         },
         async refuseFriendRequest(){
@@ -252,7 +252,7 @@ export default {
                 await this.setIsFriend()
                 await this.setAmount()
             }).catch(err => {
-                 
+                 this.errRequest = err.response.data.err
             })
         },
         async setIsPeding(friendId, axiosConfig){
