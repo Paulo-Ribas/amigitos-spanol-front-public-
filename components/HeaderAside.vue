@@ -253,13 +253,13 @@ export default {
             }
         },
         checkHorizontalMobile(){
-             
-            if (this.$mq === "md" && this.show && this.move) {
-                this.horizontal = true
+            if (this.$mq === "md" && this.width100) {
                 this.move = false
+                this.horizontal = true
             }
-            if(this.$mq === "md" && !this.show) {
+            if(this.$mq === "md" && !this.width100) {
                 this.horizontal = false
+                this.move = false
 
             }
             else {
