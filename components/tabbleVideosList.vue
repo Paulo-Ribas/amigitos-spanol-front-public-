@@ -45,14 +45,14 @@ export default {
         this.$emit('selected',{video: video, target: event.target, father: event.target.parentElement})
       },
       selectedAll(event){
-        this.selectedAll = false,
+        this.selectAll = false,
         this.deselectAll = true
         this.$emit('selectedAll')
          
       },
       deselectedAll(event){
         this.deselectAll = false
-        this.selectedAll = true
+        this.selectAll = true
         this.$emit('deselectAll')
       },
       createImgUrl(base64){

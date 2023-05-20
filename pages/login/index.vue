@@ -10,7 +10,7 @@
             <label>Senha</label>
             <input type="password" v-model="password">
             <input type="submit" value="Enviar" @click="sendUser">
-            <NuxtLink to="/login/recoverypass" class="recovery">esqueceu a senha?</NuxtLink> -->
+            <NuxtLink to="/login/recoverypass" class="recovery">esqueceu a senha?</NuxtLink>
         </form>
             <img src="/loanding1.gif" v-if="loanding" class="tardis-loanding">
     </div>
