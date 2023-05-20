@@ -8,8 +8,8 @@ html {
 }
 @font-face {
     font-family: 'Josefin Sans';
-    src: url('/static/fonts/JosefinSans-Italic-VariableFont_wght.ttf'),
-        url('/static/fonts/JosefinSans-Italic-VariableFont_wght.ttf');
+    src: url('/fonts/JosefinSans-Italic-VariableFont_wght.ttf'),
+        url('/fonts/JosefinSans-VariableFont_wght.ttf');
     /* Outras propriedades da fonte, como font-weight e font-style, podem ser adicionadas aqui */
 }
 ::-webkit-scrollbar {
