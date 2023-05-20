@@ -15,7 +15,7 @@
       <span class="status" v-if="uploading && !prossesing && !converting && !salving && videoErr === ''">enviando arquivo</span>
       <span class="status" v-if="salving && videoErr === ''">salvando...</span>
       <span class="erro_video" v-if="videoErr">{{videoErr}}</span>
-      <span class="porcent" v-if="uploading && !prossesing"></span>
+      <span class="porcent" v-if="uploading && !prossesing && !salving"></span>
       <span class="videosUploading" v-if="countVideo > 0">{{countVideo}}</span>
       <div class="progress"></div>
       <TardisVerySmall v-if="!completed" class="hidden tardis-processing"></TardisVerySmall>
