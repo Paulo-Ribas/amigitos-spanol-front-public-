@@ -765,7 +765,7 @@ export default {
             flex: 1.5;
         }
         #video{
-            width: 95%;
+            width: 100%;
             left: 50%;
             transform: translateX(-50%)
         }

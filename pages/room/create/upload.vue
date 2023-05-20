@@ -150,13 +150,13 @@ export default {
             })
         },
         removeAll(){
-            this.videosAdded = []
             let selecteds = document.querySelectorAll('tr')
             selecteds.forEach(selected => {
                 selected.lastElementChild.innerHTML === "Cancelar" ? selected.lastElementChild.innerHTML = 'Selecionar' : selected.lastElementChild.innerHTML = 'Cancelar'
                 selected.lastElementChild.classList.remove('selected')
                 selected.lastElementChild.previousElementSibling.classList.remove('selected')
             })
+            this.videosAdded = []
         },
         changeRulesType(event) {
             this.changeRules = false

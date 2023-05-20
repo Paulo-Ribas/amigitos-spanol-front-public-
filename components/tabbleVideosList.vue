@@ -53,7 +53,7 @@ export default {
       deselectedAll(event){
         this.deselectAll = false
         this.selectedAll = true
-        this.$emit('deselectAll"')
+        this.$emit('deselectAll')
       },
       createImgUrl(base64){
         let arrayBlob = Buffer.from(base64, 'base64')

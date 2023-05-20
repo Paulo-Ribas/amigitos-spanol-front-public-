@@ -80,6 +80,9 @@ export default {
         transition: 0.1s;
         text-decoration: none;
     }
+    .room-box1:active , .room-box2:active {
+        color: var(--cor6);
+    }
     svg {
         font-size: 9em;
         color: white;

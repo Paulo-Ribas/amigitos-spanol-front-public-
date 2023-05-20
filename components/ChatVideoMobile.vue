@@ -976,6 +976,15 @@ export default {
         color: var(--cor7);
         border-radius: 24px;
     }
+    @media screen and (max-width: 870px) {
+        .chatMembers-container {
+            height: 320px;
+            
+        }
+        .video-menu-container{
+            margin-top: 0px;
+        }
+    }
     @media screen and (max-width: 500px){
         .video-menu-container{
             margin-top: 0px;

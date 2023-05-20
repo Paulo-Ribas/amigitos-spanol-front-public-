@@ -254,12 +254,11 @@ export default {
         },
         checkHorizontalMobile(){
              
-            if (this.$mq === "md" && this.move) {
+            if (this.$mq === "md" && this.show && this.move) {
                 this.horizontal = true
                 this.move = false
             }
-            if(this.$mq === "md" && !this.move) {
-                this.move = true
+            if(this.$mq === "md" && !this.show) {
                 this.horizontal = false
 
             }
