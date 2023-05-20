@@ -256,15 +256,22 @@ export default {
             if (this.$mq === "md" && this.width100) {
                 this.move = false
                 this.horizontal = true
+                return
             }
             if(this.$mq === "md" && !this.width100) {
                 this.horizontal = false
                 this.move = false
+                return
 
             }
-            else {
+            if(this.$mq !== 'md' && this.width100){
                 this.horizontal = false
+                this.move = true
+                return
             }
+            this.horizontal = false
+            this.move = false
+            
         },
         connectionServer(){
              
