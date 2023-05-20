@@ -238,11 +238,11 @@ export default {
         },
         toogleMobileMenu(){
             !this.width100 ? this.width100 = true : this.width100 = false
-            this.checkHorizontalMobile()
             this.toggleShow()
             !this.spinTardis ? this.spinTardis = true : this.spinTardis = false
             !this.move ? this.move = true : this.move = false
             !this.tardisNormal ? this.tardisNormal = true : this.tardisNormal = false
+            this.checkHorizontalMobile()
         },
         responsive(){
             if (this.$mq === 'sm' || this.$mq === "md") {
