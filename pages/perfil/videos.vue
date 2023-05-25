@@ -18,7 +18,7 @@
       <span class="porcent" v-if="uploading && !prossesing && !salving"></span>
       <span class="videosUploading" v-if="countVideo > 0">{{countVideo}}</span>
       <div class="progress"></div>
-      <TardisVerySmall v-if="!completed" class="hidden tardis-processing"></TardisVerySmall>
+      <TardisVerySmall v-if="showTardis" class="tardis-processing"></TardisVerySmall>
     </div>
     <button @click="clickInput" class="add-videos">Adicionar Video</button>
     <input type="file" accept="video/*" hidden id="file" @change="uploadVideo"/>
@@ -81,6 +81,7 @@ export default {
       socket: undefined,
       salving: false,
       converting: false,
+      showTardis: false,
     };
   },
   computed: {
@@ -128,6 +129,7 @@ export default {
      /*  ConvertProgress.onmessage = function (data){
          
       } */
+      
       const Form = new FormData();
       let file = document.getElementById("file");
       if(file.files.length < 1) return 
@@ -141,18 +143,25 @@ export default {
       try {
          
         this.prossesing = true
+        this.showTardis = true
         let thumbnail = await this.createThumbnail({axiosInfos})
         this.prossesing = false
+        this.showTardis = false
         let thumbnailName = Form.get('video').name
+        let thumbnailForm = new FormData()
+
+        thumbnailForm.append('thumbnail', thumbnail, thumbnailName)
          
-        let base64String = await this.readAsDataURLForUpload(thumbnail)
+        /* let base64String = await this.readAsDataURLForUpload(thumbnail) */
          
-        axiosInfos.getprogressAndSetHeaders.headers.thumb = await this.saveThumbnail({name: thumbnailName, thumbnail: base64String, headers})
-         
+        axiosInfos.getprogressAndSetHeaders.headers.thumb = await this.saveThumbnail({thumbnail: thumbnailForm, headers})
+         this.showTardis = false
         if(Form.get('video').type !== 'video/mp4') {
           this.converting = true
+          this.showTardis = true
           let done = await this.processVideo({ axiosInfos })
           this.converting = false
+          this.showTardis = false
             let name = Form.get('video').name
             let file = new File([done], name, { type: 'video/mp4' })
             Form.delete('video')
@@ -164,9 +173,9 @@ export default {
           this.postVideo({axiosInfos, onUploadProgress}).then(res => {
              
             this.getSetVideos(this.$cookies.get('token')).then(videos => {
-              if (this.salving) {
-                  document.querySelector('.tardis-processing').classList.toggle('hidden')
-              }
+                this.showTardis = false
+                this.salving = false
+              console.log(videos)
                 this.countVideo = this.countVideo - 1
                 this.prossesing = false
                 this.videoErr = ''
@@ -176,14 +185,17 @@ export default {
                 
               }
             }).catch(erro => {
+              console.log(erro)
                this.videoErr = erro
               this.countVideo = this.countVideo - 1
+              this.salving = false
 
             })
           }).catch(err =>{
+            console.log(err)
             let status = document.querySelector('.status')
              
-            document.querySelector('.tardis-processing').classList.toggle('hidden')
+            this.showTardis = false
             if (this.countVideo === 0) {
               this.uploading = true,
               this.completed = false
@@ -199,6 +211,7 @@ export default {
           }) 
       }
       catch(err) {
+        console.log(err)
         this.prossesing = false
         this.salving = false
         this.converting = false
@@ -222,7 +235,7 @@ export default {
         thumb: {},
         getprogressAndSetHeaders: {
           onUploadProgress(event) {
-            document.querySelector('.tardis-processing').classList.add('hidden')
+            this.showTardis = false
             let progress = Math.round((event.loaded * 100) / event.total)
             // 
             let progressBar = document.querySelector('.progress')
@@ -236,7 +249,7 @@ export default {
             if (progress === 100) {
               this.salving = true
               this.videoErr = ''
-              document.querySelector('.tardis-processing').classList.toggle('hidden')
+              this.showTardis = true
 
             }
           },

@@ -10,12 +10,13 @@
         <VideoRequest :requestInfoProps="requestInfo" v-if="showRequestInfo" @accepted="acceptedRequest($event)" @rejected="rejectedRequest($event)"></VideoRequest>
         <RequestList :requestArrayProps="requestWarnList" v-if="requestWarning" @requestSelected="showRequest($event)" ></RequestList>
         <div class="video-container" v-if="joined && !mobile">
-            <video @timeupdate="GaloFilhoDaPuta()" tabindex="1" @dblclick="fullScreamToggle()" 
+            <video @loadedmetadata="setDuration" @loadeddata="setDuration" @timeupdate="GaloFilhoDaPuta()" tabindex="1" @dblclick="fullScreamToggle()" 
             @click="showObject(), emitPlayPause()" @keydown="emitKeysEvents($event)" id="video">
                 <source src="/videoplayback.mp4" type="video/mp4">
             </video>
             <ControlsPlayerLive
             :time="currentTime"
+            :durationProps="duration"
             @PlayPauseVideo="emitPlayPause($event)"
             @mouseSegura="mouseSegura"
             @setVolume="setVolume"
@@ -33,6 +34,8 @@
                 <source src="/videoplayback.mp4" type="video/mp4">
             </video>
             <ControlsPlayerLiveMobile
+            :time="currentTime"
+            :durationProps="duration"
             @PlayPauseVideo="emitPlayPause($event)"
             @mouseSegura="mouseSegura"
             @setVolume="setVolume"
@@ -124,6 +127,7 @@ export default {
             members: [],
             mobile: false,
             currentTime:'00:00',
+            duration: '00:00',
             adm: undefined,
             choice: undefined,
             videoInfo: [],
@@ -153,6 +157,13 @@ export default {
         requestWarnList(value, payload) {
              
             value.length === 0 ? this.requestWarning = false : this.requestWarning = true
+        },
+         currentTime(value, payload) {
+            if (value === isNaN) this.currentTime = '00:00'
+        },
+        duration(value, payload) {
+            if (value === isNaN) this.currentTime = '00:00'
+
         }
     },
     computed:{
@@ -545,7 +556,7 @@ export default {
                 if (this.adm || this.choice || this.owner === this.user.id) return true
                 else {
                     let videoId = this.saveRequestForVideo(video)
-                    this.socket.emit('videoRequest', { userId: this.user.id, userName: this.user.userName, location: video.location, thumb: video.thumbnail, name: video.fileName, video, room: this.room, id: videoId })
+                    this.socket.emit('videoRequest', { userId: this.user.id, userName: this.user.userName, location: video.location, thumb: video.thumbnailLocation, name: video.fileName, video, room: this.room, id: videoId })
                     return false
                 }
             }
@@ -582,6 +593,21 @@ export default {
                 barra.style.width = `${video.currentTime / video.duration * 100}%`
             }
             this.setTimeVideo()
+        },
+        setDuration(){
+            let video = document.getElementById('video')
+            let tempVideo = Math.floor(video.duration)
+            let horas = Math.floor(tempVideo / 3600)
+            let minutos = Math.floor((tempVideo % 3600) / 60)
+            let segundos = Math.floor(tempVideo % 60)
+            let time = '00:00'
+            if (horas > 0) {
+                time = `${String(horas).padStart(2, '0')}:${String(minutos).padStart(2, '0')}:${String(segundos).padStart(2, '0')}`
+            }
+            else {
+                time = `${String(minutos).padStart(2, '0')}:${String(segundos).padStart(2, '0')}`
+            }
+            this.duration = time
         },
         setTimeVideo(){
             let video = document.getElementById('video')
@@ -705,6 +731,7 @@ export default {
         emitUserDisconected(){
             if (this.socket) {
                 this.socket.emit('desconectado', {user: this.user, room: this.room})
+                this.socket.disconnect()
             }
         }
         

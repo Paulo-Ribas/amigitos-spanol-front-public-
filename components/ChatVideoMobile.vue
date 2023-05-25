@@ -125,7 +125,6 @@ export default {
         this.chatAttempts = 0
         this.askChat()
         this.verifyEmptyMembers()
-
     },
     data() {
         return {
@@ -984,6 +983,7 @@ export default {
         }
         .video-menu-container{
             margin-top: 0px;
+            max-width: 233px;
         }
     }
     @media screen and (max-width: 500px){

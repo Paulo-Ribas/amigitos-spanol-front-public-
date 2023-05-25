@@ -3,7 +3,7 @@
     <div class="video-box-container">
         <div class="video-box" data-video-box v-for="video in videos" :key="video._id" @click="setVideoPicked(video), definePinkClass($event)">
             <div class="video-img">
-                <img :src="video.thumbnail" alt="img logo">
+                <img :src="video.thumbnailLocation" alt="img logo">
             </div>
             <div class="video-name"><h3 class="name">{{video.fileName}}</h3></div>
         </div>

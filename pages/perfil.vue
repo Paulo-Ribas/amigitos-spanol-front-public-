@@ -153,8 +153,6 @@ https://www.amigitos-espanol-api.com.br/user/' + id).then(response => {
     mounted(){
         this.loanding = false
          
-         
-        this.loanding = false
     },
     middleware: ['auth'],
     head(){

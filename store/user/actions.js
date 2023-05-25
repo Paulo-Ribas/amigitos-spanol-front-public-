@@ -41,15 +41,10 @@ export default {
     },
     async saveThumbnail(context, payload){
         let headers = payload.headers
-        let { name, thumbnail } = payload
-        let dates = {
-            name,
-            thumb: thumbnail
-            
-        }
+        let {thumbnail } = payload
          
         try {
-            let thumbnailResponse = await this.$axios.$post('thumbnail',dates, headers)
+            let thumbnailResponse = await this.$axios.$post('thumbnail',thumbnail, headers)
              
             return thumbnailResponse.thumbnail
         } catch (error) {

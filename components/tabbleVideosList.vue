@@ -1,11 +1,11 @@
 <template>
   <div class="tabble">
     <ButtonSpecial v-if="selectAll" btnProps="Selecionar Tudo" @clicked="selectedAll()"/>
-    <ButtonSpecial v-if="deselectAll" btnProps="Remover Tudo" @clicked="deselectedAll()"></ButtonSpecial>
+    <ButtonSpecial v-if="deselectAll" btnProps="Remover Tudo" @clicked="deselectedAll()"/>
       <table>
          <tbody>
           <tr v-for="(video, index) in videos" :key="video.name">
-            <td class="img"><img :src="video.thumbnail" /></td>
+            <td class="img"><img :src="video.thumbnailLocation" /></td>
             <td colspan="1" class="videoName"> {{ video.fileName }}</td>
             <td class="btn" :data-video="index" @click="areYouSure($event)">{{btn}}</td>
           </tr> 
@@ -45,14 +45,14 @@ export default {
         this.$emit('selected',{video: video, target: event.target, father: event.target.parentElement})
       },
       selectedAll(event){
-        this.selectAll = false,
         this.deselectAll = true
+        this.selectAll = false,
         this.$emit('selectedAll')
          
       },
       deselectedAll(event){
-        this.deselectAll = false
         this.selectAll = true
+        this.deselectAll = false
         this.$emit('deselectAll')
       },
       createImgUrl(base64){

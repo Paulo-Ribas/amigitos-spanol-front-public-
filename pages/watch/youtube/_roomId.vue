@@ -11,7 +11,7 @@
         <RequestList :requestArrayProps="requestWarnList" v-if="requestWarning" @requestSelected="showRequest($event)" ></RequestList>
         <div class="youtube-VideoPlayer" @click="setFocus()" tabindex="1" @keydown="emitKeysEvents($event)" v-if="joined && !mobile" id="video">
             <div class="wall" @click="emitPlayPause(), setFocus()" @keydown="emitKeysEvents($event)"></div>
-            <playerYT class="teste" @error="showError($event)" @cued="AskForSyncronization()" @ready="ready($event)" @playing="playing($event)" :player-vars="{autoplay:0, controls: 0, }" player-width="100%" player-height="100%" :video-id="videoId"></playerYT>
+            <playerYT class="teste" @error="showError($event)" @cued="AskForSyncronization(), setDuration()" @ready="ready($event), setDuration()" @playing="playing($event)" :player-vars="{autoplay:0, controls: 0, rel: 0, modestbranding: 1}" player-rel="0" player-width="100%" player-height="100%" :video-id="videoId"></playerYT>
             <ControlsPlayerLiveYT
             @click="setFocus()" 
             @PlayPauseVideo="emitPlayPause()"
@@ -22,12 +22,13 @@
             @fullScreamToggle="fullScreamToggle($event)"
             @theaterMode="fullScreamToggle($event), theaterModeToggle()"
             @muteUnmute="muteUnmute()"
-            :time="currentTime"></ControlsPlayerLiveYT>
+            :time="currentTime"
+            :durationProps="duration"></ControlsPlayerLiveYT>
             <ChatFullScreen v-show="theater"></ChatFullScreen>
         </div>
         <div class="youtube-VideoPlayer-mobile" tabindex="1" id="video" @keydown="emitKeysEvents($event)" v-if="joined && mobile">
             <div class="wall" @click="emitPlayPause(), setFocus()" @keydown="emitKeysEvents($event)"></div>
-            <playerYT class="teste" @error="showError($event)" @cued="AskForSyncronization()" @ready="ready($event)" @playing="playing($event)" :player-vars="{autoplay:0, controls: 0, }" :show-related-videos="false"  player-width="100%" player-height="100%" :video-id="videoId"></playerYT>
+            <playerYT class="teste" @error="showError($event)" @cued="AskForSyncronization(), setDuration()" @ready="ready($event), setDuration()" @playing="playing($event)" :player-vars="{autoplay:0, controls: 0, rel: 0, modestbranding: 1 }" player-width="100%" player-height="100%" :video-id="videoId"></playerYT>
             <ControlsPlayerLiveYtMobile
             @click="setFocus()" 
             @PlayPauseVideo="emitPlayPause()"
@@ -37,7 +38,8 @@
             @keysEvents="emitKeysEvents($event)"
             @fullScreamToggle="fullScreamToggle($event)"
             @muteUnmute="muteUnmute()"
-            :time="currentTime"></ControlsPlayerLiveYtMobile>
+            :time="currentTime"
+            :durationProps="duration"></ControlsPlayerLiveYtMobile>
         </div>
         <ChatVideo v-show="joined && !mobile && !theater" @clicked="showVideos = !showVideos"/>
         <ChatVideoMobile v-show="!showVideos" v-if="joined && mobile" @clicked="showVideos = !showVideos"/>
@@ -136,6 +138,7 @@ export default {
             requestWarnList: [],
             requestWarning: false,
             theater: false,
+            duration: '00:00'
             
 
         }
@@ -161,6 +164,13 @@ export default {
         requestWarnList(value,payload){
              
             value.length === 0 ? this.requestWarning = false : this.requestWarning = true
+        },
+        currentTime(value, payload){
+            if(value === isNaN) this.currentTime = '00:00'
+        },
+        duration(value, payload){
+            if (value === isNaN) this.currentTime = '00:00'
+
         }
     },
     computed:{
@@ -396,7 +406,6 @@ export default {
             }
         },
         playing(event){
-             
             this.player = event.target
             this.setTimeVideo()
 
@@ -522,7 +531,7 @@ export default {
             if(this.socket){
                 this.PlayPauseVideo()
                 this.socket.emit('desconectado', {user: user})
-                this.socket.disconnect(true)
+                this.socket.disconnect()
             }
         },
         addFocus(){
@@ -626,6 +635,23 @@ export default {
             if(barra){
                 barra.style.width = `${this.player.getCurrentTime() / this.player.getDuration() * 100}%`
             }
+        },
+        setDuration(){
+            if (this.player === undefined) return
+            let tempVideo = Math.floor(this.player.getDuration())
+            let horas = Math.floor(tempVideo / 3600)
+            let minutos = Math.floor((tempVideo % 3600) / 60)
+            let segundos = Math.floor(tempVideo % 60)
+            let time = '00:00'
+
+            if (horas > 0) {
+                time = `${String(horas).padStart(2, '0')}:${String(minutos).padStart(2, '0')}:${String(segundos).padStart(2, '0')}`
+            }
+            else {
+                time = `${String(minutos).padStart(2, '0')}:${String(segundos).padStart(2, '0')}`
+            }
+            this.duration = time
+
         },
         setTimeVideo(){
             if(this.player === undefined) return

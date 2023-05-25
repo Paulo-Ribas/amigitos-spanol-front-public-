@@ -125,12 +125,16 @@ export default {
             throw error
         }
     },
+    name: 'ChatVideo',
     fetchOnServer: false,
     async mounted(){
         await this.JoinRoom()
         this.chatAttempts = 0
         this.askChat()
         this.verifyEmptyMembers()
+        this.memberIsMembersInterval = setInterval(() => {
+            this.checkIfMemberIsMember
+        }, 6000);
 
     },
         data(){
@@ -155,6 +159,7 @@ export default {
                 chatAttempts: 0,
                 chatEmpty: false,
                 showFriendList: false,
+                memberIsMembersInterval: undefined,
     
             }
         },
@@ -263,7 +268,12 @@ export default {
             this.checkMuted()
             this.checkAdm()
             this.changeMembersValues()
+            this.checkIfMemberIsMember()
         }
+    },
+    beforeDestroy(){
+        clearInterval(this.memberIsMembersInterval)
+        this.socket.disconnect()
     },
     methods:{
         connectionServer(){
@@ -421,6 +431,14 @@ export default {
                 
             }
         },
+        async checkIfMemberIsMember(){
+            await this.attRoom()
+            let user = this.roomInfo.members.find(member => {
+                return member === this.user.id
+            })
+            if(user) return
+            this.$router.push('/room')
+        },
         async emitMsg() {
             let msg = document.querySelector('textarea')
             let msgValue = msg.value
@@ -562,7 +580,7 @@ export default {
 
         },
         attChat(data){
-             
+             this.verifyEmptyMembers()
             if (this.user.id === data.userRequest) {
                 this.msgs = data.chat
                 let empty = this.verifyChatEmpty(data)

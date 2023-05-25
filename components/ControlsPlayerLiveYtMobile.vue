@@ -15,7 +15,7 @@
     </div>
     <div class="container-btns">
       <div class="btn-primary">
-        <div class="timer">{{currentTime}}</div>
+        <div class="timer">{{currentTime}} / {{duration}}</div>
         <div class="volume-container">
             <img src="/svg/com_som.svg" @click="emitMuteUnmute()" class="volume-icon">
             <input type="range" value="100" max="100" min="0" class="volume" @change="setVolume"/>
@@ -64,16 +64,21 @@ export default {
     data(){
         return {
             currentTime: this.$props.time,
+            duration: this.$props.durationProps,
             displayBlock:false,
         }
     },
     props: {
-        time: String
+        time: String,
+        durationProps: String
     },
     watch:{
         time(value, payload){
             if (value === null) return
             this.currentTime = value
+        },
+        durationProps(value, payload) {
+            this.duration = value
         }
     },
     methods: {
