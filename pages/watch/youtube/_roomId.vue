@@ -643,7 +643,10 @@ export default {
             let minutos = Math.floor((tempVideo % 3600) / 60)
             let segundos = Math.floor(tempVideo % 60)
             let time = '00:00'
-
+            if (isNaN(tempVideo)) {
+                this.duration = time
+                return
+            }
             if (horas > 0) {
                 time = `${String(horas).padStart(2, '0')}:${String(minutos).padStart(2, '0')}:${String(segundos).padStart(2, '0')}`
             }
@@ -843,6 +846,8 @@ export default {
             position: relative;
             height: 97vh;
             max-height: 480px;
+            background-color: var(--chatOpacity);
+
         }
         .youtube-VideoPlayer-mobile .teste, #youtube-player-1 {
             position: absolute !important;

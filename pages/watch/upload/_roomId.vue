@@ -159,10 +159,12 @@ export default {
             value.length === 0 ? this.requestWarning = false : this.requestWarning = true
         },
          currentTime(value, payload) {
-            if (value === isNaN) this.currentTime = '00:00'
+            let NaNSplit = value.split('N')
+            if (NaNSplit.length > 1) this.currentTime = '00:00'
         },
         duration(value, payload) {
-            if (value === isNaN) this.currentTime = '00:00'
+            let NaNSplit = value.split('N')
+            if (NaNSplit.length > 1) this.currentTime = '00:00'
 
         }
     },
@@ -622,6 +624,10 @@ export default {
             let minutos = Math.floor((tempVideo % 3600) / 60)
             let segundos = Math.floor(tempVideo % 60)
             let time = '00:00'
+            if (isNaN(tempVideo)) {
+                this.duration = time
+                return
+            }
             if (horas > 0) {
                 time = `${String(horas).padStart(2, '0')}:${String(minutos).padStart(2, '0')}:${String(segundos).padStart(2, '0')}`
             }
@@ -799,7 +805,9 @@ export default {
         #video{
             width: 100%;
             left: 50%;
-            transform: translateX(-50%)
+            transform: translateX(-50%);
+            background-color: var(--chatOpacity);
+
         }
     }
     @media screen and (max-width: 500px) {
@@ -821,6 +829,8 @@ export default {
         }
         .video-container-mobile #video {
             width: 100%;
+            background-color: var(--chatOpacity);
+
         }
         
     }

@@ -984,7 +984,7 @@ export default {
         }
         .video-menu-container{
             margin-top: 0px;
-            max-width: 333px;
+            max-width: 313px;
         }
     }
     @media screen and (max-width: 500px){
