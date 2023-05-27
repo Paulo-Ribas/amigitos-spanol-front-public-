@@ -135,7 +135,8 @@ export default {
       if(file.files.length < 1) return 
       let teste = file.files[0]
       Form.append("video", file.files[0]);
-      console.log(Form, ' o form')
+       
+
       this.setPropertyForVideoUpload()
       let headers = this.getAxiosHeaders()
       let axiosInfos = this.getAxiosConfigForUploadVideo(Form)
@@ -175,7 +176,8 @@ export default {
             this.getSetVideos(this.$cookies.get('token')).then(videos => {
                 this.showTardis = false
                 this.salving = false
-              console.log(videos)
+               
+
                 this.countVideo = this.countVideo - 1
                 this.prossesing = false
                 this.videoErr = ''
@@ -185,14 +187,16 @@ export default {
                 
               }
             }).catch(erro => {
-              console.log(erro)
+               
+
                this.videoErr = erro
               this.countVideo = this.countVideo - 1
               this.salving = false
 
             })
           }).catch(err =>{
-            console.log(err)
+             
+
             let status = document.querySelector('.status')
              
             this.showTardis = false
@@ -211,7 +215,8 @@ export default {
           }) 
       }
       catch(err) {
-        console.log(err)
+         
+
         this.prossesing = false
         this.salving = false
         this.converting = false

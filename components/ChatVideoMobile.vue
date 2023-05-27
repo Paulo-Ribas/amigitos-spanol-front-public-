@@ -435,7 +435,8 @@ export default {
             },
             showMemberInfo(index) {
             this.infoMembers = true
-            console.log(this.members, this.membersReactive, index, 'eae?')
+             
+
             this.memberChoiced = this.membersReactive[index]
 
         },

@@ -361,7 +361,8 @@ export default {
             })
         },
         sendCurrentTime(user){
-            console.log('console.log util, vamos descobrir o que está acontecendo', this.members, this.user.id)
+             
+
             if(this.members[0].id != this.user.id) return
             let video = document.getElementById('video')
             let videoStats = {
@@ -372,7 +373,8 @@ export default {
                     paused: video.paused,
                 }
             }
-            console.log('status del video', videoStats)
+             
+
             if (this.user.id != user) {
                 return this.socket.emit('sentCurrentTime', videoStats)
             }
@@ -388,7 +390,8 @@ export default {
             }
         },
         askForCurrentTime(){
-            console.log('console.log util, vamos descobrir o que está acontecendo',this.members, this.user.id)
+             
+
     
             if (this.user.id != this.members[0].id) {
                 this.socket.emit('askingUploadCurrentTime', {userId: this.user.id, room: this.room})
@@ -404,7 +407,8 @@ export default {
         },
         setOnlyCurrentTime(data){
             let video = document.querySelector('video')
-            console.log('vamos ver isso', data)
+             
+
             if (this.user.id === data.userId) {
                 let timeCalc = parseFloat((video.currentTime - data.currentTime).toFixed(3)) * 1000
                 if (timeCalc >= 5600 || timeCalc <= -600) {
@@ -413,7 +417,8 @@ export default {
             }
         },
         sendPlayerState(){
-             console.log(this.members)
+              
+
             let video = document.querySelector('video')
             if(this.user.id === this.members[0].id){
                 let playerState = video.paused

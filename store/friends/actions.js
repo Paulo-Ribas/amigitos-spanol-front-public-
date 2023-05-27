@@ -45,7 +45,8 @@ export default {
         }
          
         try {
-            console.log('fazendo requisição', axiosConfig)
+             
+
             let request = await this.$axios.$get('usersRequests', axiosConfig)
              
             return request.users
@@ -56,7 +57,8 @@ export default {
     },
     async acceptFriendRequest(context, payload) {
         let { friendId, axiosConfig } = payload
-        console.log('vou aceitar', friendId, axiosConfig)
+         
+
         try {
             let accepted = await this.$axios.$post('friend', { friendId: friendId }, axiosConfig)
             return accepted
