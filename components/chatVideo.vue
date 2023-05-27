@@ -133,7 +133,9 @@ export default {
         this.askChat()
         this.verifyEmptyMembers()
         this.memberIsMembersInterval = setInterval(() => {
-            this.checkIfMemberIsMember
+            if (this.$route.fullPath === `/watch/upload/${this.room}` || this.$route.fullPath === `/watch/youtube/${this.room}`) { 
+                this.checkIfMemberIsMember() 
+            }
         }, 6000);
 
     },
@@ -433,11 +435,12 @@ export default {
         },
         async checkIfMemberIsMember(){
             await this.attRoom()
-            let user = this.roomInfo.members.find(member => {
-                return member === this.user.id
+            let user = this.membersReactive.find(member => {
+                return member.id === this.user.id 
+
             })
             if(user) return
-            this.$router.push('/room')
+            this.$router.push('/room')                
         },
         async emitMsg() {
             let msg = document.querySelector('textarea')
@@ -860,9 +863,9 @@ export default {
         color: var(--cor7);
         transition: 0.2s;
     }
-    .options ul li:hover{
-        /* background-color: var(--cor7); */
-    }
+    /* .options ul li:hover{
+        background-color: var(--cor7); 
+    } */
     .options ul li:hover > .icon-li {
         transform: translateY(-2px);
         /*color: var(--cor8);*/
@@ -887,6 +890,7 @@ export default {
         z-index: 3;
         cursor: pointer;
         transition: 0.2s;
+        
     }
     .erro {
         color: white;
