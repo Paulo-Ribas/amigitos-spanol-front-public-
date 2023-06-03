@@ -166,10 +166,12 @@ export default {
             value.length === 0 ? this.requestWarning = false : this.requestWarning = true
         },
         currentTime(value, payload){
-            if(value === isNaN) this.currentTime = '00:00'
+            let NaNSplit = value.split('N')
+            if (NaNSplit.length > 1) this.currentTime = '00:00'
         },
         duration(value, payload){
-            if (value === isNaN) this.currentTime = '00:00'
+            let NaNSplit = value.split('N')
+            if (NaNSplit.length > 1) this.duration = '00:00'
 
         }
     },

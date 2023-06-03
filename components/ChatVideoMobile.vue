@@ -733,6 +733,7 @@ export default {
         display: flex;
         height: 100%;
         width: 100%;
+        overflow: hidden;
         
     }
     .img-name-container img {
@@ -957,6 +958,7 @@ export default {
         font-family: cursive;
         font-size: 1.4em;
         margin-left: 11px;
+        text-overflow: ellipsis;
     }
     .msg-text {
         font-family: cursive;

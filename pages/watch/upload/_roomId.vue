@@ -164,7 +164,7 @@ export default {
         },
         duration(value, payload) {
             let NaNSplit = value.split('N')
-            if (NaNSplit.length > 1) this.currentTime = '00:00'
+            if (NaNSplit.length > 1) this.duration = '00:00'
 
         }
     },
