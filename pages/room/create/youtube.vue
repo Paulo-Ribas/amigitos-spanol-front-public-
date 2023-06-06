@@ -25,7 +25,7 @@
                 </Transition>
             </div>
             <div class="submit">
-                <ButtonSpecial btnProps="Criar Sala" class="create"></ButtonSpecial>
+                <BtnSpecial btnProps="Criar Sala" class="create"></BtnSpecial>
             </div>
         </form>
 

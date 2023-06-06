@@ -1,11 +1,11 @@
 <template>
-  <button class="btn-special" @click="clicked"> {{btnValue}}</button>
+    <button class="btn-special" @click="clicked"> {{ btnValue }}</button>
 </template>
 
 <script>
 export default {
     name: 'ButtonSpecial',
-    data(){
+    data() {
         return {
             btnValue: this.$props.btnProps
         }
@@ -14,7 +14,7 @@ export default {
         btnProps: String
     },
     methods: {
-        clicked(){
+        clicked() {
             this.$emit('clicked')
         }
     }
@@ -22,7 +22,7 @@ export default {
 </script>
 
 <style scoped>
-    .btn-special{
+.btn-special {
     width: 100%;
     padding: 8px 0px;
     font-family: cursive;
@@ -31,6 +31,5 @@ export default {
     background-color: var(--cor4);
     display: block;
     text-decoration: none;
-    }
-
+}
 </style>

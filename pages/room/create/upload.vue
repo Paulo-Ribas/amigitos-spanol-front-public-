@@ -36,7 +36,7 @@
             </div>
             <div class="submit">
                 <input type="button" value="Escolher Videos" @click="showAlgo = true">
-                <ButtonSpecial btnProps="Criar Sala" class="create"></ButtonSpecial>
+                <BtnSpecial btnProps="Criar Sala" class="create"></BtnSpecial>
             </div>
         </form>
 

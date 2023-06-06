@@ -1,7 +1,7 @@
 <template>
   <div class="tabble">
-    <ButtonSpecial v-if="selectAll" btnProps="Selecionar Tudo" @clicked="selectedAll()"/>
-    <ButtonSpecial v-if="deselectAll" btnProps="Remover Tudo" @clicked="deselectedAll()"/>
+    <BtnSpecial v-if="selectAll" btnProps="Selecionar Tudo" @clicked="selectedAll()"></BtnSpecial>
+    <BtnSpecial v-if="deselectAll" btnProps="Remover Tudo" @clicked="deselectedAll()"></BtnSpecial>
       <table>
          <tbody>
           <tr v-for="(video, index) in videos" :key="video.name">

@@ -45,8 +45,8 @@
             @muteUnmute="muteUnmute()"
             />
         </div>
-        <ChatVideo v-show="joined && !mobile" @clicked="showVideos = !showVideos"/>
-        <ChatVideoMobile v-show="joined && mobile" @clicked="showVideos = !showVideos"/>
+        <ChatPcVideo v-show="joined && !mobile" @clicked="showVideos = !showVideos"></ChatPcVideo>
+        <ChatoMobileVideo v-show="joined && mobile" @clicked="showVideos = !showVideos"></ChatoMobileVideo>
     </div>
 
 </template>

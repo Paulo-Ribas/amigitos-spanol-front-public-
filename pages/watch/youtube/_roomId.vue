@@ -41,8 +41,8 @@
             :time="currentTime"
             :durationProps="duration"></ControlsPlayerLiveYtMobile>
         </div>
-        <ChatVideo v-show="joined && !mobile && !theater" @clicked="showVideos = !showVideos"/>
-        <ChatVideoMobile v-show="!showVideos" v-if="joined && mobile" @clicked="showVideos = !showVideos"/>
+        <ChatPcVideo v-show="joined && !mobile && !theater" @clicked="showVideos = !showVideos"></ChatPcVideo>
+        <ChatMobileVideo v-show="!showVideos" v-if="joined && mobile" @clicked="showVideos = !showVideos"></ChatMobileVideo>
     </div>
     
 </template>
