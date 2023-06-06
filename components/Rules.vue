@@ -8,7 +8,7 @@
             <li class="rulesTypes" @click="selected(3)">3</li>
         </ul>
     </div>
-    <ButtonSpecial btnProps="Selecionar" @clicked="btnClicked"/>
+    <BtnSpecial btnProps="Selecionar" @clicked="btnClicked"/>
   </div>
 </template>
 

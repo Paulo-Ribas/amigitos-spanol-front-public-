@@ -161,7 +161,6 @@ export default {
             throw error
         }
     },
-    name: 'ChatVideoMobile',
     fetchOnServer: false,
     beforeMount() {
         this.connectionServer()

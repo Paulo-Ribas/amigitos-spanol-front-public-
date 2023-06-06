@@ -171,7 +171,6 @@ export default {
             throw error
         }
     },
-    name: 'ChatVideo',
     fetchOnServer: false,
     async mounted() {
         await this.JoinRoom()

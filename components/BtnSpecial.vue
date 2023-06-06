@@ -4,7 +4,6 @@
 
 <script>
 export default {
-    name: 'ButtonSpecial',
     data() {
         return {
             btnValue: this.$props.btnProps
