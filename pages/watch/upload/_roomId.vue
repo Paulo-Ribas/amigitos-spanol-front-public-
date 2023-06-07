@@ -46,7 +46,7 @@
             />
         </div>
         <ChatPcVideo v-show="joined && !mobile" @clicked="showVideos = !showVideos"></ChatPcVideo>
-        <ChatoMobileVideo v-show="joined && mobile" @clicked="showVideos = !showVideos"></ChatoMobileVideo>
+        <ChatMobileVideo v-show="joined && mobile" @clicked="showVideos = !showVideos"></ChatMobileVideo>
     </div>
 
 </template>
