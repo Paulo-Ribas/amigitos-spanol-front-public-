@@ -142,9 +142,9 @@
                             </div>
                         </div>
                     </div>
-                    <div class="text-area-container">
+                    <div id="text-area-container">
                         <form class="btn-form" v-show="!muted">
-                            <textarea class="textarealol" v-show="msgErr === ''" @keydown="sendByEnter">
+                            <textarea id="textarealol" v-show="msgErr === ''" @keydown="sendByEnter">
                                 </textarea>
                             <div class="erro" v-show="msgErr != ''">
                                 {{ msgErr }}
@@ -981,7 +981,7 @@ a {
     overflow-y: auto;
 }
 
-.text-area-container {
+#text-area-container {
     position: relative;
     height: 45px;
     background-color: var(--cor4);
@@ -995,7 +995,7 @@ a {
     align-items: center;
 }
 
-.textarealol {
+#textarealol {
     width: calc(100% - 30px);
     height: 99%;
     font-family: cursive;

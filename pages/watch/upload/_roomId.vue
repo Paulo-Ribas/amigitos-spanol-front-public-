@@ -30,7 +30,7 @@
         </div>
         <div class="video-container-mobile" v-if="joined && mobile">
             <video @timeupdate="GaloFilhoDaPuta()" tabindex="1" @dblclick="fullScreamToggle()" 
-            @click="showObject(), emitPlayPause()" @keydown="emitKeysEvents($event)" id="video">
+            @click="showObject(), emitPlayPause()" @keydown="emitKeysEvents($event)" @loadedmetadata="setDuration" @loadeddata="setDuration" id="video">
                 <source src="/videoplayback.mp4" type="video/mp4">
             </video>
             <ControlsPlayerLiveMobile

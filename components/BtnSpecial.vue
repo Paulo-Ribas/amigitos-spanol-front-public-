@@ -1,5 +1,5 @@
 <template>
-    <button class="btn-special" @click="clicked"> {{ btnValue }}</button>
+    <button id="btn-special" @click="clicked"> {{ btnValue }}</button>
 </template>
 
 <script>
@@ -21,9 +21,9 @@ export default {
 </script>
 
 <style scoped>
-.btn-special {
-    width: 100%;
+#btn-special {
     padding: 8px 0px;
+    width: 100%;
     font-family: cursive;
     color: white;
     text-align: center;
