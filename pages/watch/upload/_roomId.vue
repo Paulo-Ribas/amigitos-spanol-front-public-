@@ -637,6 +637,7 @@ export default {
             this.currentTime = time
         },
         emitKeysEvents($event){
+            if($event.key.code === 'f') return this.fullScreamToggle()
             const eventEmit = {
                 code: $event.code
             }
