@@ -40,7 +40,7 @@ export default {
     name:'',
     async fetch(){
         await this.setState()
-        axios.get(`https://www.amigitos-espanol-api.com.br/user/${this.$route.params.userId}`).then(dates => {
+        axios.get(`http://localhost:3333/user/${this.$route.params.userId}`).then(dates => {
             this.name = dates.data.user[0].username
             this.emoji = dates.data.user[0].emoji
             this.description = dates.data.user[0].description

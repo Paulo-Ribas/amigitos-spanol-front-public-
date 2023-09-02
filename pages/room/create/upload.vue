@@ -11,7 +11,8 @@
         </div>
       </div>
     </div>
-    <div class="container" v-show="!showAlgo">
+    <TardisLoadBig v-if="loanding"></TardisLoadBig>
+    <div class="container" v-if="!loanding" v-show="!showAlgo">
         <Rules @ruleSelected="changeRulesType($event)" @error="erro = $event.err" v-if="changeRules"/>
         <fa icon="gears" class="icon-gear" @click="changeRules = !changeRules" v-if="!changeRules"></fa>
         <form @submit="preventSubmit($event), sendRoomData()">
@@ -46,6 +47,7 @@
 
 <script>
 import { mapActions } from 'vuex'
+import TardisLoadBig from '../../../components/TardisLoadBig.vue'
 export default {
     name: '',
     async asyncData(context){
@@ -55,8 +57,8 @@ export default {
     }
   },
     middleware:['auth'],
-    beforeMount(){
-        this.loanding = true
+    mounted(){
+        this.loanding = false
     },
     head(){
         return {
@@ -82,12 +84,13 @@ export default {
             videosAdded: [],
             showAlgo: false,
             erro: '',
-            loanding: false,
+            loanding: true,
             changeRules: false,
             rulesType: 1,
         }
     },
-    components: { 
+    components: {
+        TardisLoadBig 
     },
     watch:{
         name(value, payload){

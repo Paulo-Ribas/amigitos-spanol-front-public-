@@ -138,7 +138,9 @@ export default {
             requestWarnList: [],
             requestWarning: false,
             theater: false,
-            duration: '00:00'
+            duration: '00:00',
+            userAction: false,
+            Action: {},
             
 
         }
@@ -193,7 +195,7 @@ export default {
     middleware: ['auth', 'roomPass', 'roomBanned'],
     methods: {
         connectionServer(){
-           this.socket = io.connect('https://www.amigitos-espanol-api.com.br/',{ rememberTransport: false, transports: ['websocket', 'polling', 'Flash Socket', 'AJAX long-polling']})
+           this.socket = io.connect('http://localhost:3333/',{ rememberTransport: false, transports: ['websocket', 'polling', 'Flash Socket', 'AJAX long-polling']})
            this.socket.on('sendRequestForSynchronization', data => {
             this.sendVideoUrl(data)
            })
@@ -322,6 +324,15 @@ export default {
             else {
                 this.mobile = false
             }
+        },
+        setUserActions(data){
+            this.userAction = false
+            this.userAction = true
+            let action = {
+                name: data.userName,
+                action: data.action
+            }
+            this.
         },
         setFocus(){
             let video = document.getElementById('video')

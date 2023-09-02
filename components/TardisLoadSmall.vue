@@ -10,7 +10,7 @@ export default {
 }
 </script>
 
-<style>
+<style scoped>
     .tardis {
         position: absolute;
         top: 50%;

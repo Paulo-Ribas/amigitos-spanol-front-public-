@@ -51,14 +51,15 @@ export default {
             this.loanding = true
              
             axios.post(` 
-https://www.amigitos-espanol-api.com.br/login`,{username: name, email, password}).then(sucefful => {
+http://localhost:3333/login`,{username: name, email, password}).then(sucefful => {
                 let token = sucefful.data.token
                 this.$store.commit('user/SET_TOKEN', 'bearer ' + token)
                 this.$store.dispatch('user/validateUser', 'bearer ' + token).then(res => {
                     let id = res.id
                     this.$router.push({name: 'users-userId', params:{userId: id}})
                 }).catch(err => {
-                     
+                    console.log(err)
+                     this.erro = err.response.data.err
                 })
             }).catch(err => {
                  
