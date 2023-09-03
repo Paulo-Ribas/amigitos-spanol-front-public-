@@ -39,6 +39,7 @@ export default {
                     try {
                         controls.classList.add('opacity0')
                         this.removeDisplayBlock()
+                        this.showControls = 0
                     } catch (error) {
                         throw error    
                     }
@@ -46,7 +47,7 @@ export default {
                 return timeOut
         }
         let interval = setInterval(() => {
-             
+            
             MouseVerify()
         }, 7000);
         document.querySelector('.video-container').addEventListener('click', function (){
@@ -67,6 +68,7 @@ export default {
             currentTime: this.$props.time,
             duration: this.$props.durationProps,
             displayBlock: false,
+            showControls: 0
         }
     },
     props: {
@@ -84,6 +86,7 @@ export default {
     },
     methods: {
         PlayPauseVideo($event){
+            if(this.showControls < 2) return
             this.$emit('PlayPauseVideo', $event)
              
         },
@@ -91,9 +94,11 @@ export default {
             this.$emit('mouseSegura', $event)
         },
         setVolume($event){
+            if(this.showControls < 2) return
             this.$emit('setVolume', $event)
         },
         aprenderMatematica($event){
+            if(this.showControls < 2) return
             this.$emit('aprenderMatematica', $event)
         },
         keysEvents($event){
@@ -108,6 +113,7 @@ export default {
             this.$emit('muteUnmute')
         },
         toggleControll(){
+            this.showControls++ 
             this.displayBlock = true
         },
         removeDisplayBlock(){

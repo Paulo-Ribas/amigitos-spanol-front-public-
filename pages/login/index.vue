@@ -89,7 +89,7 @@ http://localhost:3333/login`,{username: name, email, password}).then(sucefful =>
         margin-bottom: -23px;
         text-decoration-color: var(--corAzul);
     }
-    form {
+    .login form {
         width: 100%;
         max-width: 600px;
         display: flex;
@@ -98,7 +98,7 @@ http://localhost:3333/login`,{username: name, email, password}).then(sucefful =>
         align-items: center;
         position: relative;
     }
-    input {
+    .login input {
         width: 100%;
         max-width: 410px;
         background-color: var(--corMenu);

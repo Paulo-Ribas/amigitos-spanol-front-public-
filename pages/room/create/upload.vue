@@ -279,12 +279,12 @@ export default {
     .passwordTransition-enter-to {
         width: 100%;
     }
-    form {
+    .container form {
         width: 100%;
         display: flex;
         flex-direction: column;
     }
-    input {
+    .container input {
     background-color: white;
     padding: 3px 5px;
     margin: 5px 2px;

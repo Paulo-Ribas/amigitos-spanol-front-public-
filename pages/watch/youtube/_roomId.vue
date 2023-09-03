@@ -10,6 +10,16 @@
         <VideoRequestYT :requestInfoProps="requestInfo" v-if="showRequestInfo" @accepted="acceptedRequest($event)" @rejected="rejectedRequest($event)"></VideoRequestYT>
         <RequestList :requestArrayProps="requestWarnList" v-if="requestWarning" @requestSelected="showRequest($event)" ></RequestList>
         <div class="youtube-VideoPlayer" @click="setFocus()" tabindex="1" @keydown="emitKeysEvents($event)" v-if="joined && !mobile" id="video">
+            <Transition name="actions">
+                <div v-if="userAction">
+                    <span class="userActionName">
+                        {{executedAction.name}} 
+                    </span>
+                    <span class="userActionIcon">
+                        {{executedAction.action}}
+                    </span>
+                </div>
+            </Transition>
             <div class="wall" @click="emitPlayPause(), setFocus()" @keydown="emitKeysEvents($event)"></div>
             <playerYT class="teste" @error="showError($event)" @cued="AskForSyncronization(), setDuration()" @ready="ready($event), setDuration()" @playing="playing($event)" :player-vars="{autoplay:0, controls: 0, rel: 0, modestbranding: 1}" player-rel="0" player-width="100%" player-height="100%" :video-id="videoId"></playerYT>
             <ControlsPlayerLiveYT
@@ -27,6 +37,7 @@
             <ChatFullScreen v-show="theater"></ChatFullScreen>
         </div>
         <div class="youtube-VideoPlayer-mobile" tabindex="1" id="video" @keydown="emitKeysEvents($event)" v-if="joined && mobile">
+            <div class="before-wall" v-if="beforeWall" ></div>
             <div class="wall" @click="emitPlayPause(), setFocus()" @keydown="emitKeysEvents($event)"></div>
             <playerYT class="teste" @error="showError($event)" @cued="AskForSyncronization(), setDuration()" @ready="ready($event), setDuration()" @playing="playing($event)" :player-vars="{autoplay:0, controls: 0, rel: 0, modestbranding: 1 }" player-width="100%" player-height="100%" :video-id="videoId"></playerYT>
             <ControlsPlayerLiveYtMobile
@@ -140,7 +151,7 @@ export default {
             theater: false,
             duration: '00:00',
             userAction: false,
-            Action: {},
+            executedAction: {},
             
 
         }
@@ -327,12 +338,15 @@ export default {
         },
         setUserActions(data){
             this.userAction = false
-            this.userAction = true
             let action = {
                 name: data.userName,
                 action: data.action
             }
-            this.
+            this.executedAction = action
+            this.userAction = true
+            setTimeout(() => {
+                this.userAction = false
+            }, 500);
         },
         setFocus(){
             let video = document.getElementById('video')
