@@ -68,12 +68,12 @@ export default {
     component: 'fa',
     icons: {
       solid: ['faUserGroup','faHome', 'faEnvelope', 'faUser', 'faUsers', 'faChalkboard',
-        'faUpload', 'faPenToSquare', 'faCheck', 'faXmark', 'faArrowRightFromBracket', 'faArrowLeft', 'faSearch', 'faGears', 'faFilm', 'faCommentSlash', 'faHammer', 'faPersonFallingBurst', 'faScrewdriverWrench', 'faComment', 'faChessKing', 'faExclamation', 'faEllipsis', 'faScrewdriver', 'faClapperboard', 'faMasksTheater', 'faUserPlus', 'faPeopleRoof'],
+        'faUpload', 'faPenToSquare', 'faCheck', 'faXmark', 'faArrowRightFromBracket', 'faArrowLeft', 'faArrowRight', 'faSearch', 'faGears', 'faFilm', 'faCommentSlash', 'faHammer', 'faPersonFallingBurst', 'faScrewdriverWrench', 'faComment', 'faChessKing', 'faExclamation', 'faEllipsis', 'faScrewdriver', 'faClapperboard', 'faMasksTheater', 'faUserPlus', 'faPeopleRoof'],
       brands: ['faYoutube']
     }
   },
   axios: {
-    baseURL: 'http://localhost:3333/'
+    baseURL: 'https://amigitos-espanol-api.com.br/'
 
   }, 
 

@@ -1,21 +1,33 @@
 <template>
   <main>
     <div class="container-main" v-if="!loanding && show">
+        <div class="imgAMG">
+          <img src="/logoAmigitos.png" alt="logo amigitos">
+        </div>
         <div class="container-text">
           <h1>ASSISTIR AO MESMO TEMPO</h1>
           <h2>Assista videos do youtube ao mesmo tempo com amigos em salas personalizadas ou assista videos próprios, fazendo upload dos videos desejados e criando uma sala personalizade para assistir ao em grupo com amigos, e caso também queira assistir Doctor Who, clique em assistir solo</h2>
         </div>
         <div class="login-sigin-container">
+          <div class="containerFat">
             <div class="login-container">
                   <NuxtLink to="/login">
                    Login
                   </NuxtLink>
-             </div>
-             <div class="sigin-container">
+                </div>
+            </div>
+            <p>
+                <fa icon="arrow-left"></fa>
+                <span>Seja um Amigito</span>
+                <fa icon="arrow-right"></fa>
+            </p>
+            <div class="containerFat">
+              <div class="sigin-container">
                 <NuxtLink to="/sign-up">
-                   Cadastre-se
-                 </NuxtLink>
-             </div>
+                     Cadastre-se
+                  </NuxtLink>
+              </div>
+            </div>
           </div>
         </div>
   </main>
@@ -66,7 +78,8 @@ export default {
 </script>
 <style scoped>
   main{
-    flex:1
+    flex:1;
+    overflow: auto;
   }
   .container-main{
     width: 100%;
@@ -78,22 +91,23 @@ export default {
     justify-content: center;
     align-items: center;
     font-family: cursive;
-    background-image: url('/tardis.png');
-    background-size: contain;
   }
   .container-text{
     text-align: center;
   }
   .container-text h1 {
-    color: var(--cor2);
-    text-shadow: 0px 0px 5px var(--cor7);
+    color: white;
+    background: var(--ReverseBackground);
+    margin: 10px 0px;
+    background-clip: text;
+    -webkit-background-clip: text;
+    -webkit-text-stroke: .15625em transparent ;
   }
   .container-text h2 {
     max-width: 800px;
-    font-size: 1.1em;
-    margin: 20px 0px;
-    color: black;
-    text-shadow: 0px 0px 5px var(--cor3);
+    font-size: .85em;
+    margin-bottom: 20px;
+    color: #FFFFFF;
   }
   .login-sigin-container {
     width: 100%;
@@ -101,29 +115,49 @@ export default {
     display: flex;
     justify-content: space-evenly;
   }
-  .login-container {
-    width: 120px;
-    height: 40px;
-    background: var(--corMenu);
-    border-radius: 6px;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    border: 2px solid var(--cor1);
+  .login-sigin-container p{
+    font-size: .8rem;
+    align-self: center;
+    color: white;
+    background: var(--background);
+    background-clip: text;
+    -webkit-background-clip: text;
+    -webkit-text-stroke: .2em transparent ;
   }
-  .sigin-container {
-    width: 120px;
-    height: 40px;
+  .login-sigin-container p svg{
+    stroke-width: 2px;
+    stroke: var(--background);
+  }
+  .login-sigin-container p > span{
+    text-transform: uppercase;
+    letter-spacing: -0.5px;
+  }
+  .containerFat{
+    background-color: var(--cor5);
+    width: 130px;
+    height: 50px;
+    border-radius: 10px;
+    padding: 1px .7px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .login-container, .sigin-container {
+    margin: auto;
+    width: calc(100% - .2100em);
+    height: calc(100% - .2100em);
     background: var(--corMenu);
+    border-radius: 10px; /* 10px .625em*/
     display: flex;
     justify-content: center;
     align-items: center;
-    border-radius: 6px;
-    border: 2px solid var(--cor1);
+    /* border: .1875em solid var(--cor5); */ /* 3px */
+    text-align: center;
   }
   .login-sigin-container a {
     text-decoration: none;
-    font-size: 1.1em;
+    text-transform: uppercase;
+    font-size: 0.9em;
     color: white;
     display: block;
     width: 100%;
@@ -132,5 +166,31 @@ export default {
     justify-content: center;
     align-items: center;
   }
-
+  .login-container:hover, .sigin-container:hover {
+    background-color: white;
+    
+  }
+  .login-container:hover a, .sigin-container:hover a {
+    color: transparent;
+    background: var(--ReverseBackground);
+    background-clip: text;
+    -webkit-background-clip: text;
+  }
+  .containerFat:has(.login-container:hover), .containerFat:has(.sigin-container:hover){
+    background: var(--ReverseBackground);
+  }
+  .login-container:active, .sigin-container:active {
+    background-color: white;
+    
+  }
+  .login-container:active a, .sigin-container:active a {
+    color: transparent;
+    background: var(--ReverseBackground);
+    background-clip: text;
+    -webkit-background-clip: text;
+  }
+  .containerFat:has(.login-container:active), .containerFat:has(.sigin-container:active){
+    background: var(--ReverseBackground);
+  }
+  
 </style>

@@ -61,7 +61,7 @@ export default {
         align-items: center;
         text-align: center;
     }
-    form {
+    .recovery form {
         width: 100%;
         max-width: 600px;
         display: flex;
@@ -70,7 +70,7 @@ export default {
         align-items: center;
         position: relative;
     }
-    input {
+    .recovery input {
         width: 100%;
         max-width: 410px;
         background-color: var(--corMenu);

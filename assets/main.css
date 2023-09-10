@@ -41,6 +41,7 @@ html {
     --cor8: #D94B67;
     --cor9: #E75464;
     --background: linear-gradient(var(--corAzul), var(--cor5));
+    --ReverseBackground: linear-gradient(var(--cor5), var(--corAzul));
     --scrollColor: linear-gradient(var(--scrollButton), var(--cor4));
 }
 

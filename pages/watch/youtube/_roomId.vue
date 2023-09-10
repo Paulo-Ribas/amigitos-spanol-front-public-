@@ -11,7 +11,7 @@
         <RequestList :requestArrayProps="requestWarnList" v-if="requestWarning" @requestSelected="showRequest($event)" ></RequestList>
         <div class="youtube-VideoPlayer" @click="setFocus()" tabindex="1" @keydown="emitKeysEvents($event)" v-if="joined && !mobile" id="video">
             <Transition name="actions">
-                <div v-if="userAction">
+                <div class="UserActions"  v-if="userAction">
                     <span class="userActionName">
                         {{executedAction.name}} 
                     </span>
@@ -37,7 +37,16 @@
             <ChatFullScreen v-show="theater"></ChatFullScreen>
         </div>
         <div class="youtube-VideoPlayer-mobile" tabindex="1" id="video" @keydown="emitKeysEvents($event)" v-if="joined && mobile">
-            <div class="before-wall" v-if="beforeWall" ></div>
+            <Transition name="actions">
+                <div class="UserActions"  v-if="userAction">
+                    <span class="userActionName">
+                        {{executedAction.name}} 
+                    </span>
+                    <span class="userActionIcon">
+                        {{executedAction.action}}
+                    </span>
+                </div>
+            </Transition>
             <div class="wall" @click="emitPlayPause(), setFocus()" @keydown="emitKeysEvents($event)"></div>
             <playerYT class="teste" @error="showError($event)" @cued="AskForSyncronization(), setDuration()" @ready="ready($event), setDuration()" @playing="playing($event)" :player-vars="{autoplay:0, controls: 0, rel: 0, modestbranding: 1 }" player-width="100%" player-height="100%" :video-id="videoId"></playerYT>
             <ControlsPlayerLiveYtMobile
@@ -206,7 +215,7 @@ export default {
     middleware: ['auth', 'roomPass', 'roomBanned'],
     methods: {
         connectionServer(){
-           this.socket = io.connect('http://localhost:3333/',{ rememberTransport: false, transports: ['websocket', 'polling', 'Flash Socket', 'AJAX long-polling']})
+           this.socket = io.connect('https://amigitos-espanol-api.com.br/',{ rememberTransport: false, transports: ['websocket', 'polling', 'Flash Socket', 'AJAX long-polling']})
            this.socket.on('sendRequestForSynchronization', data => {
             this.sendVideoUrl(data)
            })
@@ -223,7 +232,8 @@ export default {
            })
            this.socket.on('PlayPause', data => {
              
-            this.PlayPauseVideo()
+               this.PlayPauseVideo()
+               this.setUserActions(data.actions)
            })
            this.socket.on('keysEvents', key => {
             this.keysEvents(key.event)
@@ -339,7 +349,7 @@ export default {
         setUserActions(data){
             this.userAction = false
             let action = {
-                name: data.userName,
+                name: data.name,
                 action: data.action
             }
             this.executedAction = action
@@ -567,7 +577,12 @@ export default {
         },
         emitPlayPause($event){
             if(this.socket === null) return
-            this.socket.emit('playPause', {event: $event, room: this.room})
+            let videoState = this.player.getPlayerState()
+            let actions = {
+                name: this.user.userName,
+                action: videoState
+            }
+            this.socket.emit('playPause', {event: $event, room: this.room, actions})
 
         },
         sendPlayerState(){
@@ -864,6 +879,51 @@ export default {
         position: absolute !important;
         width: 100% !important;
         height: 100% !important;
+    }
+    .UserActions{
+        width: 100%;
+        position:absolute;
+        top:5%;
+        display:flex;
+        justify-content: center; 
+        z-index: 6;
+    }
+    .actions-enter-active{
+        opacity: 0;
+        transform: translateX(-50%);
+        transition-duration:.3s;
+    }
+    .actions-leave-active{
+        opacity:1;
+        transform:translateX(0px);
+        transition-duration:.1s;
+        transition-delay: .6s;
+    }
+    .actions-enter-from{
+        opacity: 0;
+        transform: translateX(-50%);
+    }
+    .actions-enter-to{
+        opacity:1;
+        transform:translateX(0px);
+    }
+    .actions-leave-from{
+        opacity:1;
+        transform:translateX(0px);
+    }
+    .actions-leave-to{
+        opacity:0;
+        transform:translateX(100%);
+    }
+    .userActionName{
+        font-size: 2em;
+        color:white;
+        text-shadow: 0px 0px 20px var(--cor3);
+        transform:translateX(0px);
+        background: var(--background);
+        background-clip: text;
+        -webkit-background-clip: text;
+        -webkit-text-stroke: .2em transparent ;
     }
     @media screen and (max-width: 870px) {
         .youtube-VideoPlayer-mobile {
