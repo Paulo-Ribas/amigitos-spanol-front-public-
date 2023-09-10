@@ -324,7 +324,7 @@ export default {
     },
     methods: {
         connectionServer() {
-            this.socket = io.connect('https://amigitos-espanol-api.com.br/')
+            this.socket = io.connect('https://amigitos-espanol-api.com.br/', { rememberTransport: false, transports: ['websocket', 'polling', 'Flash Socket', 'AJAX long-polling'] })
             this.socket.on('msg', data => {
                 this.renderMSG(data)
             })

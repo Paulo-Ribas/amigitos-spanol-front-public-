@@ -84,7 +84,7 @@ export default {
     },
     methods: {
         connectionServer(){
-            this.socket = io.connect('https://www.amigitos-espanol-api.com.br/')
+            this.socket = io.connect('https://www.amigitos-espanol-api.com.br/', { rememberTransport: false, transports: ['websocket', 'polling', 'Flash Socket', 'AJAX long-polling'] })
 
             this.socket.on('roomRefresh', data => {
                 this.socket.emit('deleteRoomsWith0Members')
