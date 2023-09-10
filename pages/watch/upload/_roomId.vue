@@ -33,7 +33,7 @@
             @muteUnmute="muteUnmute()"
             @theaterMode="fullScreamToggle($event), theaterModeToggle()"
             />
-            <ChatFullScreen v-show="theater"></ChatFullScreen>
+            <ChatFullScreen v-if="theater"></ChatFullScreen>
         </div>
         <div class="video-container-mobile" v-if="joined && mobile">
             <Transition name="actions">
@@ -59,8 +59,8 @@
             @muteUnmute="muteUnmute()"
             />
         </div>
-        <ChatPcVideo v-show="joined && !mobile" @clicked="showVideos = !showVideos"></ChatPcVideo>
-        <ChatMobileVideo v-show="joined && mobile" @clicked="showVideos = !showVideos"></ChatMobileVideo>
+        <ChatPcVideo v-if="joined && !mobile" @clicked="showVideos = !showVideos"></ChatPcVideo>
+        <ChatMobileVideo v-if="joined && mobile" @clicked="showVideos = !showVideos"></ChatMobileVideo>
     </div>
 
 </template>
