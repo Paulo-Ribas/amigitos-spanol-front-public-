@@ -20,7 +20,7 @@
                 <span>
                   <fa icon="arrow-left"></fa>
                 </span>
-                <span>Seja um Amigito</span>
+                <span class="text">Seja um Amigito</span>
                 <span>
                   <fa icon="arrow-right"></fa>
                 </span>
@@ -84,9 +84,9 @@ export default {
   main{
     flex:1;
     overflow: auto;
+    padding: 10% 5%;
   }
   .container-main{
-    padding: 10% 3%;
     width: 100%;
     max-width: 800px;
     margin: auto;
@@ -133,6 +133,10 @@ export default {
     -webkit-background-clip: text;
     -webkit-text-stroke: .25em transparent ;
     flex: 1;
+    text-align: center;
+  }
+  .text {
+    margin: 3px 0px;
   }
   .login-sigin-container p svg{
     stroke-width: 2px;
