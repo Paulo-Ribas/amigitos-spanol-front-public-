@@ -328,10 +328,9 @@ export default {
             this.socket.on('msg', data => {
                 this.renderMSG(data)
             })
-            this.socket.on('listMembersUpdate', data => {
-
+            this.socket.on('listMembersUpdate', async data => {
+                await this.attRoom()
                 this.updateMember(data)
-                this.attRoom()
             })
             this.socket.on('requestMsg', data => {
                 this.sendChat(data)
@@ -418,6 +417,7 @@ export default {
                 let roomInfo = await this.getRoom(this.room)
                 this.roomInfo = roomInfo.room
                 this.members = roomInfo.room.members
+                this.membersReactive = roomInfo.room.members
             } catch (error) {
                 this.err = error
                 throw error
@@ -691,8 +691,8 @@ export default {
         emitKick(member) {
             this.socket.emit('kickMember', { member, room: this.room })
         },
-        kickApply(member) {
-
+        async kickApply(member) {
+            await this.attRoom()
             if (this.user.id != member.id) return
 
             this.$router.push('/room')
@@ -700,12 +700,10 @@ export default {
         emitMute(member) {
             this.socket.emit('muteMember', { member: member, room: this.room })
         },
-        muteApply(room) {
-
-            this.roomInfo = room
+        async muteApply() {
+            await this.attRoom()
         },
         checkMuted() {
-
             let isMuted = this.roomInfo.isMuted.find(users => {
                 return users.id === this.user.id
             })
@@ -714,17 +712,15 @@ export default {
         emitUnmute(member) {
             this.socket.emit('unmuteMember', { member, room: this.room })
         },
-        unmuteApply(data) {
-            this.roomInfo = data.room
+        async unmuteApply(data) {
+            await this.attRoom()
         },
         emitBan(member) {
-
             this.banning = false
             this.socket.emit('banMember', { member, room: this.room })
 
         },
-        banApply(data) {
-            this.roomInfo = data.room
+        async banApply(data) {
             let member = data.member
 
             this.emitKick(member)
@@ -733,7 +729,7 @@ export default {
             this.socket.emit('allowChoice', { member, room: this.room })
         },
         applyAllowChoiceVideos(data) {
-            this.roomInfo = data.room
+            this.attRoom()
 
 
         },
@@ -742,7 +738,7 @@ export default {
             this.socket.emit('removeAllowedMemberChoice', { member, room: this.room })
         },
         applyRemoveAllowedMemberChoice(data) {
-            this.roomInfo = data.room
+            this.attRoom()
         },
         emitAdm(member) {
 
@@ -751,15 +747,14 @@ export default {
 
         },
         applyAdm(data) {
-            this.roomInfo = data.room
+            this.attRoom()
         },
         emitRemoveMemberAdm(member) {
 
             this.socket.emit('removeMemberAdm', { member: member, room: this.room })
         },
         applyRemoveMemberAdm(data) {
-
-            this.roomInfo = data.room
+            this.attRoom()
         }
 
     }

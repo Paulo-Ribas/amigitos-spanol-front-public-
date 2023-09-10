@@ -884,6 +884,7 @@ export default {
         min-width: 400px;
         height: 480px;
         max-height: 480px;
+        overflow: hidden;
     }
     .youtube-VideoPlayer .teste, #youtube-player-1{
         position: absolute !important;

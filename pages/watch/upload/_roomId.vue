@@ -567,7 +567,7 @@ export default {
                 play.src = '/svg/botao_play_.svg'
             }
         },
-        etUserActions(data) {
+        setUserActions(data) {
             this.userAction = false
             let action = {
                 name: data.name,
@@ -823,6 +823,7 @@ export default {
         min-width: 400px;
         height: 480px;
         outline: none;
+        overflow: hidden;
     }
     video {
         position: absolute;
@@ -846,6 +847,7 @@ export default {
         min-width: 400px;
         height: 480px;
         max-height: 480px;
+        overflow: hidden;
     }
     .UserActions{
         width: 100%;
