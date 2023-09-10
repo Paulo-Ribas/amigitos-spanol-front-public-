@@ -85,17 +85,33 @@ export default {
     flex:1;
     overflow: auto;
     padding: 10% 5%;
+    height: 100vh;
   }
   .container-main{
     width: 100%;
     max-width: 800px;
     margin: auto;
-    height: 100vh;
+    height: 100%;
     display: flex;
     flex-direction: column;
     justify-content: center;
     align-items: center;
     font-family: cursive;
+    padding: 2% 2%;
+  }
+  .imgAmg {
+    width: 70%;
+    height: 70%;
+    max-width: 266px;
+    max-height: 248px;
+    position: relative;
+  }
+  .imgAmg img {
+    position: absolute;
+    object-fit: contain;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
   }
   .container-text{
     text-align: center;
@@ -116,7 +132,6 @@ export default {
   }
   .login-sigin-container {
     width: 100%;
-    max-width: 500px;
     display: flex;
     justify-content: space-evenly;
     align-items: center;
