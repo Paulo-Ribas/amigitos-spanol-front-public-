@@ -4,7 +4,7 @@
     <div class="container-box-poop" v-show="showAlgo">
       <div class="warn-container">
         <h2>Selecione Os Videos</h2>
-            <TabbleVideosList class="tableWarn" :btnProps="propsForBtn" :selectAllProps="true" :videosProps="videos" @selected="addOrRemoveVideo($event)" @selectedAll="addAll()" @deselectAll="removeAll()"/>
+            <TabbleVideosList class="tableWarn" btnProps="Selecionar" :selectAllProps="true" :videosProps="videos" @selected="addOrRemoveVideo($event)" @selectedAll="addAll()" @deselectAll="removeAll()"/>
         <div class="btn-container">
             <button class="yes" @click="yes">Pronto</button>
             <button class="no" @click="close">Cancelar</button>
@@ -87,7 +87,6 @@ export default {
             loanding: true,
             changeRules: false,
             rulesType: 1,
-            propsForBtn: 'Selectionar Tudo'
         }
     },
     components: {
@@ -145,9 +144,8 @@ export default {
             this.videosAdded.push(video)
         },
         addAll(){
-            console.log('vou adicionar as coisas aqui')
+            console.log('vou add tudo lol')
             this.videosAdded = this.videos
-            this.propsForBtn = 'Desselecionar Tudo'
             let selecteds = document.querySelectorAll('tr')
             selecteds.forEach(selected => {
                 selected.lastElementChild.innerHTML === "Cancelar" ? selected.lastElementChild.innerHTML = 'Selecionar' : selected.lastElementChild.innerHTML = 'Cancelar'
@@ -163,7 +161,6 @@ export default {
                 selected.lastElementChild.previousElementSibling.classList.remove('selected')
             })
             this.videosAdded = []
-            this.propsForBtn = 'Selectionar Tudo'
         },
         changeRulesType(event) {
             this.changeRules = false

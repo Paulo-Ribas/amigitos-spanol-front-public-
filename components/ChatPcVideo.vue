@@ -181,7 +181,7 @@ export default {
             if (this.$route.fullPath === `/watch/upload/${this.room}` || this.$route.fullPath === `/watch/youtube/${this.room}`) {
                 this.checkIfMemberIsMember()
             }
-        }, 6000);
+        }, 12000);
 
     },
     data() {
@@ -311,12 +311,12 @@ export default {
         }
     },
     watch: {
-        roomInfo(value, payload) {
-            this.checkMuted()
-            this.checkAdm()
-            this.changeMembersValues()
-            this.checkIfMemberIsMember()
-            this.attMemberChoiced()
+        async roomInfo(value, payload) {
+            await this.checkMuted()
+            await this.checkAdm()
+            await this.changeMembersValues()
+            await this.checkIfMemberIsMember()
+            await this.attMemberChoiced()
         }
     },
     beforeDestroy() {
@@ -442,7 +442,7 @@ export default {
 
         },
         attMemberChoiced(){
-            let member = this.membersReactive.find(member => this.user.id === member.id)
+            let member = this.membersReactive.find(member => memberChoiced.id === member.id)
             if(member) return this.memberChoiced = member
             else this.memberChoiced = infoMembers = false
         },

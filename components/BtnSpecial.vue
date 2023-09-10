@@ -14,7 +14,7 @@ export default {
     },
     watch:{
         btnProps(value, preload){
-            this.btnValue = this.btnProps
+            this.btnValue = this.$props.btnProps
         },
     },
     methods: {
