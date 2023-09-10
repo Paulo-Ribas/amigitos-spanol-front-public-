@@ -73,7 +73,6 @@ export default {
     mounted(){
         this.loading = false
          
-        this.connectServer()
     },
     head(){
         return {
@@ -268,9 +267,7 @@ export default {
             let amount = await axios.get(`https://www.amigitos-espanol-api.com.br/friendsAmount/${this.$route.params.userId}`)
             this.friends = amount.data.friendsAmount
         },
-        async connectServer(){
-            this.socket = io.connect('https://www.amigitos-espanol-api.com.br/')
-        },
+
         sendNotification(){
             this.socket.emit('friendRequestSent', {userId: this.userId, room: this.$route.params.userId})
         },
