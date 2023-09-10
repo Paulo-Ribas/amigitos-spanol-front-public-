@@ -4,7 +4,7 @@
     <div class="container-box-poop" v-show="showAlgo">
       <div class="warn-container">
         <h2>Selecione Os Videos</h2>
-            <TabbleVideosList class="tableWarn" btnProps="Selecionar" :selectAllProps="true" :videosProps="videos" @selected="addOrRemoveVideo($event)" @selectedAll="addAllVideos()" @deselectAll="removeAllVideos()"/>
+            <TabbleVideosList class="tableWarn" btnProps="Selecionar" :selectAllProps="true" :videosProps="videos" @selectedVideo="addOrRemoveVideo($event)" @selectAllVideos="addAllVideos()" @deselectAllVideos="removeAllVideos()"/>
         <div class="btn-container">
             <button class="yes" @click="yes">Pronto</button>
             <button class="no" @click="close">Cancelar</button>
@@ -144,7 +144,7 @@ export default {
             this.videosAdded.push(video)
         },
         addAllVideos(){
-            console.log('vou add tudo lol')
+            console.log('ADDDDDD TUDOOOOOO!!!!!!!!!!!!!!!!!!!!')
             this.videosAdded = this.videos
             let selecteds = document.querySelectorAll('tr')
             selecteds.forEach(selected => {

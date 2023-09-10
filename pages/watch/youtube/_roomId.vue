@@ -31,7 +31,7 @@
             @muteUnmute="muteUnmute()"
             :time="currentTime"
             :durationProps="duration"></ControlsPlayerLiveYT>
-            <ChatFullScreen v-show="theater"></ChatFullScreen>
+            <ChatFullScreen :chatProps="msgs" v-if="theater"></ChatFullScreen>
         </div>
         <div class="youtube-VideoPlayer-mobile" tabindex="1" id="video" @keydown="emitKeysEvents($event)" v-if="joined && mobile">
             <Transition name="actions">
@@ -55,8 +55,8 @@
             :time="currentTime"
             :durationProps="duration"></ControlsPlayerLiveYtMobile>
         </div>
-        <ChatPcVideo v-show="joined && !mobile && !theater" @clicked="showVideos = !showVideos"></ChatPcVideo>
-        <ChatMobileVideo v-show="!showVideos" v-if="joined && mobile" @clicked="showVideos = !showVideos"></ChatMobileVideo>
+        <ChatPcVideo :chatProps="msgs" v-if="joined && !mobile && !theater" @clicked="showVideos = !showVideos"></ChatPcVideo>
+        <ChatMobileVideo :chatProps="msgs" v-show="!showVideos" v-if="joined && mobile" @clicked="showVideos = !showVideos"></ChatMobileVideo>
     </div>
     
 </template>
@@ -155,6 +155,7 @@ export default {
             duration: '00:00',
             userAction: false,
             executedAction: {},
+            msgs: [],
             
 
         }
@@ -217,6 +218,7 @@ export default {
             this.updateMemberRoom(data)
            })
            this.socket.on('msg', data => {
+            this.addMsg(data)
            })
            this.socket.on('setVideoUrl', data => {
             this.setVideoUrl(data)
@@ -330,6 +332,27 @@ export default {
         },
         updateMemberRoom(member){
             this.members = member
+        },
+        addMsg(msg) {
+            let msgText = msg.text
+            let emojiVerify = msg.text.split('|')
+            let emoji
+            if (emojiVerify[0] === "(-emoji#)") {
+                emoji = true
+
+                let newMsgFormat = emojiVerify[1]
+                msgText = newMsgFormat
+            }
+            let mensagem = {
+                userName: msg.userName,
+                userImg: msg.userImg,
+                text: msgText,
+                emoji: emoji,
+                id: msg.userId
+            }
+
+            this.msgs.push(mensagem)
+
         },
         AskForSyncronization(){
              

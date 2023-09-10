@@ -33,7 +33,7 @@
             @muteUnmute="muteUnmute()"
             @theaterMode="fullScreamToggle($event), theaterModeToggle()"
             />
-            <ChatFullScreen v-if="theater"></ChatFullScreen>
+            <ChatFullScreen :chatProps="msgs" v-if="theater"></ChatFullScreen>
         </div>
         <div class="video-container-mobile" v-if="joined && mobile">
             <Transition name="actions">
@@ -59,8 +59,8 @@
             @muteUnmute="muteUnmute()"
             />
         </div>
-        <ChatPcVideo v-if="joined && !mobile" @clicked="showVideos = !showVideos"></ChatPcVideo>
-        <ChatMobileVideo v-if="joined && mobile" @clicked="showVideos = !showVideos"></ChatMobileVideo>
+        <ChatPcVideo :chatProps="msgs" v-if="joined && !mobile" @clicked="showVideos = !showVideos"></ChatPcVideo>
+        <ChatMobileVideo :chatProps="msgs" v-if="joined && mobile" @clicked="showVideos = !showVideos"></ChatMobileVideo>
     </div>
 
 </template>
@@ -153,6 +153,7 @@ export default {
             roomInfo: {},
             userAction: false,
             executedAction: {},
+            msgs: [],
         }
     },
     watch:{
@@ -199,7 +200,7 @@ export default {
             return this.$mq
         }
     },
-    middleware: ['auth', 'roomPass'],
+    middleware: ['auth', 'roomPass', 'roomBanned'],
     methods: {
         connectionServer(){
            this.socket = io.connect('https://www.amigitos-espanol-api.com.br/',{ rememberTransport: false, transports: ['websocket', 'polling', 'Flash Socket', 'AJAX long-polling']})
@@ -209,6 +210,9 @@ export default {
            this.socket.on('listMembersUpdate', data => {
             this.updateMemberRoom(data)
            })
+           this.socket.on('msg', data => {
+                this.addMsg(data)
+            })
            this.socket.on('setVideoUrl', data => {
             this.setVideoUrl(data)
            })
@@ -323,6 +327,27 @@ export default {
         },
         updateMemberRoom(member){
             this.members = member
+        },
+        addMsg(msg) {
+            let msgText = msg.text
+            let emojiVerify = msg.text.split('|')
+            let emoji
+            if (emojiVerify[0] === "(-emoji#)") {
+                emoji = true
+
+                let newMsgFormat = emojiVerify[1]
+                msgText = newMsgFormat
+            }
+            let mensagem = {
+                userName: msg.userName,
+                userImg: msg.userImg,
+                text: msgText,
+                emoji: emoji,
+                id: msg.userId
+            }
+
+            this.msgs.push(mensagem)
+
         },
         responsive(){
             if (this.$mq === 'sm' || this.$mq === "md") {

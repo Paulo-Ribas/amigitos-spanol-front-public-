@@ -175,7 +175,7 @@ export default {
     async mounted() {
         await this.JoinRoom()
         this.chatAttempts = 0
-        this.askChat()
+        if(this.msgs.length === 0) this.askChat()
         this.verifyEmptyMembers()
         this.memberIsMembersInterval = setInterval(() => {
             if (this.$route.fullPath === `/watch/upload/${this.room}` || this.$route.fullPath === `/watch/youtube/${this.room}`) {
@@ -184,11 +184,15 @@ export default {
         }, 12000);
 
     },
+
+    props: {
+        chatProps: Array,
+    },
     data() {
         return {
             room: this.$route.params.roomId,
             socket: null,
-            msgs: [],
+            msgs: this.$props.chatProps,
             members: [],
             msgSent: 0,
             msgErr: '',
@@ -442,9 +446,9 @@ export default {
 
         },
         attMemberChoiced(){
-            let member = this.membersReactive.find(member => memberChoiced.id === member.id)
+            let member = this.membersReactive.find(member => this.memberChoiced.id === member.id)
             if(member) return this.memberChoiced = member
-            else this.memberChoiced = infoMembers = false
+            else this.infoMembers = false
         },
         checkAdm() {
             let isAdm = this.roomInfo.adms.find(users => {
