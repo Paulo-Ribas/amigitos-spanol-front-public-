@@ -316,6 +316,7 @@ export default {
             this.checkAdm()
             this.changeMembersValues()
             this.checkIfMemberIsMember()
+            this.attMemberChoiced()
         }
     },
     beforeDestroy() {
@@ -412,7 +413,6 @@ export default {
         },
         ...mapActions({ getRoom: 'user/getRoom', validateUser: 'user/validateUser', setState: 'user/setState' }),
         async attRoom() {
-
             try {
                 let roomInfo = await this.getRoom(this.room)
                 this.roomInfo = roomInfo.room
@@ -440,6 +440,11 @@ export default {
             this.infoMembers = true
             this.memberChoiced = this.membersReactive[index]
 
+        },
+        attMemberChoiced(){
+            let member = this.membersReactive.find(member => this.user.id === member.id)
+            if(member) return this.memberChoiced = member
+            else this.memberChoiced = infoMembers = false
         },
         checkAdm() {
             let isAdm = this.roomInfo.adms.find(users => {
@@ -479,7 +484,6 @@ export default {
             }
         },
         async checkIfMemberIsMember() {
-            await this.attRoom()
             let user = this.membersReactive.find(member => {
                 return member.id === this.user.id
 
@@ -722,7 +726,6 @@ export default {
         },
         async banApply(data) {
             let member = data.member
-
             this.emitKick(member)
         },
         emitAllowChoiceVideos(member) {
