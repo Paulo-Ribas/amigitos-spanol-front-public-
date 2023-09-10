@@ -844,6 +844,8 @@ export default {
 
 .member {
     position: relative;
+    display: flex;
+    align-items: center;
 }
 
 .flex-reverse {

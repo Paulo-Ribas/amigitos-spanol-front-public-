@@ -1,6 +1,6 @@
 <template>
   <div class="tabble">
-    <BtnSpecial btnProps="Selecionar Tudo" v-if="selectAll" @clicked="selectAndDeselectToggle()"></BtnSpecial>
+    <BtnSpecial :btnProps="propsForBtn" v-if="selectAll" @clicked="selectAndDeselectToggle()"></BtnSpecial>
       <table>
          <tbody>
           <tr v-for="(video, index) in videos" :key="video.name">
@@ -21,7 +21,8 @@ export default {
             videos: this.$props.videosProps,
             btn: this.$props.btnProps,
             selectAll: this.$props.selectAllProps,
-            deselectAll: false,
+            propsForBtn: 'Selecionar Tudo',
+            selectedAll: false,
         }
     },
     props: {
@@ -34,7 +35,8 @@ export default {
          
         this.videos = value
 
-      }
+
+      },
     },
     methods:{
       areYouSure(event){
@@ -44,23 +46,21 @@ export default {
         this.$emit('selected',{video: video, target: event.target, father: event.target.parentElement})
       },
       selectAndDeselectToggle(){
-        if(!this.selectAll) {
+        if(!this.selected) {
           this.removeAll()
           return
         }
         this.selectedAll()
       },
       selectedAll(event){
-        this.deselectAll = true
-        this.selectAll = false,
-        this.btnProps = 'Selecionar Tudo'
+        this.selected = true,
+        this.propsForBtn = 'Desselecionar Tudo'
         this.$emit('selectedAll')
-         
+        
       },
       removeAll(){
-        this.selectAll = true
-        this.deselectAll = false
-        this.btnProps = 'Desselecionar Tudo'
+        this.selected = false
+        this.propsForBtn = 'Selecionar Tudo'
         this.$emit('deselectAll')
       },
       createImgUrl(base64){

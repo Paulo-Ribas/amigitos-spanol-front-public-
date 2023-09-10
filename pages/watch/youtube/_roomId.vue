@@ -15,9 +15,6 @@
                     <span class="userActionName">
                         {{executedAction.name}} 
                     </span>
-                    <span class="userActionIcon">
-                        {{executedAction.action}}
-                    </span>
                 </div>
             </Transition>
             <div class="wall" @click="emitPlayPause(), setFocus()" @keydown="emitKeysEvents($event)"></div>
@@ -41,9 +38,6 @@
                 <div class="UserActions"  v-if="userAction">
                     <span class="userActionName">
                         {{executedAction.name}} 
-                    </span>
-                    <span class="userActionIcon">
-                        {{executedAction.action}}
                     </span>
                 </div>
             </Transition>
@@ -231,19 +225,23 @@ export default {
             this.setVideoStatus(data)
            })
            this.socket.on('PlayPause', data => {
-             
                this.PlayPauseVideo()
                this.setUserActions(data.actions)
            })
            this.socket.on('keysEvents', key => {
             this.keysEvents(key.event)
+            this.setUserActions(key.event.actions)
+
            })
            this.socket.on('aprenderMatematica', data => {
             this.aprenderMatematica(data)
+            this.setUserActions(data.actions)
+
            })
            this.socket.on('changeVideo', data => {
-             
             this.changeSrc(data)
+            this.setUserActions(data.actions)
+
            })
            this.socket.on('userAskingForSyncronization', data => {
             this.sendCurrentTime(data.user)
@@ -256,7 +254,7 @@ export default {
             this.verifyVideoState(data)
            })
            this.socket.on('signal', data => {
-           //  
+           console.log('sinal chegou aqui')
             this.socket.emit('answeredSignal', {roomUrl: this.room})
            })
            this.socket.on('userAskingCurrentTime',data => {
@@ -663,8 +661,12 @@ export default {
                  
                 if(!canSend) return
             }
+            let actions = {
+                name: this.user.userName,
+                    action: 'play'
+            }
              
-            this.socket.emit('changeVideoToAll', {video: video.embed || video, room: this.room})
+            this.socket.emit('changeVideoToAll', {video: video.embed || video, room: this.room, actions})
         },
         changeSrc(data){
              
@@ -716,7 +718,11 @@ export default {
         },
         emitKeysEvents($event){
             const eventEmit = {
-                code: $event.code
+                code: $event.code,
+                actions: {
+                    name: this.user.userName,
+                    action: 'play'
+                }
             }
              
             this.socket.emit('keysEvents', {event: eventEmit, room: this.room})
@@ -752,6 +758,10 @@ export default {
                 offsetX: $event.offsetX,
                 target: {
                     offsetWidth: $event.target.offsetWidth
+                },
+                actions: {
+                    name: this.user.userName,
+                    action: 'play'
                 }
             }
             this.socket.emit('aprenderMatematica', {room: this.room, event: eventEmit})

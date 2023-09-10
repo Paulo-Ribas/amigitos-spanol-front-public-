@@ -12,6 +12,11 @@ export default {
     props: {
         btnProps: String
     },
+    watch:{
+        btnProps(value, preload){
+            this.btnValue = value
+        },
+    },
     methods: {
         clicked() {
             this.$emit('clicked')

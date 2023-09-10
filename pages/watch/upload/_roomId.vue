@@ -10,6 +10,13 @@
         <VideoRequest :requestInfoProps="requestInfo" v-if="showRequestInfo" @accepted="acceptedRequest($event)" @rejected="rejectedRequest($event)"></VideoRequest>
         <RequestList :requestArrayProps="requestWarnList" v-if="requestWarning" @requestSelected="showRequest($event)" ></RequestList>
         <div class="video-container" v-if="joined && !mobile">
+            <Transition name="actions">
+                    <div class="UserActions"  v-if="userAction">
+                        <span class="userActionName">
+                            {{ executedAction.name }} 
+                        </span>
+                    </div>
+                </Transition>
             <video @loadedmetadata="setDuration" @loadeddata="setDuration" @timeupdate="GaloFilhoDaPuta()" tabindex="1" @dblclick="fullScreamToggle()" 
             @click="showObject(), emitPlayPause()" @keydown="emitKeysEvents($event)" id="video">
                 <source src="/videoplayback.mp4" type="video/mp4">
@@ -29,6 +36,13 @@
             <ChatFullScreen v-show="theater"></ChatFullScreen>
         </div>
         <div class="video-container-mobile" v-if="joined && mobile">
+            <Transition name="actions">
+                    <div class="UserActions"  v-if="userAction">
+                        <span class="userActionName">
+                            {{ executedAction.name }} 
+                        </span>
+                    </div>
+                </Transition>
             <video @timeupdate="GaloFilhoDaPuta()" tabindex="1" @dblclick="fullScreamToggle()" 
             @click="showObject(), emitPlayPause()" @keydown="emitKeysEvents($event)" @loadedmetadata="setDuration" @loadeddata="setDuration" id="video">
                 <source src="/videoplayback.mp4" type="video/mp4">
@@ -137,6 +151,8 @@ export default {
             requestWarning: false,
             theater: false,
             roomInfo: {},
+            userAction: false,
+            executedAction: {},
         }
     },
     watch:{
@@ -200,18 +216,24 @@ export default {
             this.setVideoStatus(data)
            })
            this.socket.on('PlayPause', data => {
-             
-            this.PlayPauseVideo()
-           })
-           this.socket.on('keysEvents', key => {
-            this.keysEvents(key.event)
-           })
-           this.socket.on('aprenderMatematica', data => {
-            this.aprenderMatematica(data)
-           })
-           this.socket.on('changeVideo', data => {
-            this.changeSrc(data)
-           })
+                this.PlayPauseVideo()
+                this.setUserActions(data.actions)
+            })
+            this.socket.on('keysEvents', key => {
+                this.keysEvents(key.event)
+                this.setUserActions(key.event.actions)
+
+            })
+            this.socket.on('aprenderMatematica', data => {
+                this.aprenderMatematica(data)
+                this.setUserActions(data.actions)
+
+            })
+            this.socket.on('changeVideo', data => {
+                this.changeSrc(data)
+                this.setUserActions(data.actions)
+
+            })
            this.socket.on('userAskingForSyncronization', data => {
             this.sendCurrentTime(data.user)
            })
@@ -219,7 +241,8 @@ export default {
             this.setCurrentTime(data)
            })
            this.socket.on('signal', data => {
-             
+                        console.log('sinal chegou aqui')
+
             this.socket.emit('answeredSignal', {roomUrl: this.room})
            })
            this.socket.on('playerStateRecived', data => {
@@ -523,7 +546,11 @@ export default {
             video.classList.add('focus')
         },
         emitPlayPause($event){
-            this.socket.emit('playPause', {event: $event, room: this.room})
+            let actions = {
+                name: this.user.userName,
+                action: 'play'
+            }
+            this.socket.emit('playPause', {event: $event, room: this.room, actions})
 
         },
         PlayPauseVideo(){
@@ -540,6 +567,18 @@ export default {
                 play.src = '/svg/botao_play_.svg'
             }
         },
+        etUserActions(data) {
+            this.userAction = false
+            let action = {
+                name: data.name,
+                action: data.action
+            }
+            this.executedAction = action
+            this.userAction = true
+            setTimeout(() => {
+                this.userAction = false
+            }, 500);
+        },
         showObject(event){
              
         },
@@ -553,8 +592,12 @@ export default {
                  
                 if (!canSend) return
             }
+            let actions = {
+                name: this.user.userName,
+                action: 'play'
+            }
              
-            this.socket.emit('changeVideoToAll', {video: video, room: this.room})
+            this.socket.emit('changeVideoToAll', {video: video, room: this.room, actions})
         },
         verifyPermissions(video) {
              
@@ -639,7 +682,11 @@ export default {
         emitKeysEvents($event){
             if($event.key.code === 'f') return this.fullScreamToggle()
             const eventEmit = {
-                code: $event.code
+                code: $event.code,
+                actions: {
+                    name: this.user.userName,
+                    action: 'play'
+                }
             }
              
             this.socket.emit('keysEvents', {event: eventEmit, room: this.room})
@@ -681,7 +728,12 @@ export default {
                 offsetX: $event.offsetX,
                 target: {
                     offsetWidth: $event.target.offsetWidth
+                },
+              actions: {
+                    name: this.user.userName,
+                    action: 'setTime'
                 }
+
             }
             this.socket.emit('aprenderMatematica', {room: this.room, event: eventEmit})
         },
@@ -794,6 +846,51 @@ export default {
         min-width: 400px;
         height: 480px;
         max-height: 480px;
+    }
+    .UserActions{
+        width: 100%;
+        position:absolute;
+        top:5%;
+        display:flex;
+        justify-content: center; 
+        z-index: 6;
+    }
+    .actions-enter-active{
+        opacity: 0;
+        transform: translateX(-50%);
+        transition-duration:.3s;
+    }
+    .actions-leave-active{
+        opacity:1;
+        transform:translateX(0px);
+        transition-duration:.1s;
+        transition-delay: .6s;
+    }
+    .actions-enter-from{
+        opacity: 0;
+        transform: translateX(-50%);
+    }
+    .actions-enter-to{
+        opacity:1;
+        transform:translateX(0px);
+    }
+    .actions-leave-from{
+        opacity:1;
+        transform:translateX(0px);
+    }
+    .actions-leave-to{
+        opacity:0;
+        transform:translateX(100%);
+    }
+    .userActionName{
+        font-size: 2em;
+        color:white;
+        text-shadow: 0px 0px 20px var(--cor3);
+        transform:translateX(0px);
+        background: var(--background);
+        background-clip: text;
+        -webkit-background-clip: text;
+        -webkit-text-stroke: .2em transparent ;
     }
     @media screen and (max-width: 870px) {
         .video-container-mobile {
