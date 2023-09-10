@@ -1,5 +1,6 @@
 <template>
         <section id="serie">
+            <Erro erroProps="api de episódio ainda não está no ar"></Erro>
             <TardisLoadBig v-if="!loaded"></TardisLoadBig>
             <SerieSeasonList v-if="loaded" :selectedTempProps="0"></SerieSeasonList>
             <div class="background-img">
@@ -64,6 +65,7 @@ export default {
         height: 100vh;
         font-family: cursive;
         display: flex;
+        position: relative;
     }
     .background-img {
         display: flex;

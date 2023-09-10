@@ -17,9 +17,13 @@
                 </div>
             </div>
             <p>
-                <fa icon="arrow-left"></fa>
+                <span>
+                  <fa icon="arrow-left"></fa>
+                </span>
                 <span>Seja um Amigito</span>
-                <fa icon="arrow-right"></fa>
+                <span>
+                  <fa icon="arrow-right"></fa>
+                </span>
             </p>
             <div class="containerFat">
               <div class="sigin-container">
@@ -82,6 +86,7 @@ export default {
     overflow: auto;
   }
   .container-main{
+    padding: 10% 3%;
     width: 100%;
     max-width: 800px;
     margin: auto;
@@ -105,7 +110,7 @@ export default {
   }
   .container-text h2 {
     max-width: 800px;
-    font-size: .85em;
+    font-size: 1.1em;
     margin-bottom: 20px;
     color: #FFFFFF;
   }
@@ -114,15 +119,20 @@ export default {
     max-width: 500px;
     display: flex;
     justify-content: space-evenly;
+    align-items: center;
   }
   .login-sigin-container p{
-    font-size: .8rem;
-    align-self: center;
+    font-size: 1rem;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-evenly;
     color: white;
     background: var(--background);
     background-clip: text;
     -webkit-background-clip: text;
-    -webkit-text-stroke: .2em transparent ;
+    -webkit-text-stroke: .25em transparent ;
+    flex: 1;
   }
   .login-sigin-container p svg{
     stroke-width: 2px;
@@ -141,6 +151,7 @@ export default {
     display: flex;
     align-items: center;
     justify-content: center;
+    flex: 1;
   }
   .login-container, .sigin-container {
     margin: auto;

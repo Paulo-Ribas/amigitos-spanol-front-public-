@@ -1,6 +1,6 @@
 <template>
   <div class="tabble">
-    <BtnSpecial btnProps="Selecionar Tudo" @clicked="selectAndDeselectToggle()"></BtnSpecial>
+    <BtnSpecial btnProps="Selecionar Tudo" v-if="selectAll" @clicked="selectAndDeselectToggle()"></BtnSpecial>
       <table>
          <tbody>
           <tr v-for="(video, index) in videos" :key="video.name">

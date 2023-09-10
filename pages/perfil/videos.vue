@@ -7,7 +7,7 @@
       </NuxtLink>
     </span>
     </h2>
-      <TabbleVideosList :btnProps="'deletar'" :videosProps="user.videos" @selected="areYouSure($event)"></TabbleVideosList>
+      <TabbleVideosList :btnProps="'deletar'" :videosProps="user.videos" :selectAllProps="false" @selected="areYouSure($event)"></TabbleVideosList>
     <div class="progress-bar" v-if="!completed">
       <span class="completed" v-if="completed">completo</span>
       <span class="status" v-if="prossesing && videoErr === ''">processando...</span>
