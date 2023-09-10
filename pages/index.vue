@@ -84,7 +84,6 @@ export default {
   main{
     flex:1;
     overflow: auto;
-    padding: 10% 5%;
     height: 100vh;
   }
   .container-main{
