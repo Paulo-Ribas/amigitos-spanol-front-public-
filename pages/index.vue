@@ -99,19 +99,22 @@ export default {
     font-family: cursive;
     padding: 2% 2%;
   }
-  .imgAmg {
+  .imgAMG {
     width: 70%;
     height: 70%;
     max-width: 266px;
     max-height: 248px;
     position: relative;
+    min-height: 100px;
   }
-  .imgAmg img {
+  .imgAMG img {
     position: absolute;
     object-fit: contain;
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
+    width: 100%;
+    height: 100%;
   }
   .container-text{
     text-align: center;
