@@ -317,8 +317,8 @@ export default {
             this.changeMembersValues()
         },
         chatProps(value, payload) {
-            console.log('OLHA Ta mudando', value)
             this.msgsMobile = value
+            this.setScroll()
         }
     },
     methods: {
@@ -486,7 +486,7 @@ export default {
                 let scroll = document.querySelector('.chat-mobile-screen')
                 setTimeout(() => {
                     scroll.scrollTop = scroll.scrollHeight
-                }, 200);
+                }, 600);
 
             } catch (error) {
                 return
@@ -564,17 +564,17 @@ export default {
             }
 
             this.msgsMobile.push(mensagem)
-            this.setScroll(mensagem)
+            this.setScroll()
 
         },
-        setScroll(msg) {
+        setScroll() {
             let scroll = document.querySelector('.chat-mobile-screen')
-            let user = msg.id
+            let lastMsg = this.msgsMobile[(this.msgMobile.length - 1)]
 
-            if ((scroll.scrollHeight - scroll.scrollTop) <= 260 && user != this.user.id) {
+            if ((scroll.scrollHeight - scroll.scrollTop) <= 260 && lastMsg.id != this.user.id) {
                 setTimeout(() => {
                     scroll.scrollTop = scroll.scrollHeight
-                }, 200);
+                }, 600);
 
             }
 
