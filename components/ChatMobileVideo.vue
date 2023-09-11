@@ -570,7 +570,7 @@ export default {
         setScroll() {
             let scroll = document.querySelector('.chat-mobile-screen')
             let lastMsg = this.msgsMobile[(this.msgsMobile.length - 1)]
-            console.log(lastMsg, scroll.scrollHeight, scroll.scrollTop, 'calculo: '(scroll.scrollHeight - scroll.scrollTop), this.user.id)
+            console.log(lastMsg, scroll.scrollHeight, scroll.scrollTop, 'calculo:' + (scroll.scrollHeight - scroll.scrollTop), this.user.id)
             if ((scroll.scrollHeight - scroll.scrollTop) <= 260 && lastMsg.id != this.user.id) {
                 setTimeout(() => {
                     scroll.scrollTop = scroll.scrollHeight
