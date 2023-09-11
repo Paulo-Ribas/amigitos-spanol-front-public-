@@ -357,6 +357,7 @@ export default {
         font-size: 1em;
         font-family: cursive;
         word-wrap: break-word;
+        white-space: pre-wrap;
     }
     .description textarea {
         width: 100%;
