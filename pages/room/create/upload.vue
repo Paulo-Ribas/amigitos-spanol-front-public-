@@ -11,8 +11,8 @@
         </div>
       </div>
     </div>
-    <TardisLoadBig v-if="loanding"></TardisLoadBig>
-    <div class="container" v-if="!loanding" v-show="!showAlgo">
+    <TardisLoadBig v-if="loading"></TardisLoadBig>
+    <div class="container" v-if="!loading" v-show="!showAlgo">
         <Rules @ruleSelected="changeRulesType($event)" @error="erro = $event.err" v-if="changeRules"/>
         <fa icon="gears" class="icon-gear" @click="changeRules = !changeRules" v-if="!changeRules"></fa>
         <form @submit="preventSubmit($event), sendRoomData()">
@@ -58,7 +58,7 @@ export default {
   },
     middleware:['auth'],
     mounted(){
-        this.loanding = false
+        this.loading = false
     },
     head(){
         return {
@@ -84,7 +84,7 @@ export default {
             videosAdded: [],
             showAlgo: false,
             erro: '',
-            loanding: true,
+            loading: true,
             changeRules: false,
             rulesType: 1,
         }
