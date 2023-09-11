@@ -44,6 +44,7 @@ export default {
             this.$emit('selected', { video: video, target: event.target, father: event.target.parentElement });
         },
         selectedAllVideos(event) {
+          console.log('selecionado tudo')
             this.selectAll = false
                 this.deselectAll = true;
             this.$emit('selectedAll');
