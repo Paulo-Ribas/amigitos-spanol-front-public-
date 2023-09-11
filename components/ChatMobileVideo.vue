@@ -187,7 +187,7 @@ export default {
         return {
             room: this.$route.params.roomId,
             socket: null,
-            msgs: [],
+            msgsMobile: [],
             members: [],
             msgSent: 0,
             msgErr: '',
@@ -316,13 +316,13 @@ export default {
             this.checkAdm()
             this.changeMembersValues()
         },
+        chatProps(value, payload) {
+            this.msgsMobile = value
+        }
     },
     methods: {
         connectionServer() {
             this.socket = io.connect('https://www.amigitos-espanol-api.com.br/', { rememberTransport: false, transports: ['websocket', 'polling', 'Flash Socket', 'AJAX long-polling'] })
-            this.socket.on('msg', data => {
-                this.renderMSG(data)
-            })
             this.socket.on('listMembersUpdate', data => {
 
                 this.updateMember(data)

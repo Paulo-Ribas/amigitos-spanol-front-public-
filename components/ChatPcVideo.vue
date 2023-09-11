@@ -188,6 +188,7 @@ export default {
     props: {
         chatProps: Array,
     },
+
     data() {
         return {
             room: this.$route.params.roomId,
@@ -321,6 +322,9 @@ export default {
             await this.changeMembersValues()
             await this.checkIfMemberIsMember()
             await this.attMemberChoiced()
+        },
+        chatProps(value){
+            this.msgsDesktop = value
         }
     },
     beforeDestroy() {
@@ -330,9 +334,6 @@ export default {
     methods: {
         connectionServer() {
             this.socket = io.connect('https://amigitos-espanol-api.com.br/', { rememberTransport: false, transports: ['websocket', 'polling', 'Flash Socket', 'AJAX long-polling'] })
-            this.socket.on('msg', data => {
-                this.renderMSG(data)
-            })
             this.socket.on('listMembersUpdate', async data => {
                 await this.attRoom()
                 this.updateMember(data)
