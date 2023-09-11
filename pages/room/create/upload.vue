@@ -4,9 +4,9 @@
     <div class="container-box-poop" v-show="showAlgo">
       <div class="warn-container">
         <h2>Selecione Os Videos</h2>
-            <BtnSpecial v-if="selectAll" btnProps="Selecionar Tudo" @clicked="selectAll()"></BtnSpecial>
+            <BtnSpecial v-if="selectAll" btnProps="Selecionar Tudo" @clicked="addAll()"></BtnSpecial>
             <BtnSpecial v-if="!selectAll" btnProps="Desselecionar Tudo" @clicked="removeAll()"></BtnSpecial>
-            <TabbleVideosList class="tableWarn" btnProps="Selecionar" :selectAllProps="true" :videosProps="videos" @selectedVideo="addOrRemoveVideo($event)"/>
+            <TabbleVideosList class="tableWarn" btnProps="Selecionar" :selectAllProps="true" :videosProps="videos" @selected="addOrRemoveVideo($event)"/>
         <div class="btn-container">
             <button class="yes" @click="yes">Pronto</button>
             <button class="no" @click="close">Cancelar</button>

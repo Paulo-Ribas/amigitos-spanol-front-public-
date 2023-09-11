@@ -59,6 +59,15 @@ export default {
         this.chatAttempts = 0
         this.msgs.length === 0 && this.$props.chatProps.length === 0 ? this.askChat() : this.msgs = this.$props.chatProps
         this.askChat()
+        this.memberIsMembersInterval = setInterval(() => {
+            if (this.$route.fullPath === `/watch/upload/${this.room}` || this.$route.fullPath === `/watch/youtube/${this.room}`) {
+                this.checkIfMemberIsMember()
+            }
+        }, 12000);
+    },
+    beforeDestroy() {
+        clearInterval(this.memberIsMembersInterval)
+        this.socket.disconnect()
     },
     props: {
         chatProps: Array,
@@ -84,6 +93,7 @@ export default {
                 attempts: 0,
                 chatAttempts: 0,
                 chatEmpty: false,
+                memberIsMembersInterval: undefined,
     
             }
         },

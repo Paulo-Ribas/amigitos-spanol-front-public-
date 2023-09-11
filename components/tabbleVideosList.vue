@@ -42,26 +42,6 @@ export default {
       const video = this.videos[index]
       this.$emit('selected', { video: video, target: event.target, father: event.target.parentElement })
     },
-    selectAndDeselectToggle() {
-      if (!this.selectAll) {
-        this.removeAll()
-        return
-      }
-      this.selectedAll()
-    },
-    selectedAll(event) {
-      this.deselectAll = true
-      this.selectAll = false,
-        this.btnProps = 'Selecionar Tudo'
-      this.$emit('selectedAll')
-
-    },
-    removeAll() {
-      this.selectAll = true
-      this.deselectAll = false
-      this.btnProps = 'Desselecionar Tudo'
-      this.$emit('deselectAll')
-    },
     createImgUrl(base64) {
       let arrayBlob = Buffer.from(base64, 'base64')
       let blob = new Blob(arrayBlob)
