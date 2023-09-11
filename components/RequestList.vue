@@ -49,6 +49,7 @@ export default {
         display: flex;
         flex-direction: column;
         overflow: hidden;
+        pointer-events: none;
     }
     .warning {
         width: 50px;
@@ -63,6 +64,7 @@ export default {
         align-items: center;
         cursor: pointer;
         position: relative;
+        pointer-events: all;
     }
     .fa-exclamation {
         font-size: 2.1em;
