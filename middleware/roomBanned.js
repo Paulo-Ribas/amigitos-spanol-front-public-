@@ -14,12 +14,7 @@ export default async function (context) {
         
     } catch (error) {
         let err = error.message
-        context.redirect('/room', {
-            statusCode: 302,
-            query: {
-                data: 'banido'
-            }
-})
+        context.redirect(`/room?q=${err}`)
     }
 
     

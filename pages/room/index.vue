@@ -58,7 +58,7 @@ export default {
 
     },
     fetch(){
-         
+        if(this.$route.query.q) this.err = this.$route.query.q
     },
     fetchOnServer: false,
     created(){
