@@ -177,11 +177,6 @@ export default {
         this.chatAttempts = 0
         this.msgsDesktop.length === 0 && this.$props.chatProps.length === 0 ? this.askChat() : this.msgsDesktop = this.$props.chatProps
         this.verifyEmptyMembers()
-        this.memberIsMembersInterval = setInterval(() => {
-            if (this.$route.fullPath === `/watch/upload/${this.room}` || this.$route.fullPath === `/watch/youtube/${this.room}`) {
-                this.checkIfMemberIsMember()
-            }
-        }, 12000);
 
     },
 
@@ -211,7 +206,7 @@ export default {
             chatAttempts: 0,
             chatEmpty: false,
             showFriendList: false,
-            memberIsMembersInterval: undefined,
+
 
         }
     },
@@ -320,7 +315,6 @@ export default {
             await this.checkMuted()
             await this.checkAdm()
             await this.changeMembersValues()
-            await this.checkIfMemberIsMember()
             await this.attMemberChoiced()
         },
         chatProps(value, payload){
@@ -328,7 +322,6 @@ export default {
         }
     },
     beforeDestroy() {
-        clearInterval(this.memberIsMembersInterval)
         this.socket.disconnect()
     },
     methods: {
@@ -488,14 +481,6 @@ export default {
 
             }
         },
-        async checkIfMemberIsMember() {
-            let user = this.membersReactive.find(member => {
-                return member.id === this.user.id
-
-            })
-            if (user) return
-            this.$router.push('/room')
-        },
         async emitMsg() {
             let msg = document.querySelector('textarea')
             let msgValue = msg.value
@@ -590,12 +575,11 @@ export default {
         },
         setScroll(msg) {
             let scroll = document.querySelector('.chat-screen')
-            let user = msg.id
-
-            if ((scroll.scrollHeight - scroll.scrollTop) <= 260 && user != this.user.id) {
+            let lastMsg = this.msgsDesktop[(this.msgsDesktop.length - 1)]
+            if ((scroll.scrollHeight - scroll.scrollTop) <= 260 && lastMsg.id != this.user.id) {
                 setTimeout(() => {
                     scroll.scrollTop = scroll.scrollHeight
-                }, 100);
+                }, 200);
 
             }
 

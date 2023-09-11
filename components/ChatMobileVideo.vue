@@ -170,14 +170,8 @@ export default {
         this.chatAttempts = 0
         this.msgsMobile.length === 0 && this.$props.chatProps.length === 0 ? this.askChat() : this.msgsMobile = this.$props.chatProps
         this.verifyEmptyMembers()
-        this.memberIsMembersInterval = setInterval(() => {
-            if (this.$route.fullPath === `/watch/upload/${this.room}` || this.$route.fullPath === `/watch/youtube/${this.room}`) {
-                this.checkIfMemberIsMember()
-            }
-        }, 12000);
     },
     beforeDestroy() {
-        clearInterval(this.memberIsMembersInterval)
         this.socket.disconnect()
     },
     props: {
@@ -206,7 +200,6 @@ export default {
             chatEmpty: false,
             showFriendList: false,
             width100: false,
-            memberIsMembersInterval: undefined,
 
         }
     },
@@ -311,10 +304,12 @@ export default {
         }
     },
     watch: {
-        roomInfo(value, payload) {
-            this.checkMuted()
-            this.checkAdm()
-            this.changeMembersValues()
+        async roomInfo(value, payload) {
+            await this.checkMuted()
+            await this.checkAdm()
+            await this.changeMembersValues()
+            await this.checkIfMemberIsMember()
+            await this.attMemberChoiced()
         },
         chatProps(value, payload) {
             this.msgsMobile = value
@@ -426,6 +421,14 @@ export default {
             }
             return true
         },
+        async checkIfMemberIsMember() {
+            let user = this.membersReactive.find(member => {
+                return member.id === this.user.id
+
+            })
+            if (user) return
+            this.$router.push('/room')
+        },
         askChat() {
 
             if (!this.socket) return
@@ -494,10 +497,13 @@ export default {
         },
         showMemberInfo(index) {
             this.infoMembers = true
-
-
             this.memberChoiced = this.membersReactive[index]
 
+        },
+        attMemberChoiced() {
+            let member = this.membersReactive.find(member => this.memberChoiced.id === member.id)
+            if (member) return this.memberChoiced = member
+            else this.infoMembers = false
         },
         sendMSG(e) {
             e.preventDefault()
@@ -629,7 +635,7 @@ export default {
                 }
 
                 else {
-                    this.setScroll()
+                    this.setScroll(this.user.id)
                 }
             }
         },
@@ -693,9 +699,8 @@ export default {
         emitMute(member) {
             this.socket.emit('muteMember', { member: member, room: this.room })
         },
-        muteApply(room) {
-
-            this.roomInfo = room
+        async muteApply(room) {
+            await this.attRoom()
         },
         checkMuted() {
 
@@ -707,8 +712,8 @@ export default {
         emitUnmute(member) {
             this.socket.emit('unmuteMember', { member, room: this.room })
         },
-        unmuteApply(data) {
-            this.roomInfo = data.room
+        async unmuteApply(data) {
+            await this.attRoom()
         },
         emitBan(member) {
 
@@ -716,8 +721,8 @@ export default {
             this.socket.emit('banMember', { member, room: this.room })
 
         },
-        banApply(data) {
-            this.roomInfo = data.room
+        async banApply(data) {
+            await this.attRoom()
             let member = data.member
 
             this.emitKick(member)

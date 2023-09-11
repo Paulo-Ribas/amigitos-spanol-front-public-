@@ -59,14 +59,10 @@ export default {
         this.chatAttempts = 0
         this.msgs.length === 0 && this.$props.chatProps.length === 0 ? this.askChat() : this.msgs = this.$props.chatProps
         this.askChat()
-        this.memberIsMembersInterval = setInterval(() => {
-            if (this.$route.fullPath === `/watch/upload/${this.room}` || this.$route.fullPath === `/watch/youtube/${this.room}`) {
-                this.checkIfMemberIsMember()
-            }
-        }, 12000);
+       
     },
     beforeDestroy() {
-        clearInterval(this.memberIsMembersInterval)
+      
         this.socket.disconnect()
     },
     props: {
@@ -76,7 +72,7 @@ export default {
             return {
                 room: this.$route.params.roomId,
                 socket: null,
-                msgs: [],
+                msgs: this.$props.chatProps,
                 members: [],
                 msgSent: 0,
                 msgErr: '',
@@ -93,7 +89,7 @@ export default {
                 attempts: 0,
                 chatAttempts: 0,
                 chatEmpty: false,
-                memberIsMembersInterval: undefined,
+               
     
             }
         },
@@ -109,14 +105,15 @@ export default {
             this.checkMuted()
             this.checkAdm()
            
-        }
+        },
+        chatProps(value, payload){
+            this.msgs = value
+            this.setScroll()
+        },
     },
     methods:{
         connectionServer(){
            this.socket = io.connect('https://www.amigitos-espanol-api.com.br/', { rememberTransport: false, transports: ['websocket', 'polling', 'Flash Socket', 'AJAX long-polling'] })
-           this.socket.on('msg', data => {
-            this.renderMSG(data)
-           })
            this.socket.on('listMembersUpdate', data => {
              
             this.updateMember(data)
@@ -327,16 +324,16 @@ export default {
            this.setScroll(mensagem)
           
         },
-        setScroll(msg){
-            let scroll = document.querySelector('.chat-full-screen')
-            let user = msg.id
-             
-            setTimeout(() => {
-                scroll.scrollTop = scroll.scrollHeight
-            }, 100);
+        setScroll() {
+            let scroll = document.querySelector('.chat-mobile-screen') ||  document.querySelector('.chat-screen')
+            let lastMsg = this.msgse[(this.msgs.length - 1)]
+            if ((scroll.scrollHeight - scroll.scrollTop) <= 400 && lastMsg.id != this.user.id) {
+                setTimeout(() => {
+                    scroll.scrollTop = scroll.scrollHeight
+                }, 200);
 
-        
-            
+            }
+
         },
         sendChat(data){
             let userRequest = data.user

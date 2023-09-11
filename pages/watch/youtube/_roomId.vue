@@ -104,15 +104,23 @@ export default {
         document.addEventListener('fullscreenchange', event => {
             if(!document.fullscreenElement && this.theater) return this.theaterModeToggle()
         })
-        setInterval(() => {
+        this.sendPlayerStateInterval = setInterval(() => {
             this.sendPlayerState()
         }, 4700);
-        setInterval(() => {
+        this.askForCurrentTimeInterval = setInterval(() => {
             this.askForCurrentTime()
         }, 5000);
+         this.memberIsMembersInterval = setInterval(() => {
+            if (this.$route.fullPath === `/watch/upload/${this.room}` || this.$route.fullPath === `/watch/youtube/${this.room}`) {
+                this.checkIfMemberIsMember()
+            }
+        }, 12000);
     },
     beforeDestroy(){
         this.emitUserDisconected()
+        clearInterval(this.memberIsMembersInterval)
+        clearInterval(this.sendPlayerStateInterval)
+        clearInterval(this.askForCurrentTimeInterval)
     },
     head(){
         return {
@@ -155,7 +163,10 @@ export default {
             duration: '00:00',
             userAction: false,
             executedAction: {},
-            msgsForProps: [],
+            msgsForProps: [],           
+            memberIsMembersInterval: undefined,
+            sendPlayerStateInterval: undefined,
+            askForCurrentTimeInterval: undefined,
             
 
         }
@@ -332,6 +343,14 @@ export default {
         },
         updateMemberRoom(member){
             this.members = member
+        },
+         async checkIfMemberIsMember() {
+            let user = this.membersReactive.find(member => {
+                return member.id === this.user.id
+
+            })
+            if (user) return
+            this.$router.push('/room')
         },
         addMsg(msg) {
             let msgText = msg.text

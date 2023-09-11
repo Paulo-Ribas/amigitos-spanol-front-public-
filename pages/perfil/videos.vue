@@ -368,11 +368,14 @@ export default {
     transform: translateX(-50%);
 
 }
+*>>> span.status {
+  transform: translate(-50%, 6px)
+}
 *>>> span.porcent {
   transform: translateY(22px);
 }
 *>>> .tardis-processing{
-  transform: translate(-50%, 38%)
+  transform: translate(-50%, 38%) !important;
 }
 *>>> .hidden {
   display: none;
