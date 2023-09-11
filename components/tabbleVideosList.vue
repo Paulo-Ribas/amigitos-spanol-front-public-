@@ -1,6 +1,6 @@
 <template>
   <div class="tabble">
-    <BtnSpecial v-if="selectAll" :btnProps="Action" @clicked="selectedAllVideos()" />
+    <BtnSpecial v-if="selectAll" :btnProps="Action" @clicked="selectedAllVideos()"></BtnSpecial>
     <BtnSpecial v-if="deselectAll" :btnProps="Action" @clicked="deselectedAll()"></BtnSpecial>
     <table>
       <tbody>
@@ -63,8 +63,7 @@ export default {
         ...mapState({
             user: state => state.user
         })
-    },
-    components: { BtnSpecial }
+    }
 }
 </script>
 
