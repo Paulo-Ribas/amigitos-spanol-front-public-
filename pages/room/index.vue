@@ -1,7 +1,7 @@
 <template>
   <div id="rooms-container">
     <div class="room-box-container" v-if="rooms.length > 0">
-    <Erro v-if="err" :erroProps="err"></Erro>
+    <Erro v-if="err != ''" :erroProps="err"></Erro>
         <div class="box-room" v-for="room in rooms" :key="room._id">
             <div class="icon-container" v-if="room.type === 'youtube'">
                 <fa :icon="['fab','youtube']"/>
@@ -53,12 +53,11 @@ export default {
        
        return {
         rooms: rooms.rooms,
-        err,
        }
 
     },
     fetch(){
-        if(this.$route.query.q) this.err = this.$route.query.q
+        if(this.$route.query.q) this.err = decodeURI(this.$route.query.q)
     },
     fetchOnServer: false,
     created(){
@@ -70,7 +69,7 @@ export default {
     data(){
         return {
             socket: null,
-            err: undefined
+            err: ''
         }
     },
     computed:{ 

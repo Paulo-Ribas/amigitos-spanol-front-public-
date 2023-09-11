@@ -331,12 +331,6 @@ export default {
                 await this.attRoom()
                 this.updateMember(data)
             })
-            this.socket.on('requestMsg', data => {
-                this.sendChat(data)
-            })
-            this.socket.on('chatRecived', data => {
-                this.attChat(data)
-            })
             this.socket.on('attRoomInfo', data => {
                 this.attRoom()
             });
@@ -582,42 +576,6 @@ export default {
                 }, 200);
 
             }
-
-        },
-        sendChat(data) {
-            let userRequest = data.user
-            let room = this.room
-            let chat = this.msgsDesktop
-            let chatEmpty = false
-            let newUserThatSendTheChat = undefined
-            if (chat.length === 0) {
-                chatEmpty = true
-            }
-            if (this.members[0].id != this.user.id) return
-            if (this.members[0].id === userRequest && this.members.length < 2) return
-            if (this.members[0].id === userRequest && this.members.length >= 2) {
-                newUserThatSendTheChat = this.members[1].id
-            }
-            if (chatEmpty && this.members.length >= 2) {
-                newUserThatSendTheChat = this.members[1].id
-            }
-
-            if (!newUserThatSendTheChat) return this.socket.emit('chatSent', { userRequest, room, chat, empty: false })
-            if (newUserThatSendTheChat) return this.socket.emit('chatSecondChance', { userRequest, room, chat, newUserThatSendTheChat })
-        },
-        chatAttemptTwo(data) {
-            let userRequest = data.userRequest
-            let whoSentChat = data.newUserThatSendTheChat
-            let room = this.room
-            let chat = this.msgsDesktop
-            let chatEmpty = false
-            if (this.user.id != whoSentChat) return
-            if (chat.length === 0) {
-                chatEmpty = true
-            }
-            if (chatEmpty) return this.socket.emit('chatSent', { userRequest, room, chat, empty: true })
-            if (!chatEmpty) return this.socket.emit('chatSent', { userRequest, room, chat, empty: false })
-
 
         },
         attChat(data) {

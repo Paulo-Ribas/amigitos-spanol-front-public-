@@ -207,6 +207,10 @@ export default {
                 return []
             }
         },
+        membersReactive() {
+            return this.members
+
+        },
         mediaQuery(){
             return this.$mq
         }
@@ -223,6 +227,15 @@ export default {
            })
            this.socket.on('msgForBackUp', data => {
                 this.addMsg(data)
+            })
+            this.socket.on('requestMsg', data => {
+                this.sendChat(data)
+            })
+            this.socket.on('secondMemberSendChat', data => {
+                this.chatAttemptTwo(data)
+            })
+            this.socket.on('chatRecived', data => {
+                this.attChat(data)
             })
            this.socket.on('setVideoUrl', data => {
             this.setVideoUrl(data)
@@ -346,6 +359,45 @@ export default {
             })
             if (user) return
             this.$router.push('/room')
+        },
+         sendChat(data) {
+            let userRequest = data.user
+            let room = this.room
+            let chat = this.msgsForProps
+            let chatEmpty = false
+            let newUserThatSendTheChat = undefined
+            if (chat.length === 0) {
+                chatEmpty = true
+            }
+            if (this.members[0].id != this.user.id) return
+            if (this.members[0].id === userRequest && this.members.length < 2) return
+            if (this.members[0].id === userRequest && this.members.length >= 2) {
+                newUserThatSendTheChat = this.members[1].id
+            }
+            if (chatEmpty && this.members.length >= 2) {
+                newUserThatSendTheChat = this.members[1].id
+            }
+
+            if (!newUserThatSendTheChat) return this.socket.emit('chatSent', { userRequest, room, chat, empty: false })
+            if (newUserThatSendTheChat) return this.socket.emit('chatSecondChance', { userRequest, room, chat, newUserThatSendTheChat })
+        },
+        chatAttemptTwo(data) {
+            let userRequest = data.userRequest
+            let whoSentChat = data.newUserThatSendTheChat
+            let room = this.room
+            let chat = this.msgs
+            let chatEmpty = false
+            if (this.user.id != whoSentChat) return
+            if (chat.length === 0) {
+                chatEmpty = true
+            }
+            if (chatEmpty) return this.socket.emit('chatSent', { userRequest, room, chat, empty: true })
+            if (!chatEmpty) return this.socket.emit('chatSent', { userRequest, room, chat, empty: false })
+
+
+        },
+        attChat(data) {
+                this.msgsForProps = data.chat
         },
         addMsg(msg) {
             let msgText = msg.text

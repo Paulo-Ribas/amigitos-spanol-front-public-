@@ -323,12 +323,6 @@ export default {
                 this.updateMember(data)
                 this.attRoom()
             })
-            this.socket.on('requestMsg', data => {
-                this.sendChat(data)
-            })
-            this.socket.on('chatRecived', data => {
-                this.attChat(data)
-            })
             this.socket.on('attRoomInfo', data => {
                 this.attRoom()
             });

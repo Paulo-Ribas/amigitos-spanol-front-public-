@@ -58,7 +58,8 @@ export default {
         await this.JoinRoom()
         this.chatAttempts = 0
         this.msgs.length === 0 && this.$props.chatProps.length === 0 ? this.askChat() : this.msgs = this.$props.chatProps
-        this.askChat()
+        this.verifyEmptyMembers()
+
        
     },
     beforeDestroy() {
@@ -118,12 +119,6 @@ export default {
              
             this.updateMember(data)
             this.attRoom()
-           })
-           this.socket.on('requestMsg', data => {
-            this.sendChat(data)
-           })
-           this.socket.on('chatRecived', data => {
-            this.attChat(data)
            })
            this.socket.on('attRoomInfo', data => {
             this.attRoom()
@@ -250,7 +245,7 @@ export default {
                 let scroll = document.querySelector('.chat-full-screen')
                 setTimeout(() => {
                     scroll.scrollTop = scroll.scrollHeight
-                 }, 100);
+                 }, 200);
 
             } catch (error) {
                 return
@@ -326,7 +321,7 @@ export default {
         },
         setScroll() {
             let scroll = document.querySelector('.chat-mobile-screen') ||  document.querySelector('.chat-screen')
-            let lastMsg = this.msgse[(this.msgs.length - 1)]
+            let lastMsg = this.msgs[(this.msgs.length - 1)]
             if ((scroll.scrollHeight - scroll.scrollTop) <= 400 && lastMsg.id != this.user.id) {
                 setTimeout(() => {
                     scroll.scrollTop = scroll.scrollHeight
@@ -335,44 +330,7 @@ export default {
             }
 
         },
-        sendChat(data){
-            let userRequest = data.user
-            let room = this.room
-            let chat = this.msgs
-            let chatEmpty = false
-            let newUserThatSendTheChat = undefined
-            if (chat.length === 0) {
-                chatEmpty = true
-            }
-            if(this.members[0].id != this.user.id) return
-            if(this.members[0].id === userRequest  && this.members.length < 2) return
-            if(this.members[0].id === userRequest && this.members.length >= 2) {
-                newUserThatSendTheChat = this.members[1].id
-            }
-            if(chatEmpty && this.members.length >= 2){
-                newUserThatSendTheChat = this.members[1].id
-            }
-             
-            if(!newUserThatSendTheChat) return this.socket.emit('chatSent', {userRequest, room, chat, empty: false})
-            if(newUserThatSendTheChat) return this.socket.emit('chatSecondChance', {userRequest, room, chat, newUserThatSendTheChat})
-        },
-        chatAttemptTwo(data){
-            let userRequest = data.userRequest
-            let whoSentChat = data.newUserThatSendTheChat
-            let room = this.room
-            let chat = this.msgs
-            let chatEmpty = false
-            if(this.user.id != whoSentChat) return
-            if(chat.length === 0){ 
-                chatEmpty = true
-            }
-            if(chatEmpty) return this.socket.emit('chatSent', {userRequest, room, chat, empty: true})
-            if(!chatEmpty) return this.socket.emit('chatSent', {userRequest, room, chat, empty: false})
-
-
-        },
         attChat(data){
-             
             if (this.user.id === data.userRequest) {
                 this.msgs = data.chat
                 let empty = this.verifyChatEmpty(data)
@@ -402,9 +360,6 @@ export default {
         },
         updateMember(member){
             this.members = member
-        },
-        teste(){
-             
         },
         emitClick(){
             this.$emit('clicked')
