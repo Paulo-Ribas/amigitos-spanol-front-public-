@@ -1,13 +1,11 @@
 <template>
   <div class="tabble">
-    <BtnSpecial v-if="selectAll" :btnProps="Action" @clicked="selectedAllVideos()"></BtnSpecial>
-    <BtnSpecial v-if="deselectAll" :btnProps="Action" @clicked="deselectedAll()"></BtnSpecial>
     <table>
       <tbody>
         <tr v-for="(video, index) in videos" :key="video.name">
-          <td class="img"><img :src="video.thumbnail" /></td>
+          <td class="img"><img :src="video.thumbnailLocation" /></td>
           <td colspan="1" class="videoName"> {{ video.fileName }}</td>
-          <td class="btn" :data-video="index" @click="areYouSure($event)">{{ btn }}</td>
+          <td class="btn" :data-video="index" @click="areYouSure($event)">{{btn}}</td>
         </tr>
       </tbody>
     </table>
@@ -17,53 +15,64 @@
 <script>
 import { mapState } from 'vuex'
 export default {
-    data() {
-        return {
-            videos: this.$props.videosProps,
-            btn: this.$props.btnProps,
-            selectAll: this.$props.selectAllProps,
-            deselectAll: false,
-            Action: 'Selectionar Tudo'
-        };
-    },
-    props: {
-        videosProps: Array,
-        btnProps: String,
-        selectAllProps: Boolean,
-    },
-    watch: {
-        videosProps(value, payload) {
-            this.videos = value;
-        }
-    },
-    methods: {
-        areYouSure(event) {
-            const indexValue = event.target.attributes['data-video'].value;
-            const index = parseInt(indexValue);
-            const video = this.videos[index];
-            this.$emit('selected', { video: video, target: event.target, father: event.target.parentElement });
-        },
-        selectedAllVideos(event) {
-          console.log('selecionado tudo')
-            this.selectAll = false
-                this.deselectAll = true;
-            this.$emit('selectedAll');
-        },
-        deselectedAll(event) {
-            this.deselectAll = false;
-            this.selectAll = true;
-            this.$emit('deselectAll"');
-        },
-        createImgUrl(base64) {
-            let arrayBlob = Buffer.from(base64, 'base64');
-            let blob = new Blob(arrayBlob);
-        }
-    },
-    computed: {
-        ...mapState({
-            user: state => state.user
-        })
+  data() {
+    return {
+      videos: this.$props.videosProps,
+      btn: this.$props.btnProps,
+      selectAll: this.$props.selectAllProps,
+      deselectAll: false,
     }
+  },
+  props: {
+    videosProps: Array,
+    btnProps: String,
+    selectAllProps: Boolean,
+  },
+  watch: {
+    videosProps(value, payload) {
+
+      this.videos = value
+
+    }
+  },
+  methods: {
+    areYouSure(event) {
+      const indexValue = event.target.attributes['data-video'].value
+      const index = parseInt(indexValue)
+      const video = this.videos[index]
+      this.$emit('selected', { video: video, target: event.target, father: event.target.parentElement })
+    },
+    selectAndDeselectToggle() {
+      if (!this.selectAll) {
+        this.removeAll()
+        return
+      }
+      this.selectedAll()
+    },
+    selectedAll(event) {
+      this.deselectAll = true
+      this.selectAll = false,
+        this.btnProps = 'Selecionar Tudo'
+      this.$emit('selectedAll')
+
+    },
+    removeAll() {
+      this.selectAll = true
+      this.deselectAll = false
+      this.btnProps = 'Desselecionar Tudo'
+      this.$emit('deselectAll')
+    },
+    createImgUrl(base64) {
+      let arrayBlob = Buffer.from(base64, 'base64')
+      let blob = new Blob(arrayBlob)
+    }
+  },
+  computed: {
+    ...mapState({
+      user: state => state.user
+    })
+  }
+
 }
 </script>
 
@@ -154,4 +163,13 @@ table {
 
 .selected {
   color: var(--cor9)
-}</style>
+}
+
+@media screen and (max-width: 500px) {
+  .videoName {
+    max-height: 50px;
+    max-width: 224px !important;
+  }
+
+}
+</style>

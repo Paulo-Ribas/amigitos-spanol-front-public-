@@ -168,8 +168,11 @@ export default {
     async mounted() {
         await this.JoinRoom()
         this.chatAttempts = 0
-        this.askChat()
+        this.msgs.length === 0 && this.$props.chatProps.length === 0 ? this.askChat() : this.msgs = this.$props.chatProps
         this.verifyEmptyMembers()
+    },
+    props: {
+        chatProps: Array,
     },
     data() {
         return {

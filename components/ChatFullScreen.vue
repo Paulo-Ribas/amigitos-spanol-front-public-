@@ -52,11 +52,16 @@ export default {
             throw error
         }
     },
+    
     fetchOnServer: false,
     async mounted(){
         await this.JoinRoom()
         this.chatAttempts = 0
+        this.msgs.length === 0 && this.$props.chatProps.length === 0 ? this.askChat() : this.msgs = this.$props.chatProps
         this.askChat()
+    },
+    props: {
+        chatProps: Array,
     },
         data(){
             return {
