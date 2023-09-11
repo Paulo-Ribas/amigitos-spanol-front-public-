@@ -33,7 +33,7 @@
             @muteUnmute="muteUnmute()"
             @theaterMode="fullScreamToggle($event), theaterModeToggle()"
             />
-            <ChatFullScreen :chatProps="msgs" v-if="theater"></ChatFullScreen>
+            <ChatFullScreen :chatProps="msgsForProps" v-if="theater"></ChatFullScreen>
         </div>
         <div class="video-container-mobile" v-if="joined && mobile">
             <Transition name="actions">
@@ -59,8 +59,8 @@
             @muteUnmute="muteUnmute()"
             />
         </div>
-        <ChatPcVideo :chatProps="msgs" v-if="joined && !mobile" @clicked="showVideos = !showVideos"></ChatPcVideo>
-        <ChatMobileVideo :chatProps="msgs" v-if="joined && mobile" @clicked="showVideos = !showVideos"></ChatMobileVideo>
+        <ChatPcVideo :chatProps="msgsForProps" v-if="joined && !mobile" @clicked="showVideos = !showVideos"></ChatPcVideo>
+        <ChatMobileVideo :chatProps="msgsForProps" v-if="joined && mobile" @clicked="showVideos = !showVideos"></ChatMobileVideo>
     </div>
 
 </template>
@@ -153,7 +153,7 @@ export default {
             roomInfo: {},
             userAction: false,
             executedAction: {},
-            msgs: [],
+            msgsForProps: [],
         }
     },
     watch:{
@@ -346,7 +346,7 @@ export default {
                 id: msg.userId
             }
 
-            this.msgs.push(mensagem)
+            this.msgsForProps.push(mensagem)
 
         },
         responsive(){

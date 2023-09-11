@@ -175,6 +175,7 @@ export default {
     async mounted() {
         await this.JoinRoom()
         this.chatAttempts = 0
+        this.msgs = this.$props.chatProps
         if(this.msgs.length === 0) this.askChat()
         this.verifyEmptyMembers()
         this.memberIsMembersInterval = setInterval(() => {
@@ -192,7 +193,7 @@ export default {
         return {
             room: this.$route.params.roomId,
             socket: null,
-            msgs: this.$props.chatProps,
+            msgs: [],
             members: [],
             msgSent: 0,
             msgErr: '',

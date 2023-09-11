@@ -31,7 +31,7 @@
             @muteUnmute="muteUnmute()"
             :time="currentTime"
             :durationProps="duration"></ControlsPlayerLiveYT>
-            <ChatFullScreen :chatProps="msgs" v-if="theater"></ChatFullScreen>
+            <ChatFullScreen :chatProps="msgsForProps" v-if="theater"></ChatFullScreen>
         </div>
         <div class="youtube-VideoPlayer-mobile" tabindex="1" id="video" @keydown="emitKeysEvents($event)" v-if="joined && mobile">
             <Transition name="actions">
@@ -55,8 +55,8 @@
             :time="currentTime"
             :durationProps="duration"></ControlsPlayerLiveYtMobile>
         </div>
-        <ChatPcVideo :chatProps="msgs" v-if="joined && !mobile && !theater" @clicked="showVideos = !showVideos"></ChatPcVideo>
-        <ChatMobileVideo :chatProps="msgs" v-show="!showVideos" v-if="joined && mobile" @clicked="showVideos = !showVideos"></ChatMobileVideo>
+        <ChatPcVideo :chatProps="msgsForProps" v-if="joined && !mobile && !theater" @clicked="showVideos = !showVideos"></ChatPcVideo>
+        <ChatMobileVideo :chatProps="msgsForProps" v-show="!showVideos" v-if="joined && mobile" @clicked="showVideos = !showVideos"></ChatMobileVideo>
     </div>
     
 </template>
@@ -155,7 +155,7 @@ export default {
             duration: '00:00',
             userAction: false,
             executedAction: {},
-            msgs: [],
+            msgsForProps: [],
             
 
         }
@@ -351,7 +351,7 @@ export default {
                 id: msg.userId
             }
 
-            this.msgs.push(mensagem)
+            this.msgsForProps.push(mensagem)
 
         },
         AskForSyncronization(){
