@@ -148,7 +148,6 @@ export default {
         },
         addAll(){
             try {
-                console.log('ADDDDDD TUDOOOOOO!!!!!!!!!!!!!!!!!!!!')
                 this.videosAdded = this.videos
                 let selecteds = document.querySelectorAll('tr')
                 selecteds.forEach(selected => {
@@ -170,7 +169,7 @@ export default {
                 selected.lastElementChild.previousElementSibling.classList.remove('selected')
             })
             this.videosAdded = []
-            this.selectAll = false
+            this.selectAll = true
         },
         changeRulesType(event) {
             this.changeRules = false

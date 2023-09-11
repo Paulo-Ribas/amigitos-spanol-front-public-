@@ -119,7 +119,7 @@
                 </div>
                 <div class="chat-container" @mouseenter="removePopUpInfo">
                     <div class="chat-screen" @click="setScroll">
-                        <div class="msg-container" v-for="(msg, index) in msgs" :key="index">
+                        <div class="msg-container" v-for="(msg, index) in msgsDesktop" :key="index">
                             <div class="name-img-container">
                                 <div class="img-container">
                                     <img :src="msg.userImg">
@@ -175,7 +175,7 @@ export default {
     async mounted() {
         await this.JoinRoom()
         this.chatAttempts = 0
-        this.msgs.length === 0 && this.$props.chatProps.length === 0 ? this.askChat() : this.msgs = this.$props.chatProps
+        this.msgsDesktop.length === 0 && this.$props.chatProps.length === 0 ? this.askChat() : this.msgsDesktop = this.$props.chatProps
         this.verifyEmptyMembers()
         this.memberIsMembersInterval = setInterval(() => {
             if (this.$route.fullPath === `/watch/upload/${this.room}` || this.$route.fullPath === `/watch/youtube/${this.room}`) {
@@ -192,7 +192,7 @@ export default {
         return {
             room: this.$route.params.roomId,
             socket: null,
-            msgs: [],
+            msgsDesktop: [],
             members: [],
             msgSent: 0,
             msgErr: '',
@@ -583,7 +583,7 @@ export default {
                 id: msg.userId
             }
 
-            this.msgs.push(mensagem)
+            this.msgsDesktop.push(mensagem)
             this.setScroll(mensagem)
 
         },
@@ -602,7 +602,7 @@ export default {
         sendChat(data) {
             let userRequest = data.user
             let room = this.room
-            let chat = this.msgs
+            let chat = this.msgsDesktop
             let chatEmpty = false
             let newUserThatSendTheChat = undefined
             if (chat.length === 0) {
@@ -624,7 +624,7 @@ export default {
             let userRequest = data.userRequest
             let whoSentChat = data.newUserThatSendTheChat
             let room = this.room
-            let chat = this.msgs
+            let chat = this.msgsDesktop
             let chatEmpty = false
             if (this.user.id != whoSentChat) return
             if (chat.length === 0) {
@@ -638,7 +638,7 @@ export default {
         attChat(data) {
             this.verifyEmptyMembers()
             if (this.user.id === data.userRequest) {
-                this.msgs = data.chat
+                this.msgsDesktop = data.chat
                 let empty = this.verifyChatEmpty(data)
                 if (empty && this.chatAttempts < 2 && !this.chatEmpty) {
 
@@ -656,7 +656,7 @@ export default {
 
             this.chatAttempts++
 
-            if (this.msgs.length === 0 && !data.empty) {
+            if (this.msgsDesktop.length === 0 && !data.empty) {
                 return true
             }
             if (data.empty) {
