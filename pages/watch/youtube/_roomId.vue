@@ -987,6 +987,7 @@ export default {
             height: 97vh;
             max-height: 480px;
             background-color: var(--chatOpacity);
+            overflow: hidden;
 
         }
         .youtube-VideoPlayer-mobile .teste, #youtube-player-1 {
@@ -1012,6 +1013,7 @@ export default {
             width: 100%;
             position: relative;
             flex: 2;
+            overflow: hidden;
         }
         .youtube-VideoPlayer-mobile #video {
            width: 100%;

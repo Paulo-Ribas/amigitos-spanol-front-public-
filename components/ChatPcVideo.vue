@@ -877,6 +877,7 @@ export default {
     display: flex;
     flex-direction: column;
     justify-content: space-around;
+    overflow: hidden;
 }
 
 .options h3,
@@ -887,6 +888,8 @@ a {
     font-size: 1.3em;
     text-align: center;
     margin-top: 4px;
+    text-overflow: ellipsis;
+    white-space: nowrap;
 }
 
 .options ul {

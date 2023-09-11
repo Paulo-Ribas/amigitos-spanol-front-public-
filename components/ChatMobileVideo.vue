@@ -308,7 +308,6 @@ export default {
             await this.checkMuted()
             await this.checkAdm()
             await this.changeMembersValues()
-            await this.checkIfMemberIsMember()
             await this.attMemberChoiced()
         },
         chatProps(value, payload) {
@@ -420,14 +419,6 @@ export default {
                 return false
             }
             return true
-        },
-        async checkIfMemberIsMember() {
-            let user = this.membersReactive.find(member => {
-                return member.id === this.user.id
-
-            })
-            if (user) return
-            this.$router.push('/room')
         },
         askChat() {
 
@@ -894,6 +885,7 @@ export default {
     border-top-left-radius: 20px;
     border-bottom-left-radius: 20px;
     margin-left: 5px;
+    align-items: center;
     transition: width 1s;
     background-color: var(--corMenu);
     border: 1px solid var(--cor5);
@@ -937,13 +929,15 @@ export default {
 }
 
 .options h3,
-a {
+.options a {
     color: var(--cor8);
     font-family: cursive;
     text-decoration: none;
     font-size: 1.3em;
     text-align: center;
     margin-top: 4px;
+    text-overflow: ellipsis;
+    white-space: nowrap;
 }
 
 .options ul {
@@ -1029,10 +1023,12 @@ a {
 .name-img-container {
     display: flex;
     max-width: 200px;
+    align-items: center;
 }
 
 .img-container {
     width: 50px;
+    min-width: 50px;
     height: 50px;
     border-radius: 10px;
     background-color: var(--cor4);
@@ -1058,6 +1054,8 @@ a {
     font-size: 1.4em;
     margin-left: 11px;
     text-overflow: ellipsis;
+    white-space: nowrap;
+    overflow: hidden;
 }
 
 .msg-text {
