@@ -175,8 +175,7 @@ export default {
     async mounted() {
         await this.JoinRoom()
         this.chatAttempts = 0
-        this.msgs = this.$props.chatProps
-        if(this.msgs.length === 0) this.askChat()
+        this.msgs.length === 0 && this.$props.chatProps.length === 0 ? this.askChat() : this.msgs = this.$props.chatProps
         this.verifyEmptyMembers()
         this.memberIsMembersInterval = setInterval(() => {
             if (this.$route.fullPath === `/watch/upload/${this.room}` || this.$route.fullPath === `/watch/youtube/${this.room}`) {

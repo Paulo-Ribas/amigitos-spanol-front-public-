@@ -217,7 +217,7 @@ export default {
            this.socket.on('listMembersUpdate', data => { 
             this.updateMemberRoom(data)
            })
-           this.socket.on('msg', data => {
+           this.socket.on('msgForBackUp', data => {
             this.addMsg(data)
            })
            this.socket.on('setVideoUrl', data => {

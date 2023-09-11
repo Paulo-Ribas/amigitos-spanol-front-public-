@@ -4,7 +4,7 @@
     <div class="container-box-poop" v-show="showAlgo">
       <div class="warn-container">
         <h2>Selecione Os Videos</h2>
-            <TabbleVideosList class="tableWarn" btnProps="Selecionar" :selectAllProps="true" :videosProps="videos" @selectedVideo="addOrRemoveVideo($event)" @selectAllVideos="addAllVideos()" @deselectAllVideos="removeAllVideos()"/>
+            <TabbleVideosList class="tableWarn" btnProps="Selecionar" :selectAllProps="true" :videosProps="videos" @selectedVideo="addOrRemoveVideo($event)" @selectAll="addAll()" @deselectAll="removeAll()"/>
         <div class="btn-container">
             <button class="yes" @click="yes">Pronto</button>
             <button class="no" @click="close">Cancelar</button>
@@ -143,17 +143,22 @@ export default {
         addVideoInArray(video) {
             this.videosAdded.push(video)
         },
-        addAllVideos(){
-            console.log('ADDDDDD TUDOOOOOO!!!!!!!!!!!!!!!!!!!!')
-            this.videosAdded = this.videos
-            let selecteds = document.querySelectorAll('tr')
-            selecteds.forEach(selected => {
-                selected.lastElementChild.innerHTML === "Cancelar" ? selected.lastElementChild.innerHTML = 'Selecionar' : selected.lastElementChild.innerHTML = 'Cancelar'
-                selected.lastElementChild.classList.add('selected')
-                selected.lastElementChild.previousElementSibling.classList.add('selected')
-            })
+        addAll(){
+            try {
+                console.log('ADDDDDD TUDOOOOOO!!!!!!!!!!!!!!!!!!!!')
+                this.videosAdded = this.videos
+                let selecteds = document.querySelectorAll('tr')
+                selecteds.forEach(selected => {
+                    selected.lastElementChild.innerHTML === "Cancelar" ? selected.lastElementChild.innerHTML = 'Selecionar' : selected.lastElementChild.innerHTML = 'Cancelar'
+                    selected.lastElementChild.classList.add('selected')
+                    selected.lastElementChild.previousElementSibling.classList.add('selected')
+                })
+                
+            } catch (error) {
+                console.log(error)
+            }
         },
-        removeAllVideos(){
+        removeAll(){
             let selecteds = document.querySelectorAll('tr')
             selecteds.forEach(selected => {
                 selected.lastElementChild.innerHTML === "Cancelar" ? selected.lastElementChild.innerHTML = 'Selecionar' : selected.lastElementChild.innerHTML = 'Cancelar'
