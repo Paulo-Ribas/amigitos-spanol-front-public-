@@ -323,7 +323,7 @@ export default {
             await this.checkIfMemberIsMember()
             await this.attMemberChoiced()
         },
-        chatProps(value){
+        chatProps(value, payload){
             this.msgsDesktop = value
         }
     },

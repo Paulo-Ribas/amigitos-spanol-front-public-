@@ -117,7 +117,7 @@
             <div class="container-chat">
                 <div class="chat-container">
                     <div class="chat-mobile-screen" @click="setScroll">
-                        <div class="msg-container" v-for="(msg, index) in msgs" :key="index">
+                        <div class="msg-container" v-for="(msg, index) in msgsMobile" :key="index">
                             <div class="name-img-container">
                                 <div class="img-container">
                                     <img :src="msg.userImg">
@@ -317,6 +317,7 @@ export default {
             this.changeMembersValues()
         },
         chatProps(value, payload) {
+            console.log('OLHA Ta mudando', value)
             this.msgsMobile = value
         }
     },
