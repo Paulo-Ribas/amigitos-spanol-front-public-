@@ -659,7 +659,7 @@ export default {
             this.joined = false
             if(this.socket){
                 this.PlayPauseVideo()
-                this.socket.emit('desconectado', {user: user})
+                this.socket.emit('desconectado', {user: user, room: this.room})
                 setTimeout(() => {
                     this.socket.disconnect()
                 }, 1000);

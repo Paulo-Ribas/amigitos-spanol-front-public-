@@ -52,7 +52,16 @@ export default {
                 this.imgSrc = dates.data.user[0].profileimg
             }
 
-        }).catch(err =>{})
+        }).catch(err =>{
+            if(this.$route.params.userId === '0'){
+                this.emoji = '&#128563'
+                this.imgSrc = 'https://media.tenor.com/2Ghkt795SqgAAAAC/doctor-who.gif'
+                return
+            }
+            this.name = 'Eu Ainda Não Existo'
+            this.imgSrc = '/cavalo.png'
+            this.description = 'eu ainda posso existir, mas e o user 0?'
+        })
         let token = this.$cookies.get('token')
         let axiosConfig = {
             headers: {
