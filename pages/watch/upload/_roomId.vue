@@ -893,7 +893,9 @@ export default {
             try {
                 console.log('vou ser desconectado')
                 this.socket.emit('desconectado', {user: this.user, room: this.room})
-                this.socket.disconnect()
+                setTimeout(() => {
+                    this.socket.disconnect()
+                }, 1000);
             } catch (error) {
                 console.log('deu erro? em teoria sim')
                 
