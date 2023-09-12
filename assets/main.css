@@ -44,6 +44,10 @@ html {
     --ReverseBackground: linear-gradient(var(--cor5), var(--corAzul));
     --scrollColor: linear-gradient(var(--scrollButton), var(--cor4));
 }
+.nuxt-progress {
+    height: 3.5px !important;
+    background-color: var(--cor5) !important;
+}
 
 @media screen and (max-width: 870px) {
     *{

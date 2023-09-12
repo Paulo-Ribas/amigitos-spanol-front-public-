@@ -16,7 +16,6 @@
       <span class="status" v-if="salving && videoErr === ''">salvando...</span>
       <span class="erro_video" v-if="videoErr">{{videoErr}}</span>
       <span class="porcent" v-if="uploading && !prossesing && !salving"></span>
-      <span class="porcent" v-if="prossesing && !salving"></span>
       <span class="videosUploading" v-if="countVideo > 0">{{countVideo}}</span>
       <div class="progress"></div>
       <TardisVerySmall v-if="showTardis" class="tardis-processing"></TardisVerySmall>
@@ -153,18 +152,10 @@ export default {
         let thumbnailForm = new FormData()
 
         thumbnailForm.append('thumbnail', thumbnail, thumbnailName)
-         let interval = setInterval(() => {
-                  if(!document.querySelector('.nuxt-progress')) return
-
-                  let porcentNuxt = document.querySelector('.nuxt-progress')
-                  let myPorcent = document.querySelector('.porcent')
-                  myPorcent.style.width = porcentNuxt.style.width
-         }, 4000);
         /* let base64String = await this.readAsDataURLForUpload(thumbnail) */
          
         axiosInfos.getprogressAndSetHeaders.headers.thumb = await this.saveThumbnail({thumbnail: thumbnailForm, headers})
          this.showTardis = false
-         clearInterval(interval)
         if(Form.get('video').type !== 'video/mp4') {
           this.converting = true
           this.showTardis = true
