@@ -157,7 +157,7 @@ export default {
             if (validUser) {
                 let room = this.room
                 this.connectionServer()
-                this.socket.emit('joinRoom',{user: this.user,room})
+                this.socket.emit('joinRoom',{user: this.user,room, chat: true})
                 await this.awaitUserJoinConfirm()
                  
                 return
