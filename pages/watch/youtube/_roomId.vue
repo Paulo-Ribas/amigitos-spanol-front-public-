@@ -660,7 +660,9 @@ export default {
             if(this.socket){
                 this.PlayPauseVideo()
                 this.socket.emit('desconectado', {user: user})
-                this.socket.disconnect()
+                setTimeout(() => {
+                    this.socket.disconnect()
+                }, 1000);
             }
         },
         addFocus(){
