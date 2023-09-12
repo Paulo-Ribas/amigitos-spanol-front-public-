@@ -889,10 +889,14 @@ export default {
             }
         },
         emitUserDisconected(){
-            if (this.socket) {
+            try {
                 this.socket.emit('desconectado', {user: this.user, room: this.room})
                 this.socket.disconnect()
+            } catch (error) {
+                console.log('deu erro? em teoria sim')
+                
             }
+            
         }
         
     }
