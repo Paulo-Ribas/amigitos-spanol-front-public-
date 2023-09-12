@@ -120,6 +120,7 @@ export default {
     },
     beforeDestroy(){
         this.emitUserDisconected()
+        console.log('emitiu')
         clearInterval(this.memberIsMembersInterval)
         clearInterval(this.sendPlayerStateInterval)
         clearInterval(this.askForCurrentTimeInterval)
@@ -890,6 +891,7 @@ export default {
         },
         emitUserDisconected(){
             try {
+                console.log('vou ser desconectado')
                 this.socket.emit('desconectado', {user: this.user, room: this.room})
                 this.socket.disconnect()
             } catch (error) {
