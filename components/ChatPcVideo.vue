@@ -188,7 +188,7 @@ export default {
         return {
             room: this.$route.params.roomId,
             socket: null,
-            msgsDesktop: [],
+            msgsDesktop: this.$chatProps,
             members: [],
             msgSent: 0,
             msgErr: '',
@@ -319,6 +319,7 @@ export default {
         },
         chatProps(value, payload){
             this.msgsDesktop = value
+            this.setScroll()
         }
     },
     beforeDestroy() {
@@ -570,7 +571,7 @@ export default {
         setScroll(msg) {
             let scroll = document.querySelector('.chat-screen')
             let lastMsg = this.msgsDesktop[(this.msgsDesktop.length - 1)]
-            if ((scroll.scrollHeight - scroll.scrollTop) <= 260 && lastMsg.id != this.user.id) {
+            if ((scroll.scrollHeight - scroll.scrollTop) <= 300 && lastMsg.id != this.user.id) {
                 setTimeout(() => {
                     scroll.scrollTop = scroll.scrollHeight
                 }, 200);

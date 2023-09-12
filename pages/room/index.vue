@@ -1,7 +1,7 @@
 <template>
   <div id="rooms-container">
     <div class="room-box-container" v-if="rooms.length > 0">
-    <Erro v-if="err != ''" :erroProps="err"></Erro>
+    <Erro v-if="err != ''" v-once :erroProps="err"></Erro>
         <div class="box-room" v-for="room in rooms" :key="room._id">
             <div class="icon-container" v-if="room.type === 'youtube'">
                 <fa :icon="['fab','youtube']"/>
@@ -80,6 +80,9 @@ export default {
             return roomRendered
 
         }
+    },
+    watch: {
+        '$route.query': '$fetch'
     },
     methods: {
         connectionServer(){

@@ -681,7 +681,7 @@ export default {
             this.socket.emit('changeVideoToAll', { video: video, room: this.room, actions })
         },
         verifyPermissions(video) {
-
+            console.log(this.roomInfo, this.adm || this.choice || this.owner === this.user.id )
             if (this.roomInfo.rulesType === 2) {
 
                 if (this.adm || this.choice || this.owner === this.user.id) return true

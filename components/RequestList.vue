@@ -44,7 +44,7 @@ export default {
         max-width: 200px;
         position: absolute;
         height: 100%;
-        z-index: 6;
+        z-index: 4;
         right: 0;
         display: flex;
         flex-direction: column;
