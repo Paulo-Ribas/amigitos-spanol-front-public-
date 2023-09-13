@@ -173,6 +173,7 @@ export default {
     },
     fetchOnServer: false,
     async mounted() {
+        console.log('e foi montado o celular')
         await this.JoinRoom()
         this.chatAttempts = 0
         this.msgsMobile.length === 0 && this.$props.chatProps.length === 0 ? this.askChat() : this.msgsMobile = this.$props.chatProps
