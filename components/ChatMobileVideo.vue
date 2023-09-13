@@ -797,4 +797,246 @@ export default {
     font-family: cursive;
     height: 45px;
 }
+
+.members-container {
+    height: 58px;
+    width: 100%;
+    overflow-x: auto;
+    display: flex;
+    overflow-x: auto;
+    overflow-y: none;
+    align-items: center;
+    position: absolute;
+    transform: translateY(50px);
+    flex-direction: row-reverse;
+    z-index: 3;
+}
+
+.members-container .icon-container {
+    color: white;
+    background: var(--background);
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 40px;
+    width: 40px;
+    font-size: 1.4em;
+}
+
+.members {
+    width: 0%;
+    right: 0%;
+    height: 100%;
+    display: flex;
+    border-top-left-radius: 20px;
+    border-bottom-left-radius: 20px;
+    margin-left: 5px;
+    transition: width 1s;
+    background-color: var(--corMenu);
+    border: 1px solid var(--cor5);
+    border-right: none;
+
+}
+
+.member-container {
+    height: 49px;
+    width: 49px;
+    position: relative;
+    margin: 0px 5px;
+    position: absolute;
+}
+
+.member-container img {
+    width: 100%;
+    height: 100%;
+    position: absolute;
+    border-radius: 20px;
+    cursor: pointer;
+    object-fit: cover;
+    object-fit: cover;
+}
+
+.options {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    background-color: var(--cor7);
+    border-radius: 2px;
+    z-index: 4;
+    /* top: 0%;
+        left: 50%;
+        transform: translate(-50%, -50%); */
+    display: flex;
+    flex-direction: column;
+    justify-content: space-around;
+    overflow-x: hidden;
+
+}
+
+.options h3,
+a {
+    color: var(--cor8);
+    font-family: cursive;
+    text-decoration: none;
+    font-size: 1.3em;
+    text-align: center;
+    margin-top: 4px;
+}
+
+.options ul {
+    display: flex;
+    width: 100%;
+    height: 35%;
+    max-height: 50px;
+    min-height: 30px;
+    background-color: var(--cor8);
+}
+
+.options ul li {
+    flex: 1;
+    list-style: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.6em;
+    border-right: 1.5px solid var(--cor6);
+    border-left: 1.5px solid var(--cor6);
+    cursor: pointer;
+    transition: 0.2s;
+    position: relative;
+}
+
+.options ul li .icon-li {
+    color: var(--cor7);
+    transition: 0.2s;
+}
+
+.close-options {
+    color: var(--cor4);
+    font-size: 1.8em;
+    position: absolute;
+    top: 0;
+    right: 0;
+    transform: translate(-6px, 4px);
+    z-index: 3;
+    cursor: pointer;
+}
+
+.chat-container {
+    height: 100%;
+}
+
+.chat-mobile-screen {
+    width: 100%;
+    height: calc(100% - 45px);
+    overflow-y: auto;
+
+}
+
+.text-area-container {
+    position: relative;
+    height: 45px;
+    background-color: var(--cor4);
+}
+
+.btn-form {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+#textarea-mobile {
+    width: calc(100% - 30px);
+    height: 99%;
+    font-family: cursive;
+    padding: 3px 5px;
+    resize: none;
+    border: 1px solid var(--cor7);
+    outline: none
+}
+
+.msg-container {
+    width: fit-content;
+    margin: 5px 0px;
+    padding: 0px 5px;
+}
+
+.name-img-container {
+    display: flex;
+    max-width: 200px;
+}
+
+.img-container {
+    width: 50px;
+    height: 50px;
+    border-radius: 10px;
+    background-color: var(--cor4);
+    border-bottom-left-radius: 0px;
+    position: relative;
+}
+
+.img-container img {
+    width: 50px;
+    height: 50px;
+    border-radius: 20px;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    object-fit: cover;
+    transform: translate(-50%, -50%);
+    z-index: 2;
+}
+
+.user-name-chat {
+    color: var(--cor6);
+    font-family: cursive;
+    font-size: 1.4em;
+    margin-left: 11px;
+    text-overflow: ellipsis;
+}
+
+.msg-text {
+    font-family: cursive;
+    color: white;
+    background-color: var(--cor4);
+    padding: 8px 10px;
+    width: fit-content;
+    min-width: 80px;
+    border-radius: 29px;
+    font-size: 1.2em;
+    border-top-left-radius: 0px;
+    word-break: break-word;
+}
+
+#send {
+    background-color: var(--background);
+    padding: 10px 10px;
+    color: var(--cor7);
+    border-radius: 24px;
+}
+
+@media screen and (max-width: 870px) {
+    .chatMembers-container {
+        height: 320px;
+
+    }
+
+    .video-menu-container {
+        margin-top: 0px;
+        max-width: 313px;
+    }
+}
+
+@media screen and (max-width: 500px) {
+    .video-menu-container {
+        margin-top: 0px;
+        flex: 2.5;
+        height: 97vh;
+        max-height: 480px;
+        max-width: 400px;
+    }
+}
 </style>
