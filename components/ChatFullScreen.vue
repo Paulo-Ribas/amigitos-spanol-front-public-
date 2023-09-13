@@ -147,9 +147,7 @@ export default {
            this.socket.on('applyRemoveAdm', data => {
             this.applyRemoveMemberAdm(data)
            })
-           this.socket.on('secondMemberSendChat', data => {
-            this.chatAttemptTwo(data)
-           })
+           
         },
          async JoinRoom(){            
             let validUser = this.validateUserDates()
