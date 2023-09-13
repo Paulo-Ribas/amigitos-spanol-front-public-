@@ -117,7 +117,7 @@
             <div class="container-chat">
                 <div class="chat-container">
                     <div class="chat-mobile-screen" @click="setScroll">
-                        <div class="msg-container" v-for="(msgsMobile, index) in msgs" :key="index">
+                        <div class="msg-container" v-for="(msg, index) in msgsMobile" :key="index">
                             <div class="name-img-container">
                                 <div class="img-container">
                                     <img :src="msg.userImg">
@@ -482,7 +482,7 @@ export default {
                 let scroll = document.querySelector('.chat-screen')
                 setTimeout(() => {
                     scroll.scrollTop = scroll.scrollHeight
-                }, 200);
+                }, 300);
 
             } catch (error) {
                 return

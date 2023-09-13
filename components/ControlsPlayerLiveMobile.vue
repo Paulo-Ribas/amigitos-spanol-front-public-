@@ -1,83 +1,82 @@
 <template>
-  <div class="mobile-controls-container" @click="toggleControll">
-    <div class="controls-container" v-show="displayBlock">
-        <div class="skip-container" @click="keysEvents('ArrowRight')">
-            <img src="/svg/adiantar_o_video_.svg" class="skip-icon">
+    <div class="mobile-controls-container" @click="toggleControll">
+        <div class="controls-container" v-show="displayBlock">
+            <div class="skip-container" @click="keysEvents('ArrowRight')">
+                <img src="/svg/adiantar_o_video_.svg" class="skip-icon">
+            </div>
+            <img src="/svg/botao_play_.svg" class="play-pause-icon" @click="PlayPauseVideo">
+            <div class="return-container" @click="keysEvents('ArrowLeft')">
+                <img src="/svg/regressar_o_video_.svg" class="return-icon">
+            </div>
         </div>
-        <img src="/svg/botao_play_.svg" class="play-pause-icon" @click="PlayPauseVideo">
-        <div class="return-container" @click="keysEvents('ArrowLeft')">
-            <img src="/svg/regressar_o_video_.svg" class="return-icon">
-        </div>
-    </div>
-  <div class="controls" @keydown="keysEvents">
-    <div class="progress"  @mousedown="aprenderMatematica" draggable="false">
-      <div class="progress-bar" @mousedown="aprenderMatematica" draggable="false"></div>
-    </div>
-    <div class="container-btns">
-      <div class="btn-primary">
-        <div class="timer">{{currentTime}} / {{duration}}</div>
-        <div class="volume-container">
-            <img src="/svg/com_som.svg" @click="emitMuteUnmute()" class="volume-icon">
-            <div class="volume" @mousedown="setVolume($event), addMovimentListener()" @mouseup="removeMovimentListener()">
-                <div id="volume-bar">
-                    <div class="ball"></div>
+        <div class="controls" @keydown="keysEvents">
+            <div class="progress" @mousedown="aprenderMatematica" draggable="false">
+                <div class="progress-bar" @mousedown="aprenderMatematica" draggable="false"></div>
+            </div>
+            <div class="container-btns">
+                <div class="btn-primary">
+                    <div class="timer">{{ currentTime }}b/ {{ duration }}</div>
+                    <div class="volume-container">
+                        <img src="/svg/com_som.svg" @click="emitMuteUnmute()" class="volume-icon">
+                        <input type="range" value="100" max="100" min="0" class="volume" @change="setVolume" />
+                    </div>
+                </div>
+                <div class="btn-fudno">
+                    <img src="/svg/tela_cheia.svg" class="fullScreem-icon" @click="fullScreamToggle">
                 </div>
             </div>
         </div>
-      </div>
-      <div class="btn-fundo">
-        <img src="/svg/tela_cheia.svg" class="fullScreem-icon" @click="fullScreamToggle">
-      </div>
-    </div>
-  </div>
     </div>
 </template>
 
 <script>
 export default {
-     mounted(){
+    mounted() {
         let controls = document.querySelector('.controls')
         let self = this
         let MouseVerify = function VerifyMouse() {
-                let timeOut = setTimeout(function () {
-                    try {
-                        controls.classList.add('opacity0')
-                        this.removeDisplayBlock()
-                    } catch (error) {
-                        throw error    
-                    }
-                }.bind(self), 7000);
-                return timeOut
-        }
-        let interval = setInterval(() => {
-            MouseVerify()
-        }, 7000);
-        document.querySelector('.video-container-mobile').addEventListener('click', function (){
+            let timeOut = setTimeout(function () {
                 try {
-                    controls.classList.remove('opacity0')
-                    this.toggleControll()
+                    controls.classList.add('opacity0')
+                    this.removeDisplayBlock()
+                    this.showControls = 0
                 } catch (error) {
                     throw error
                 }
-                clearInterval(MouseVerify)
-            }.bind(self))
-        window.addEventListener('beforeunload', ()=> {
+            }.bind(self), 7000);
+            return timeOut
+        }
+        let interval = setInterval(() => {
+
+            MouseVerify()
+        }, 7000);
+        document.querySelector('.video-container').addEventListener('click', function () {
+            try {
+                controls.classList.remove('opacity0')
+                this.toggleControll()
+            } catch (error) {
+                throw error
+            }
+            clearInterval(MouseVerify)
+        }.bind(self))
+        window.addEventListener('beforeunload', () => {
             return clearInterval(interval)
-         })
+        })
     },
-    data(){
+    data() {
         return {
             currentTime: this.$props.time,
             duration: this.$props.durationProps,
             displayBlock: false,
+            showControls: 0
         }
     },
     props: {
         time: String,
-        durationProps: String
+        durationProps: String,
     },
-    watch:{
-        time(value, payload){
+    watch: {
+        time(value, payload) {
             if (value === null) return
             this.currentTime = value
         },
@@ -86,56 +85,38 @@ export default {
         }
     },
     methods: {
-        PlayPauseVideo($event){
+        PlayPauseVideo($event) {
+            if (this.showControls < 2) return
             this.$emit('PlayPauseVideo', $event)
-             
+
         },
-        mouseSegura($event){
+        mouseSegura($event) {
             this.$emit('mouseSegura', $event)
         },
         setVolume($event) {
-            let width = $event.offsetX
-            let volumeBar = document.getElementById('volume-bar')
-            volumeBar.style.width = `${width}%`
-            let volume = width / 100
-            this.$emit('setVolume', volume)
+            if (this.showControls < 2) return
+            this.$emit('setVolume', $event)
         },
-        addMovimentListener() {
-            let volumeContainer = document.querySelector('.volume')
-            volumeContainer.addEventListener('mousemove', this.moveVolumeBar)
-        },
-        moveVolumeBar(element) {
-            let volumeBar = document.getElementById('volume-bar')
-            let width = element.offsetX
-            volumeBar.style.width = `${width}%`
-            let volume = width / 100
-
-            this.$emit('setVolume', volume)
-
-        },
-        removeMovimentListener() {
-            let volumeContainer = document.querySelector('.volume')
-            volumeContainer.removeEventListener('mousemove', this.moveVolumeBar)
-        },
-
-        aprenderMatematica($event){
+        aprenderMatematica($event) {
+            if (this.showControls < 2) return
             this.$emit('aprenderMatematica', $event)
         },
-        keysEvents($event){
-            let event = {code:$event}
-             
+        keysEvents($event) {
+            let event = { code: $event }
+
             this.$emit('keysEvents', event)
         },
-        fullScreamToggle($event){
+        fullScreamToggle($event) {
             this.$emit('fullScreamToggle', $event)
         },
-        emitMuteUnmute(){
+        emitMuteUnmute() {
             this.$emit('muteUnmute')
         },
-        toggleControll(){
+        toggleControll() {
+            this.showControls++
             this.displayBlock = true
         },
-        removeDisplayBlock(){
+        removeDisplayBlock() {
             this.displayBlock = false
         }
 
@@ -147,132 +128,114 @@ export default {
 .opacity0 {
     opacity: 0 !important;
 }
+
 .mobile-controls-container {
     position: absolute;
     width: 100%;
     height: 100%;
     z-index: 2;
 }
-    .controls-container {
-        position: absolute;
-        width: 100%;
-        height: 100%;
-        z-index: 2;
-        background-color: var(--corMenu);
-    }
-    .skip-container {
-        width: 50%;
-        height: 100%;
-        position: absolute;
-        z-index: 2;
-        right: 0;
-    }
-    .return-container {
-        width: 50%;
-        height: 100%;
-        position: absolute;
-        z-index: 2;
-        left: 0;
-    }
-    .controls {
-        width: 100%;
-        height: 48px;
-        z-index: 2;
-        color: white;
-        position: absolute;
-        bottom: 0;
-        display: flex;
-        flex-direction: column;
-        background-color: rgba(0, 0, 0, 0.342);
-    }
-    .progress {
-        width: 100%;
-        background-color: var(--cor2);
-        height: 8px;
-        position: relative;
-        cursor: pointer;
-    }
-    .progress-bar {
-        height: 100%;
-        position: absolute;
-        width: 1%;
-        background-color: var(--cor4);
-        z-index: 2;
-        pointer-events: none;
-        cursor: pointer;
-    }
-    .container-btns {
-        width: 100%;
-        height: calc(100% - 8px);
-        display: flex;
-        padding-top: 10px;
-        justify-content: space-between;
-        align-items: center;
-    }
-    .btn-primary {
-        display: flex;
-        align-items: center;
-        margin-left: 6px;
-    
-    }
-    .btn-primary img {
-        margin: 0px 2px;
-    }
-    img {
-        height: 22px;
-        width: 22px;
-        cursor: pointer;
-    }
-    .volume-container {
-        display: flex;
-        align-items: center;
-    }
-    .volume {
-        width: 100px;
-        height: 10px;
-        background-color: var(--corMenu);
-        position: relative;
-        cursor: pointer;
-        border-radius: 10px;
-        margin: 0px 3px;
-    }
-    .ball {
-        width: 13.5px;
-        height: 13.5px;
-        border-radius: 50%;
-        left: 100%;
-        top: 50%;
-        transform: translate(-75%,-50%);
-        position: absolute;
-        background-color: var(--cor4);
-        pointer-events: none;
-    }
-    #volume-bar {
-        position: absolute;
-        width: 100%;
-        height: 100%;
-        background-color: var(--cor7);
-        border-radius: 10px
 
+.controls-container {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    z-index: 2;
+    background-color: var(--corMenu);
+}
 
-    }
-     .play-pause-icon, .skip-icon, .return-icon {
-        height: 42px;
-        width: 42px;
-        position: absolute;
-        left: 50%;
-        top: 50%;
-        transform: translate(-50%, -50%);
-        z-index: 3;
-    }
-    .btn-fundo {
-        display: flex;
-        justify-content: center;
-        align-items: center;
-    }
-    .fullScreem-icon {
-        width: 43px;
-        height: 37px;
-    }
+.skip-container {
+    width: 50%;
+    height: 100%;
+    position: absolute;
+    z-index: 2;
+    right: 0;
+}
 
-</style>
+.return-container {
+    width: 50%;
+    height: 100%;
+    position: absolute;
+    z-index: 2;
+    left: 0;
+}
+
+.controls {
+    width: 100%;
+    height: 44px;
+    z-index: 2;
+    color: white;
+    position: absolute;
+    bottom: 0;
+    display: flex;
+    flex-direction: column;
+    background-color: rgba(0, 0, 0, 0.342);
+}
+
+.progress {
+    width: 100%;
+    background-color: var(--cor2);
+    height: 8px;
+    position: relative;
+    cursor: pointer;
+}
+
+.progress-bar {
+    height: 100%;
+    position: absolute;
+    width: 1%;
+    background-color: var(--cor4);
+    z-index: 2;
+    pointer-events: none;
+    cursor: pointer;
+}
+
+.container-btns {
+    width: 100%;
+    height: calc(100% - 8px);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.btn-primary {
+    display: flex;
+    align-items: center;
+    margin-left: 6px;
+
+}
+
+.btn-primary img {
+    margin: 0px 2px;
+}
+
+img {
+    height: 22px;
+    width: 22px;
+    cursor: pointer;
+}
+
+.volume-container {
+    display: flex;
+}
+
+.play-pause-icon,
+.skip-icon,
+.return-icon {
+    height: 42px;
+    width: 42px;
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 3;
+}
+
+.fullScreem-icon {
+    width: 43px;
+    height: 43px;
+}
+
+.volume-container input {
+    width: 75px;
+}</style>
