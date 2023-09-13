@@ -701,3 +701,100 @@ export default {
 }
 </script>
 
+<style scoped>
+.video-menu-container {
+    background-color: var(--corMenu);
+    flex: 1.5;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    position: relative;
+    width: 100%;
+    margin-top: 10px;
+    max-width: 400px;
+}
+
+.info-users {
+    flex: 1;
+    display: flex;
+    position: relative;
+}
+
+.icon-info-user {
+    position: absolute;
+    z-index: 5;
+    color: var(--cor4);
+    font-size: 1.9em;
+    right: 0;
+    margin-right: 8px;
+    cursor: pointer;
+}
+
+.user-info {
+    position: relative;
+    flex: 1;
+}
+
+.img-name-container {
+    position: relative;
+    display: flex;
+    height: 100%;
+    width: 100%;
+    overflow: hidden;
+
+}
+
+.img-name-container img {
+    width: 100%;
+    height: 100%;
+    position: absolute;
+    object-fit: cover;
+    object-position: 0px -16px;
+}
+
+.btn-container {
+    margin: 10px 5px;
+    overflow: hidden;
+    border-radius: 5px;
+}
+
+.chatMembers-container {
+    height: 340px
+}
+
+.container-chat {
+    height: 100%;
+    background-color: var(--corMenu);
+
+}
+
+.erro-container {
+    position: absolute;
+    bottom: -5%;
+    min-width: 220px;
+    width: 310px;
+}
+
+.member {
+    height: 50px;
+    width: 50px;
+    position: relative;
+
+}
+
+.width100 {
+    opacity: 1;
+    width: 82% !important;
+}
+
+.erro {
+    color: white;
+    width: calc(100% - 30px);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    font-family: cursive;
+    height: 45px;
+}
+</style>
