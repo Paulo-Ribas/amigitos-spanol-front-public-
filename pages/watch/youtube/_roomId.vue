@@ -338,6 +338,7 @@ export default {
              
             this.roomInfo = room.room
             this.members = room.room.members
+            this.membersReactive = room.room.members
         },
         checkAdm(){
              
@@ -355,7 +356,7 @@ export default {
             canChoice ? this.choice = true : this.choice = false
         },
         updateMemberRoom(member){
-            this.members = member
+            this.attRoom()
         },
          async checkIfMemberIsMember() {
             let user = this.membersReactive.find(member => {

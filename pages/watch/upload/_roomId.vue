@@ -51,8 +51,7 @@
                 @muteUnmute="muteUnmute()" />
         </div>
         <ChatPcVideo :chatProps="msgsForProps" v-if="joined && !mobile" @clicked="showVideos = !showVideos"></ChatPcVideo>
-        <ChatMobileVideo :chatProps="msgsForProps" v-if="joined && mobile" @clicked="showVideos = !showVideos">
-        </ChatMobileVideo>
+        <ChatMobileVideo :chatProps="msgsForProps" v-if="joined && mobile" @clicked="showVideos = !showVideos"></ChatMobileVideo>
     </div>
 </template>
 <script>
@@ -341,8 +340,7 @@ export default {
             canChoice ? this.choice = true : this.choice = false
         },
         async updateMemberRoom(member) {
-            this.members = member
-            this.membersReactive = member
+            await this.attRoom()
         },
         async checkIfMemberIsMember() {
             let user = this.membersReactive.find(member => {
