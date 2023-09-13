@@ -188,7 +188,7 @@ export default {
         return {
             room: this.$route.params.roomId,
             socket: null,
-            msgsDesktop: this.$chatProps,
+            msgsDesktop: this.$props.chatProps,
             members: [],
             msgSent: 0,
             msgErr: '',

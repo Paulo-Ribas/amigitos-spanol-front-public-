@@ -411,8 +411,10 @@ export default {
 
         },
         responsive() {
+            console.log(this.$mq)
             if (this.$mq === 'sm' || this.$mq === "md") {
                 this.mobile = true
+                console.log(this.mobile)
             }
             else {
                 this.mobile = false

@@ -571,7 +571,7 @@ export default {
             if ((scroll.scrollHeight - scroll.scrollTop) <= 400 && lastMsg.id != this.user.id) {
                 setTimeout(() => {
                     scroll.scrollTop = scroll.scrollHeight
-                }, 200);
+                }, 333);
 
             }
 
