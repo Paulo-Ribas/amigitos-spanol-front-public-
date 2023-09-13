@@ -1,139 +1,130 @@
 <template>
-    <div class="video-menu-container" @mouseover="removePopUpInfo" @mouseleave="removePopUpInfo">
+    <div class="video-menu-container">
         <PoopBox @confirm="emitBan($event)" @refuse="banning = false"
             :msgProps="'tem certeza que quer mesmo banir o ' + memberChoiced.username + '?'" btnConfirmProps="Sim"
             btnRefuseProps="Não" :datesProps="memberChoiced" v-if="banning"></PoopBox>
         <PoopBox @confirm="emitAdm($event)" @refuse="givingAdm = false"
             :msgProps="'tem certeza que quer mesmo dar para o ' + memberChoiced.username + '?'" btnConfirmProps="Sim"
             btnRefuseProps="Depois" :datesProps="memberChoiced" v-if="givingAdm"></PoopBox>
-        <div class="friend-list" v-if="showFriendList">
-            <fa icon="xmark" @click="showFriendList = false"></fa>
-            <Friend-list btnProps="Convidar Amigo" @btnClicked="inviteFriend($event)"></Friend-list>
-        </div>
         <div class="btn-container">
-            <BtnSpecial @clicked="emitClick" btnProps="Escolher Video" @btnClicked="inviteFriend($event)"></BtnSpecial>
+            <BtnSpecial @clicked="emitClick" btnProps="Escolher Video"></BtnSpecial>
         </div>
         <div class="info-users" @mouseover="removePopUpInfo">
             <div class="user-info" v-if="Object.keys(memberChoiced).length > 0">
-                <fa icon="gears" class="icon-info-user" @click="settings = !settings"></fa>
-                <div class="img-name-container">
-                    <img :src="memberChoiced.profileimg">
-                </div>
-            </div>
-            <div class="options" v-if="settings">
-                <fa class="close-options" icon="xmark" @click="settings = false"></fa>
-                <h3 class="name-info"><a target="_blank" :href="'/users/' + memberChoiced.id">{{ memberChoiced.username}}</a>
-                </h3>
-                <ul @mouseleave="removePopUpInfo()">
-                    <!-- dono da sala -->
-                    <li v-if="memberChoiced.id === roomInfo.userAdm" @mouseenter="setPopUpInfo('dono')"
-                        @mouseleave="removePopUpInfo()">
-                        <fa class="icon-li" icon="chess-king"></fa>
-                        <PopUpInfo textProps="dono" v-if="popUpInfo === 'dono'" />
-                    </li>
-                    <!---->
-                    <!--próprio user-->
-                    <!--                         <li v-if="memberChoiced.id === user.id" @mouseenter="setPopUpInfo('convidar amigos')" @mouseleave="removePopUpInfo()"> <fa class="icon-li" icon="user-plus" @click="showFriendList = true"><PopUpInfo textProps="convidar amigos" v-if="popUpInfo === 'convidar amigos'"/></fa></li>
- --> <!-- -->
-                    <!-- remover da sala li's -->
-                    <li v-if="removeFromRoom" @mouseenter="setPopUpInfo('remover da sala')" @mouseleave="removePopUpInfo()">
-                        <fa class="icon-li" icon="person-falling-burst" @click="emitKick(memberChoiced)" />
-                        <PopUpInfo textProps="remover da sala" v-if="popUpInfo === 'remover da sala'" />
-                    </li>
-                    <!-- -->
-                    <!-- mutar usuario li's -->
-                    <li v-if="muteUser" @mouseenter="setPopUpInfo('mutar usuário')" @mouseleave="removePopUpInfo()">
-                        <fa class="icon-li" icon="comment-slash" @click="emitMute(memberChoiced)" />
-                        <PopUpInfo textProps="mutar usuário" v-if="popUpInfo === 'mutar usuário'" />
-                    </li>
-                    <!-- -->
-                    <!-- desmutar usuario li's -->
-                    <li v-if="unmuteUser" @mouseenter="setPopUpInfo('desmutar usuário')" @mouseleave="removePopUpInfo()">
-                        <fa class="icon-li" icon="comment" @click="emitUnmute(memberChoiced)"></fa>
-                        <PopUpInfo textProps="desmutar usuário" v-if="popUpInfo === 'desmutar usuário'" />
-                    </li>
-                    <li v-if="communUser && memberChoiced.muted" @mouseenter="setPopUpInfo('usuário mutado')"
-                        @mouseleave="removePopUpInfo()">
-                        <fa class="icon-li" icon="comment-slash"></fa>
-                        <PopUpInfo textProps="usuário mutado" v-if="popUpInfo === 'usuário mutado'" />
-                    </li>
-                    <!-- -->
-                    <!-- banir usuario li-'s -->
-                    <li v-if="banUser" @mouseenter="setPopUpInfo('banir')" @click="banning = true"
-                        @mouseleave="removePopUpInfo()">
-                        <fa class="icon-li" icon="hammer"></fa>
-                        <PopUpInfo textProps="banir" v-if="popUpInfo === 'banir'" />
-                    </li>
-                    <!---->
-                    <!-- permitir usuario escolher videos li's -->
-                    <li v-if="allowUserToChooseVideos" @mouseenter="setPopUpInfo('permitir escolher vídeos')"
-                        @click="emitAllowChoiceVideos(memberChoiced)" @mouseleave="removePopUpInfo()">
-                        <fa class="icon-li" icon="film"></fa>
-                        <PopUpInfo textProps="permitir escolher vídeos" v-if="popUpInfo === 'permitir escolher vídeos'" />
-                    </li>
-                    <li v-if="communUser && memberChoiced.choice" @mouseenter="setPopUpInfo('pode escolher videos')"
-                        @mouseleave="removePopUpInfo()">
-                        <fa class="icon-li" icon="film"></fa>
-                        <PopUpInfo textProps="pode escolher videos" v-if="popUpInfo === 'pode escolher videos'" />
-                    </li>
-                    <!---->
-                    <!-- remover permissão de usuario escolher videos li-->
-                    <li v-if="removeUserPermissionToChooseVideos"
-                        @mouseenter="setPopUpInfo('remover permissão de escolher videos')" @mouseleave="removePopUpInfo()"
-                        @click="emitRemoveAllowedMemberChoice(memberChoiced)">
-                        <fa class="icon-li" icon="clapperboard"></fa>
-                        <PopUpInfo textProps="remover permissão de escolher videos"
-                            v-if="popUpInfo === 'remover permissão de escolher videos'" />
-                    </li>
-                    <!---->
-                    <!-- dar admistração a usuario li's -->
-                    <li v-if="giveAdministrationToUser" @mouseenter="setPopUpInfo('ser admistrador')"
-                        @click="givingAdm = true" @mouseleave="removePopUpInfo()">
-                        <fa class="icon-li" icon="screwdriver-wrench"></fa>
-                        <PopUpInfo textProps="ser admistrador" v-if="popUpInfo === 'ser admistrador'" />
-                    </li>
-                    <li v-if="memberChoiced.role && communUser" @mouseenter="setPopUpInfo('admistrador')"
-                        @mouseleave="removePopUpInfo()">
-                        <fa class="icon-li" icon="screwdriver-wrench"></fa>
-                        <PopUpInfo textProps="admistrador" v-if="popUpInfo === 'admistrador'" />
-                    </li>
-                    <!---->
-                    <!-- remover admistração de usuario li-->
-                    <li v-if="removeAdministrationFromUser" @click="emitRemoveMemberAdm(memberChoiced)"
-                        @mouseenter="setPopUpInfo('remover admistração')" @mouseleave="removePopUpInfo()">
-                        <fa class="icon-li" icon="screwdriver"></fa>
-                        <PopUpInfo textProps="remover admistração" v-if="popUpInfo === 'remover admistração'" />
-                    </li>
-                    <!---->
-                </ul>
+                <fa icon="gears" class="icon-info-user" v-if="!settings" @click="settings = true"></fa>
             </div>
         </div>
-        <div class="chatMembers-container" @mouseenter="removePopUpInfo">
-            <div class="container-chat" @mouseover="removePopUpInfo">
-                <div class="members" @mouseover="removePopUpInfo">
-                    <div class="member" v-for="(member, index) in membersReactive" :key="index">
-                        <div class="member-container" @click="showMemberInfo(index)">
-                            <img :src="member.profileimg">
-                        </div>
+        <div class="members-container">
+            <div :class="{ members: 'members', width100 }">
+                <div class="member" v-for="(member, index) in membersReactive" :key="index">
+                    <div class="member-container" @click="showMemberInfo(index)">
+                        <img :src="member.profileimg">
                     </div>
                 </div>
-                <div class="chat-container" @mouseenter="removePopUpInfo">
-                    <div class="chat-screen" @click="setScroll">
-                        <div class="msg-container" v-for="(msg, index) in msgsMobile" :key="index">
+            </div>
+            <div class="icon-container" @click="width100 = !width100">
+                <fa icon="users"></fa>
+            </div>
+        </div>
+        <div class="options" v-if="settings">
+            <fa class="close-options" icon="xmark" @click="closeOptions()"></fa>
+            <h3 class="name-info"><a target="_blank" :href="'/users/' + memberChoiced.id">{{ memberChoiced.username }}</a>
+            </h3>
+            <ul @mouseleave="removePopUpInfo()">
+                <!-- dono da sala -->
+                <li v-if="memberChoiced.id === roomInfo.userAdm" @mouseenter="setPopUpInfo('dono')"
+                    @mouseleave="removePopUpInfo()">
+                    <fa class="icon-li" icon="chess-king"></fa>
+                    <PopUpInfo textProps="você mesmo lol" v-if="popUpInfo === 'você mesmo lol'" />
+                </li>
+                <!---->
+                <!--próprio user-->
+                <!--                     <li v-if="memberChoiced.id === user.id" @mouseenter="setPopUpInfo('você mesmo lol')" @mouseleave="removePopUpInfo()"> <fa class="icon-li" icon="user-plus" @click="showFriendList = true"><PopUpInfo textProps="você mesmo lol" v-if="popUpInfo === 'você mesmo lol'"/></fa></li>
+ --> <!-- -->
+                <!-- remover da sala li's -->
+                <li v-if="removeFromRoom" @mouseenter="setPopUpInfo('remover da sala')" @mouseleave="removePopUpInfo()">
+                    <fa class="icon-li" icon="person-falling-burst" @click="emitKick(memberChoiced)" />
+                    <PopUpInfo textProps="remover da sala" v-if="popUpInfo === 'remover da sala'" />
+                </li>
+                <!-- -->
+                <!-- mutar usuario li's -->
+                <li v-if="muteUser" @mouseleave="removePopUpInfo()">
+                    <fa class="icon-li" icon="comment-slash" @click="emitMute(memberChoiced)" />
+                    <PopUpInfo textProps="mutar usuário" v-if="popUpInfo === 'mutar usuário'" />
+                </li>
+                <!-- -->
+                <!-- desmutar usuario li's -->
+                <li v-if="unmuteUser" @mouseenter="setPopUpInfo('desmutar usuário')" @mouseleave="removePopUpInfo()">
+                    <fa class="icon-li" icon="comment" @click="emitUnmute(memberChoiced)"></fa>
+                    <PopUpInfo textProps="desmutar usuário" v-if="popUpInfo === 'desmutar usuário'" />
+                </li>
+                <li v-if="communUser && memberChoiced.muted" @mouseenter="setPopUpInfo('usuário mutado')"
+                    @mouseleave="removePopUpInfo()">
+                    <fa class="icon-li" icon="comment-slash"></fa>
+                    <PopUpInfo textProps="usuário mutado" v-if="popUpInfo === 'usuário mutado'" />
+                </li>
+                <!-- -->
+                <!-- banir usuario li-'s -->
+                <li v-if="banUser" @mouseenter="setPopUpInfo('banir')" @click="banning = true"
+                    @mouseleave="removePopUpInfo()">
+                    <fa class="icon-li" icon="hammer"></fa>
+                    <PopUpInfo textProps="banir" v-if="popUpInfo === 'banir'" />
+                </li>
+                <!---->
+                <!-- permitir usuario escolher videos li's -->
+                <li v-if="allowUserToChooseVideos" @mouseenter="setPopUpInfo('permitir escolher vídeos')"
+                    @click="emitAllowChoiceVideos(memberChoiced)" @mouseleave="removePopUpInfo()">
+                    <fa class="icon-li" icon="film"></fa>
+                    <PopUpInfo textProps="permitir escolher vídeos" v-if="popUpInfo === 'permitir escolher vídeos'" />
+                </li>
+                <li v-if="communUser && memberChoiced.choice" @mouseenter="setPopUpInfo('pode escolher videos')"
+                    @mouseleave="removePopUpInfo()">
+                    <fa class="icon-li" icon="film"></fa>
+                    <PopUpInfo textProps="pode escolher videos" v-if="popUpInfo === 'pode escolher videos'" />
+                </li>
+                <!---->
+                <!-- remover permissão de usuario escolher videos li-->
+                <li v-if="removeUserPermissionToChooseVideos"
+                    @mouseenter="setPopUpInfo('remover permissão de escolher videos')" @mouseleave="removePopUpInfo()"
+                    @click="emitRemoveAllowedMemberChoice(memberChoiced)">
+                    <fa class="icon-li" icon="clapperboard"></fa>
+                    <PopUpInfo textProps="remover permissão de escolher videos"
+                        v-if="popUpInfo === 'remover permissão de escolher videos'" />
+                </li>
+                <!---->
+                <!-- dar admistração a usuario li's -->
+                <li v-if="giveAdministrationToUser" @mouseenter="setPopUpInfo('ser admistrador')" @click="givingAdm = true"
+                    @mouseleave="removePopUpInfo()">
+                    <fa class="icon-li" icon="screwdriver-wrench"></fa>
+                    <PopUpInfo textProps="ser admistrador" v-if="popUpInfo === 'ser admistrador'" />
+                </li>
+                <li v-if="memberChoiced.role && communUser" @mouseenter="setPopUpInfo('admistrador')"
+                    @mouseleave="removePopUpInfo()">
+                    <fa class="icon-li" icon="screwdriver-wrench"></fa>
+                    <PopUpInfo textProps="admistrador" v-if="popUpInfo === 'admistrador'" />
+                </li>
+                <!---->
+                <!-- remover admistração de usuario li-->
+                <li v-if="removeAdministrationFromUser" @click="emitRemoveMemberAdm(memberChoiced)"
+                    @mouseenter="setPopUpInfo('remover admistração')" @mouseleave="removePopUpInfo()">
+                    <fa class="icon-li" icon="screwdriver"></fa>
+                    <PopUpInfo textProps="remover admistração" v-if="popUpInfo === 'remover admistração'" />
+                </li>
+                <!---->
+            </ul>
+        </div>
+        <div class="chatMembers-container">
+            <div class="container-chat">
+                <div class="chat-container">
+                    <div class="chat-mobile-screen" @click="setScroll">
+                        <div class="msg-container" v-for="(msgsMobile, index) in msgs" :key="index">
                             <div class="name-img-container">
                                 <div class="img-container">
                                     <img :src="msg.userImg">
                                 </div>
                                 <span class="user-name-chat">{{ msg.userName }}</span>
                             </div>
-                            <div class="msg-text" v-if="msg.id === user.id">
-                                <p v-html="msg.text" v-if="msg.emoji">
-                                </p>
-                                <p v-else>
-                                    {{ msg.text }}
-                                </p>
-                            </div>
-                            <div class="msg-text flex-reverse" v-else>
+                            <div class="msg-text">
                                 <p v-html="msg.text" v-if="msg.emoji">
                                 </p>
                                 <p v-else>
@@ -142,16 +133,15 @@
                             </div>
                         </div>
                     </div>
-                    <div id="text-area-container">
-                        <form class="btn-form" v-show="!muted">
-                            <textarea id="textarealol" v-show="msgErr === ''" @keydown="sendByEnter">
+                    <div class="text-area-container">
+                        <form class="btn-form">
+                            <textarea v-show="msgErr === ''" id="textarea-mobile" @keydown="sendByEnter">
                                 </textarea>
                             <div class="erro" v-show="msgErr != ''">
                                 {{ msgErr }}
                             </div>
                             <input id="send" type="submit" value="Enviar" @click="sendMSG">
                         </form>
-                        <span v-if="muted" class="muted">você está mutado</span>
                     </div>
                 </div>
             </div>
@@ -711,328 +701,3 @@ export default {
 }
 </script>
 
-<style scoped>
-.video-menu-container {
-    background-color: var(--corMenu);
-    flex: 0.229;
-    max-width: 300px;
-    min-width: 210px;
-    height: 75vh;
-    max-height: 480px;
-    margin: 10px 20px;
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
-    position: relative;
-}
-
-.info-users {
-    flex: 1;
-    display: flex;
-    position: relative;
-}
-
-.icon-info-user {
-    position: absolute;
-    z-index: 2;
-    color: var(--cor4);
-    font-size: 1.9em;
-    right: 0;
-    margin-right: 8px;
-    cursor: pointer;
-}
-
-.user-info {
-    position: relative;
-    flex: 1;
-}
-
-.img-name-container {
-    position: relative;
-    display: flex;
-    height: 100%;
-    width: 100%;
-
-}
-
-.img-name-container img {
-    width: 100%;
-    height: 100%;
-    position: absolute;
-    object-fit: cover;
-    object-position: 0px -16px;
-}
-
-.btn-container {
-    margin: 10px 5px;
-    overflow: hidden;
-    border-radius: 5px;
-}
-
-.chatMembers-container {
-    height: 308px;
-}
-
-.container-chat {
-    height: 100%;
-    background-color: var(--corMenu);
-
-}
-
-.erro-container {
-    position: absolute;
-    bottom: -5%;
-    min-width: 220px;
-    width: 310px;
-}
-
-.member {
-    position: relative;
-    display: flex;
-    align-items: center;
-}
-
-.flex-reverse {
-    flex-direction: row-reverse;
-}
-
-.members {
-    height: 63px;
-    width: 100%;
-    overflow-x: auto;
-    display: flex;
-    overflow-x: auto;
-    overflow-y: none;
-}
-
-.member-container {
-    height: 50px;
-    width: 50px;
-    position: relative;
-    margin: 0px 5px;
-}
-
-.member-container img {
-    width: 100%;
-    height: 100%;
-    position: absolute;
-    border-radius: 20px;
-    cursor: pointer;
-    object-fit: cover;
-}
-
-.options {
-    position: absolute;
-    width: 100%;
-    height: 100%;
-    background-color: var(--cor7);
-    border-radius: 2px;
-    z-index: 2;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    display: flex;
-    flex-direction: column;
-    justify-content: space-around;
-    overflow: hidden;
-}
-
-.options h3,
-a {
-    color: var(--cor8);
-    font-family: cursive;
-    text-decoration: none;
-    font-size: 1.3em;
-    text-align: center;
-    margin-top: 4px;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-}
-
-.options ul {
-    display: flex;
-    width: 100%;
-    height: 35%;
-    max-height: 50px;
-    min-height: 30px;
-    background-color: var(--cor8);
-}
-
-.options ul li {
-    flex: 1;
-    list-style: none;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 1.6em;
-    border-right: 1.5px solid var(--cor6);
-    border-left: 1.5px solid var(--cor6);
-    cursor: pointer;
-    transition: 0.2s;
-    position: relative;
-}
-
-.options ul li .icon-li {
-    color: var(--cor7);
-    transition: 0.2s;
-}
-
-/* .options ul li:hover{
-        background-color: var(--cor7); 
-    } */
-.options ul li:hover>.icon-li {
-    transform: translateY(-2px);
-    /*color: var(--cor8);*/
-}
-
-.close-options {
-    color: var(--cor4);
-    font-size: 1.3em;
-    position: absolute;
-    top: 0;
-    right: 0;
-    transform: translate(-6px, 4px);
-    z-index: 3;
-    cursor: pointer;
-}
-
-.close-options:hover {
-    color: var(--cor9);
-    font-size: 1.3em;
-    position: absolute;
-    top: 0;
-    right: 0;
-    transform: translate(-6px, 4px);
-    z-index: 3;
-    cursor: pointer;
-    transition: 0.2s;
-
-}
-
-.erro {
-    color: white;
-    width: calc(100% - 30px);
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    text-align: center;
-    font-family: cursive;
-    height: 45px;
-}
-
-.chat-container {
-    height: calc(100% - 50px);
-}
-
-.chat-screen {
-    width: 100%;
-    height: calc(100% - 58px);
-    overflow-y: auto;
-}
-
-#text-area-container {
-    position: relative;
-    height: 45px;
-    background-color: var(--cor4);
-}
-
-.btn-form {
-    width: 100%;
-    height: 100%;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-}
-
-#textarealol {
-    width: calc(100% - 30px);
-    height: 99%;
-    font-family: cursive;
-    padding: 3px 5px;
-    resize: none;
-    border: 1px solid var(--cor7);
-    outline: none;
-    overflow-x: none;
-}
-
-.msg-container {
-    width: fit-content;
-    margin: 5px 0px;
-    padding: 0px 5px;
-}
-
-.name-img-container {
-    display: flex;
-    max-width: 200px;
-    overflow: hidden;
-}
-
-.img-container {
-    width: 40px;
-    height: 40px;
-    border-radius: 10px;
-    background-color: var(--cor4);
-    border-bottom-left-radius: 0px;
-    position: relative;
-}
-
-.img-container img {
-    width: 40px;
-    height: 40px;
-    border-radius: 20px;
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    z-index: 2;
-    object-fit: cover;
-}
-
-.user-name-chat {
-    color: var(--cor6);
-    font-family: cursive;
-    font-size: 1.1em;
-    margin-left: 11px;
-    text-overflow: ellipsis;
-}
-
-.msg-text {
-    font-family: cursive;
-    color: white;
-    background-color: var(--cor4);
-    padding: 8px 10px;
-    width: fit-content;
-    min-width: 80px;
-    border-radius: 29px;
-    border-top-left-radius: 0px;
-    word-break: break-word;
-}
-
-#send {
-    background-color: var(--background);
-    padding: 10px 10px;
-    color: var(--cor7);
-    border-radius: 24px;
-}
-
-.muted {
-    text-align: center;
-    color: var(--cor9);
-    font-size: 1em;
-    font-family: cursive;
-    text-shadow: 0px 0px 2px var(--cor7), 0px 0px 2px var(--cor7), 0px 0px 2px var(--cor7);
-    margin: 10px 0px 0px 10px;
-    display: inline-block;
-}
-
-.friend-list {
-    width: 100%;
-    height: 100%;
-    position: absolute;
-    z-index: 3;
-    background-color: var(--corMenu);
-    padding: 10px;
-    display: flex;
-
-}
-</style>
