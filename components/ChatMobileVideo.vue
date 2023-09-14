@@ -314,9 +314,6 @@ export default {
             this.setScroll()
         },
         width100(value, payload) {
-            if(value === false) {
-                this.settings = true
-            }
         }
     },
     beforeDestroy() {
@@ -835,6 +832,7 @@ export default {
     right: 0%;
     height: 100%;
     display: flex;
+    align-items: center;
     border-top-left-radius: 20px;
     border-bottom-left-radius: 20px;
     margin-left: 5px;
