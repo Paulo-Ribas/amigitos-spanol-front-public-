@@ -483,7 +483,7 @@ export default {
                 await this.verifyMsgSize()
                 msg.value = null
                 this.socket.emit('newMSG', dates)
-                let scroll = document.querySelector('.chat-screen')
+                let scroll = document.querySelector('.chat-mobile-screen')
                 setTimeout(() => {
                     scroll.scrollTop = scroll.scrollHeight
                 }, 300);

@@ -2,11 +2,11 @@
     <div class="mobile-controls-container" @click="toggleControll">
         <div class="controls-container" v-show="displayBlock">
             <div class="skip-container">
-                <img src="/svg/adiantar_o_video_.svg" @click="keysEvents('ArrowRight')" class="skip-icon">
+                <img src="/svg/adiantar_o_video_.svg" @click.stop="skip" class="skip-icon">
             </div>
             <img src="/svg/botao_play_.svg" class="play-pause-icon" @click="PlayPauseVideo">
             <div class="return-container">
-                <img src="/svg/regressar_o_video_.svg" @click="keysEvents('ArrowLeft')" class="return-icon">
+                <img src="/svg/regressar_o_video_.svg" @click.stop="Return" class="return-icon">
             </div>
         </div>
         <div class="controls" @keydown="keysEvents">
@@ -86,7 +86,6 @@ export default {
     },
     methods: {
         PlayPauseVideo($event) {
-            
             this.$emit('PlayPauseVideo', $event)
 
         },
@@ -94,15 +93,38 @@ export default {
             this.$emit('mouseSegura', $event)
         },
         setVolume($event) {
-           
-            this.$emit('setVolume', $event)
+
+            let width = $event.offsetX
+            let volumeBar = document.getElementById('volume-bar')
+            volumeBar.style.width = `${width}%`
+            let volume = width / 100
+            this.$emit('setVolume', volume)
+        },
+        addMovimentListener() {
+            let volumeContainer = document.querySelector('.volume')
+            volumeContainer.addEventListener('mousemove', this.moveVolumeBar)
+        },
+        moveVolumeBar(element) {
+            let volumeBar = document.getElementById('volume-bar')
+            let width = element.offsetX
+            volumeBar.style.width = `${width}%`
+            let volume = width / 100
+
+            this.$emit('setVolume', volume)
+
         },
         aprenderMatematica($event) {
             
             this.$emit('aprenderMatematica', $event)
         },
+        skip() {
+            this.keysEvents('ArrowRight')
+        },
+        Return() {
+            this.keysEvents('ArrowLeft')
+        },
         keysEvents($event) {
-            let event = { code: $event }
+            let event = { code: $event, key: { code: $event } }
 
             this.$emit('keysEvents', event)
         },
@@ -175,7 +197,7 @@ export default {
 .progress {
     width: 100%;
     background-color: var(--cor2);
-    height: 8px;
+    height: 9px;
     position: relative;
     cursor: pointer;
 }

@@ -40,5 +40,6 @@ export default {
         font-family: cursive,'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
         left: 50%;
         transform: translateX(-50%);
+        z-index: 3;
     }
 </style>

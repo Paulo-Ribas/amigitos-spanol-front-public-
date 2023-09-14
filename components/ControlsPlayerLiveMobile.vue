@@ -96,7 +96,28 @@ export default {
             this.$emit('mouseSegura', $event)
         },
         setVolume($event) {
-            this.$emit('setVolume', $event)
+
+            let width = $event.offsetX
+            let volumeBar = document.getElementById('volume-bar')
+            volumeBar.style.width = `${width}%`
+            let volume = width / 100
+            volume > 1 ? volume = 1 : volume < 0 ? volume = 0 : volume = volume
+
+            this.$emit('setVolume', volume)
+        },
+        addMovimentListener() {
+            let volumeContainer = document.querySelector('.volume')
+            volumeContainer.addEventListener('mousemove', this.moveVolumeBar)
+        },
+        moveVolumeBar(element) {
+            let volumeBar = document.getElementById('volume-bar')
+            let width = element.offsetX
+            volumeBar.style.width = `${width}%`
+            let volume = width / 100
+            volume > 1 ? volume = 1 : volume < 0 ? volume = 0 : volume = volume
+
+            this.$emit('setVolume', volume)
+
         },
         aprenderMatematica($event) {
             this.$emit('aprenderMatematica', $event)
@@ -180,7 +201,7 @@ export default {
 .progress {
     width: 100%;
     background-color: var(--cor2);
-    height: 8px;
+    height: 9px;
     position: relative;
     cursor: pointer;
 }
