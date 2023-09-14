@@ -11,7 +11,7 @@
         </div>
         <div class="info-users" @mouseover="removePopUpInfo">
             <div class="user-info" v-if="Object.keys(memberChoiced).length > 0">
-                <fa icon="gears" class="icon-info-user" v-if="!settings" @click="settings = true"></fa>
+                <fa icon="gears" class="icon-info-user" v-if="!settings && width100" @click="settings = true"></fa>
             </div>
         </div>
         <div class="members-container">

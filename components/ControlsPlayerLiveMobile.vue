@@ -36,14 +36,11 @@
 <script>
 export default {
     mounted() {
-        let controls = document.querySelector('.mobile-controls-container')
         let self = this
         let MouseVerify = function VerifyMouse() {
             let timeOut = setTimeout(function () {
                 try {
-                    controls.classList.add('opacity0')
                     this.removeDisplayBlock()
-                    this.showControls = 0
                 } catch (error) {
                     throw error
                 }
@@ -51,12 +48,10 @@ export default {
             return timeOut
         }
         let interval = setInterval(() => {
-
             MouseVerify()
         }, 7000);
         document.querySelector('.mobile-controls-container').addEventListener('click', function () {
             try {
-                controls.classList.remove('opacity0')
                 this.toggleControll()
             } catch (error) {
                 throw error
