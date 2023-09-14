@@ -314,6 +314,7 @@ export default {
             this.setScroll()
         },
         width100(value, payload) {
+            this.memberChoiced = {}
         }
     },
     beforeDestroy() {

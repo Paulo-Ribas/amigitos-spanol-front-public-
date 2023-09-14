@@ -1,12 +1,12 @@
 <template>
     <div class="mobile-controls-container" @click="toggleControll">
         <div class="controls-container" v-show="displayBlock">
-            <div class="skip-container" @click="removeDisplayBlock">
-                <img src="/svg/adiantar_o_video_.svg" @click.stop="keysEvents('ArrowRight')" class="skip-icon">
+            <div class="skip-container" @click.stop="removeDisplayBlock">
+                <img src="/svg/adiantar_o_video_.svg" @click.stop="skip()" class="skip-icon">
             </div>
             <img src="/svg/botao_play_.svg" class="play-pause-icon" @click="PlayPauseVideo">
-            <div class="return-container" @click="removeDisplayBlock">
-                <img src="/svg/regressar_o_video_.svg" class="return-icon" @click.stop="keysEvents('ArrowLeft')">
+            <div class="return-container" @click.stop="removeDisplayBlock">
+                <img src="/svg/regressar_o_video_.svg" class="return-icon" @click.stop="Return()">
             </div>
         </div>
         <div class="controls" @keydown="keysEvents">
@@ -53,7 +53,7 @@ export default {
 
             MouseVerify()
         }, 7000);
-        document.querySelector('.videos-container').addEventListener('click', function () {
+        document.querySelector('.video-container-mobile').addEventListener('click', function () {
             try {
                 controls.classList.remove('opacity0')
                 this.toggleControll()
@@ -100,6 +100,12 @@ export default {
         },
         aprenderMatematica($event) {
             this.$emit('aprenderMatematica', $event)
+        },
+        skip(){
+            this.keysEvents('ArrowRight')
+        },
+        Return(){
+            this.keysEvents('ArrowLeft')
         },
         keysEvents($event) {
             let event = { code: $event }
