@@ -197,6 +197,7 @@ export default {
             chatAttempts: 0,
             chatEmpty: false,
             showFriendList: false,
+            width100: false,
 
 
         }

@@ -36,7 +36,7 @@
 <script>
 export default {
     mounted() {
-        let controls = document.querySelector('.controls')
+        let controls = document.querySelector('.mobile-controls-container')
         let self = this
         let MouseVerify = function VerifyMouse() {
             let timeOut = setTimeout(function () {
@@ -54,7 +54,7 @@ export default {
 
             MouseVerify()
         }, 7000);
-        document.querySelector('.video-container').addEventListener('click', function () {
+        document.querySelector('.mobile-controls-container').addEventListener('click', function () {
             try {
                 controls.classList.remove('opacity0')
                 this.toggleControll()
@@ -117,7 +117,7 @@ export default {
             this.$emit('muteUnmute')
         },
         toggleControll() {
-            if(this.displayBlock = true) return this.removeDisplayBlock()
+            if(this.displayBlock === true) return this.removeDisplayBlock()
             this.displayBlock = true
         },
         removeDisplayBlock() {
