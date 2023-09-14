@@ -1,12 +1,12 @@
 <template>
     <div class="mobile-controls-container" @click="toggleControll">
         <div class="controls-container" v-show="displayBlock">
-            <div class="skip-container">
-                <img src="/svg/adiantar_o_video_.svg" @click="keysEvents('ArrowRight')" class="skip-icon">
+            <div class="skip-container" @click="toggleControll">
+                <img src="/svg/adiantar_o_video_.svg" @click="keysEvents.stop('ArrowRight')" class="skip-icon">
             </div>
             <img src="/svg/botao_play_.svg" class="play-pause-icon" @click="PlayPauseVideo">
-            <div class="return-container">
-                <img src="/svg/regressar_o_video_.svg" class="return-icon" @click="keysEvents('ArrowLeft')">
+            <div class="return-container" @click="toggleControll">
+                <img src="/svg/regressar_o_video_.svg" class="return-icon" @click="keysEvents.stop('ArrowLeft')">
             </div>
         </div>
         <div class="controls" @keydown="keysEvents">
@@ -36,10 +36,12 @@
 <script>
 export default {
     mounted() {
+        let controls = document.querySelector('.controls')
         let self = this
         let MouseVerify = function VerifyMouse() {
             let timeOut = setTimeout(function () {
                 try {
+                    controls.classList.add('opacity0')
                     this.removeDisplayBlock()
                 } catch (error) {
                     throw error
@@ -48,10 +50,12 @@ export default {
             return timeOut
         }
         let interval = setInterval(() => {
+
             MouseVerify()
         }, 7000);
         document.querySelector('.mobile-controls-container').addEventListener('click', function () {
             try {
+                controls.classList.remove('opacity0')
                 this.toggleControll()
             } catch (error) {
                 throw error
@@ -109,7 +113,6 @@ export default {
             this.$emit('muteUnmute')
         },
         toggleControll() {
-            if (this.displayBlock === true) return this.removeDisplayBlock()
             this.displayBlock = true
         },
         removeDisplayBlock() {

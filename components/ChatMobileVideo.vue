@@ -312,6 +312,11 @@ export default {
         chatProps(value, payload) {
             this.msgsMobile = value
             this.setScroll()
+        },
+        width100(value, payload) {
+            if(value === false) {
+                this.settings = true
+            }
         }
     },
     beforeDestroy() {
@@ -967,7 +972,7 @@ a {
 
 .name-img-container {
     display: flex;
-    max-width: 200px;
+    align-items: center;
 }
 
 .img-container {
@@ -996,6 +1001,7 @@ a {
     font-family: cursive;
     font-size: 1.4em;
     margin-left: 11px;
+    max-width: 250px;
     text-overflow: ellipsis;
 }
 
