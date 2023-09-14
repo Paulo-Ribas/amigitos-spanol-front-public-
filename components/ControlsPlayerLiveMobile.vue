@@ -108,7 +108,7 @@ export default {
             this.keysEvents('ArrowLeft')
         },
         keysEvents($event) {
-            let event = { code: $event }
+            let event = { code: $event, key:{code: $event} }
 
             this.$emit('keysEvents', event)
         },
