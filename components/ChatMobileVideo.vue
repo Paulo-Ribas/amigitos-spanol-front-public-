@@ -486,7 +486,7 @@ export default {
                 let scroll = document.querySelector('.chat-mobile-screen')
                 setTimeout(() => {
                     scroll.scrollTop = scroll.scrollHeight
-                }, 300);
+                }, 333);
 
             } catch (error) {
                 return
@@ -563,7 +563,7 @@ export default {
         setScroll(msg) {
             let scroll = document.querySelector('.chat-mobile-screen')
             let lastMsg = this.msgsMobile[(this.msgsMobile.length - 1)]
-            if ((scroll.scrollHeight - scroll.scrollTop) <= 400 && lastMsg.id != this.user.id) {
+            if ((scroll.scrollHeight - scroll.scrollTop) <= 440 && lastMsg.id != this.user.id) {
                 setTimeout(() => {
                     scroll.scrollTop = scroll.scrollHeight
                 }, 333);

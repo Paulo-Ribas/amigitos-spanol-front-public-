@@ -10,8 +10,8 @@
             </div>
         </div>
         <div class="controls" @keydown="keysEvents">
-            <div class="progress" @mousedown="aprenderMatematica" draggable="false">
-                <div class="progress-bar" @mousedown="aprenderMatematica" draggable="false"></div>
+                    <div class="progress" @click="setFalse(), aprenderMatematica($event)"  @mousedown="teste($event)" @mousemove="ultimoTeste($event)" @mouseleave="clicado = false" draggable="false">
+                    <div class="progress-bar" draggable="false"></div>
             </div>
             <div class="container-btns">
                 <div class="btn-primary">
@@ -96,13 +96,10 @@ export default {
             this.$emit('mouseSegura', $event)
         },
         setVolume($event) {
-
             let width = $event.offsetX
             let volumeBar = document.getElementById('volume-bar')
             volumeBar.style.width = `${width}%`
-            let volume = width / 100
-            volume > 1 ? volume = 1 : volume < 0 ? volume = 0 : volume = volume
-
+                let volume = width / 100
             this.$emit('setVolume', volume)
         },
         addMovimentListener() {
@@ -113,11 +110,14 @@ export default {
             let volumeBar = document.getElementById('volume-bar')
             let width = element.offsetX
             volumeBar.style.width = `${width}%`
-            let volume = width / 100
-            volume > 1 ? volume = 1 : volume < 0 ? volume = 0 : volume = volume
+                let volume = width / 100
 
             this.$emit('setVolume', volume)
 
+        },
+        removeMovimentListener() {
+            let volumeContainer = document.querySelector('.volume')
+            volumeContainer.removeEventListener('mousemove', this.moveVolumeBar)
         },
         aprenderMatematica($event) {
             this.$emit('aprenderMatematica', $event)
@@ -144,6 +144,23 @@ export default {
         },
         removeDisplayBlock() {
             this.displayBlock = false
+        },
+        teste($event) {
+            if ($event.type === 'mousedown') {
+                this.clicado = true
+            }
+            else {
+                this.clicado = false
+            }
+        },
+        ultimoTeste($event) {
+            if (this.clicado === true) {
+                this.aprenderMatematica($event)
+            }
+
+        },
+        setFalse() {
+            this.clicado = false
         }
 
     }

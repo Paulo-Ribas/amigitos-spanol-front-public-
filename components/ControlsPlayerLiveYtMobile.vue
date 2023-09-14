@@ -1,11 +1,11 @@
 <template>
     <div class="mobile-controls-container" @click="toggleControll">
         <div class="controls-container" v-show="displayBlock">
-            <div class="skip-container">
+            <div class="skip-container" @click.stop="removeDisplayBlock()">
                 <img src="/svg/adiantar_o_video_.svg" @click.stop="skip" class="skip-icon">
             </div>
             <img src="/svg/botao_play_.svg" class="play-pause-icon" @click="PlayPauseVideo">
-            <div class="return-container">
+            <div class="return-container" @click.stop="removeDisplayBlock()">
                 <img src="/svg/regressar_o_video_.svg" @click.stop="Return" class="return-icon">
             </div>
         </div>
@@ -36,10 +36,12 @@
 <script>
 export default {
     mounted() {
+        let controls = document.querySelector('.controls')
         let self = this
         let MouseVerify = function VerifyMouse() {
             let timeOut = setTimeout(function () {
                 try {
+                    controls.classList.add('opacity0')
                     this.removeDisplayBlock()
                 } catch (error) {
                     throw error
@@ -51,8 +53,9 @@ export default {
 
             MouseVerify()
         }, 7000);
-        document.querySelector('.mobile-controls-container').addEventListener('click', function () {
+        document.querySelector('.youtube-VideoPlayer-mobile').addEventListener('click', function () {
             try {
+                controls.classList.remove('opacity0')
                 this.toggleControll()
             } catch (error) {
                 throw error
@@ -100,6 +103,13 @@ export default {
             let volume = width / 100
             this.$emit('setVolume', volume)
         },
+        setVolume($event) {
+            let width = $event.offsetX
+            let volumeBar = document.getElementById('volume-bar')
+            volumeBar.style.width = `${width}%`
+            let volume = width / 100
+            this.$emit('setVolume', volume)
+        },
         addMovimentListener() {
             let volumeContainer = document.querySelector('.volume')
             volumeContainer.addEventListener('mousemove', this.moveVolumeBar)
@@ -112,6 +122,10 @@ export default {
 
             this.$emit('setVolume', volume)
 
+        },
+        removeMovimentListener() {
+            let volumeContainer = document.querySelector('.volume')
+            volumeContainer.removeEventListener('mousemove', this.moveVolumeBar)
         },
         aprenderMatematica($event) {
             
@@ -140,6 +154,23 @@ export default {
         },
         removeDisplayBlock() {
             this.displayBlock = false
+        },
+        teste($event) {
+            if ($event.type === 'mousedown') {
+                this.clicado = true
+            }
+            else {
+                this.clicado = false
+            }
+        },
+        ultimoTeste($event) {
+            if (this.clicado === true) {
+                this.aprenderMatematica($event)
+            }
+
+        },
+        setFalse() {
+            this.clicado = false
         }
 
     }
