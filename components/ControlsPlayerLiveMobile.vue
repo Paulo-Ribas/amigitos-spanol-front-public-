@@ -1,12 +1,12 @@
 <template>
     <div class="mobile-controls-container" @click="toggleControll">
         <div class="controls-container" v-show="displayBlock">
-            <div class="skip-container" @click="keysEvents('ArrowRight')">
-                <img src="/svg/adiantar_o_video_.svg" class="skip-icon">
+            <div class="skip-container">
+                <img src="/svg/adiantar_o_video_.svg" @click="keysEvents('ArrowRight')" class="skip-icon">
             </div>
             <img src="/svg/botao_play_.svg" class="play-pause-icon" @click="PlayPauseVideo">
-            <div class="return-container" @click="keysEvents('ArrowLeft')">
-                <img src="/svg/regressar_o_video_.svg" class="return-icon">
+            <div class="return-container">
+                <img src="/svg/regressar_o_video_.svg" class="return-icon" @click="keysEvents('ArrowLeft')">
             </div>
         </div>
         <div class="controls" @keydown="keysEvents">
@@ -15,12 +15,16 @@
             </div>
             <div class="container-btns">
                 <div class="btn-primary">
-                    <div class="timer">{{ currentTime }}b/ {{ duration }}</div>
+                    <div class="timer">{{ currentTime }} / {{ duration }}</div>
                     <div class="volume-container">
-                        <img src="/svg/com_som.svg" @click="emitMuteUnmute()" class="volume-icon">
-                        <input type="range" value="100" max="100" min="0" class="volume" @change="setVolume" />
+                <img src="/svg/com_som.svg" @click="emitMuteUnmute()" class="volume-icon">
+                <div class="volume" @mousedown="setVolume($event), addMovimentListener()" @mouseup="removeMovimentListener()">
+                    <div id="volume-bar">
+                        <div class="ball"></div>
                     </div>
                 </div>
+            </div>
+            </div>
                 <div class="btn-fudno">
                     <img src="/svg/tela_cheia.svg" class="fullScreem-icon" @click="fullScreamToggle">
                 </div>
@@ -86,7 +90,6 @@ export default {
     },
     methods: {
         PlayPauseVideo($event) {
-            if (this.showControls < 2) return
             this.$emit('PlayPauseVideo', $event)
 
         },
@@ -94,11 +97,9 @@ export default {
             this.$emit('mouseSegura', $event)
         },
         setVolume($event) {
-            if (this.showControls < 2) return
             this.$emit('setVolume', $event)
         },
         aprenderMatematica($event) {
-            if (this.showControls < 2) return
             this.$emit('aprenderMatematica', $event)
         },
         keysEvents($event) {
@@ -113,7 +114,8 @@ export default {
             this.$emit('muteUnmute')
         },
         toggleControll() {
-            this.showControls++
+            if (this.displayBlock = true) return this.removeDisplayBlock()
+
             this.displayBlock = true
         },
         removeDisplayBlock() {
@@ -148,7 +150,7 @@ export default {
     width: 50%;
     height: 100%;
     position: absolute;
-    z-index: 2;
+    z-index: 1;
     right: 0;
 }
 
@@ -156,7 +158,7 @@ export default {
     width: 50%;
     height: 100%;
     position: absolute;
-    z-index: 2;
+    z-index: 1;
     left: 0;
 }
 
@@ -213,11 +215,10 @@ img {
     height: 22px;
     width: 22px;
     cursor: pointer;
+    position: relative;
+    z-index: 3;
 }
 
-.volume-container {
-    display: flex;
-}
 
 .play-pause-icon,
 .skip-icon,
@@ -236,6 +237,37 @@ img {
     height: 43px;
 }
 
-.volume-container input {
-    width: 75px;
-}</style>
+.volume-container {
+        display: flex;
+        align-items: center;
+    }
+    .volume {
+        width: 100px;
+        height: 10px;
+        background-color: var(--corMenu);
+        position: relative;
+        cursor: pointer;
+        border-radius: 10px;
+        margin: 0px 3px;
+    }
+    #volume-bar {
+        position: absolute;
+        width: 100%;
+        height: 100%;
+        background-color: var(--cor7);
+        border-radius: 10px
+
+
+    }
+    .ball {
+        width: 13.5px;
+        height: 13.5px;
+        border-radius: 50%;
+        left: 100%;
+        top: 50%;
+        transform: translate(-75%,-50%);
+        position: absolute;
+        background-color: var(--cor4);
+        pointer-events: none;
+    }
+</style>

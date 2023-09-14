@@ -33,7 +33,8 @@ export default {
 <style scoped>
     .btn-special{
     width: 100%;
-    padding: 8px 0px;
+    padding: 11px 0px;
+    min-height: 39px;
     font-family: cursive;
     color: white;
     text-align: center;

@@ -27,7 +27,7 @@
             </div>
         </div>
         <div class="options" v-if="settings">
-            <fa class="close-options" icon="xmark" @click="closeOptions()"></fa>
+            <fa class="close-options" icon="xmark" @click="settings = !settings"></fa>
             <h3 class="name-info"><a target="_blank" :href="'/users/' + memberChoiced.id">{{ memberChoiced.username }}</a>
             </h3>
             <ul @mouseleave="removePopUpInfo()">

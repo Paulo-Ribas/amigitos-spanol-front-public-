@@ -204,16 +204,16 @@ export default {
         width: 24px;
         cursor: pointer;
     }
-    .volume-container {
-        display: flex;
-        align-items: center;
-    }
     .play-pause-icon {
         height: 20px;
     }
     .fullScreem-icon {
         width: 45px;
         height: 45px;
+    }
+    .volume-container {
+        display: flex;
+        align-items: center;
     }
     .volume {
         width: 100px;
