@@ -149,7 +149,6 @@ export default {
             this.$emit('muteUnmute')
         },
         toggleControll() {
-            if(this.displayBlock === true) return this.removeDisplayBlock()
             this.displayBlock = true
         },
         removeDisplayBlock() {
