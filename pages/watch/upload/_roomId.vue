@@ -355,7 +355,7 @@ export default {
             let room = this.room
             let chat = this.msgsForProps
             let chatEmpty = false
-            let newUserThatSendTheChat = undefined
+            let newUserThatSendTheChat = undefined 
             if (chat.length === 0) {
                 chatEmpty = true
             }
