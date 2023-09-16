@@ -465,7 +465,7 @@ export default {
                         return resolve(true)
 
                     }
-                    if (Try >= 30) {
+                    if (Try >= 20) {
                         clearInterval(interval)
                         return reject(true)
                     }
