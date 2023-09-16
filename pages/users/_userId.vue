@@ -189,7 +189,7 @@ export default {
             this.editing = false
         },
         sendFriendRequest(){
-            if (this.$route.params.userId === '0') return this.err = `Discord: bayaya`
+            if (this.$route.params.userId === '0') return this.errRequest = `Discord: bayaya`
             let cookie = this.$cookies.get('token')
             let friendId = this.$route.params.userId
             let axiosConfig = {
@@ -205,9 +205,7 @@ export default {
                 await this.setAmount()
                 this.sendNotification()
             }).catch(err => {
-                 
-                this.errRequest = err.response.data.err
-                this.err = `Leia o nome ou API crashou`
+                    this.errRequest = `Leia o nome ou API crashou`
             })
         },
         acceptFriendRequest(){

@@ -15,7 +15,7 @@
             </div>
             <div class="container-btns">
                 <div class="btn-primary">
-                    <div class="timer">{{ currentTime }}b/ {{ duration }}</div>
+                    <div class="timer">{{ currentTime }} / {{ duration }}</div>
                     <div class="volume-container">
                 <img src="/svg/com_som.svg" @click="emitMuteUnmute()" class="volume-icon">
                 <div class="volume" @mousedown="setVolume($event), addMovimentListener()" @mouseup="removeMovimentListener()">
@@ -149,7 +149,6 @@ export default {
             this.$emit('muteUnmute')
         },
         toggleControll() {
-            if(this.displayBlock === true) return this.removeDisplayBlock()
             this.displayBlock = true
         },
         removeDisplayBlock() {
