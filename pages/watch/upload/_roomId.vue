@@ -526,22 +526,35 @@ export default {
         },
         sendPlayerState() {
             let video = document.querySelector('video')
+            let src = document.querySelector('source').src
             if (this.user.id === this.members[0].id) {
-                let playerState = video.paused
+                let playerState = {
+                    paused: video.paused,
+                    source: src
+                }
                 this.socket.emit('playerState', { room: this.room, userId: this.user.id, playerState })
             }
         },
         verifyVideoState(playerStateData) {
             const video = document.querySelector('video')
+            let  src = document.querySelector('source').src
+            let {paused, source} = playerStateData
 
+            if(this.user.id === this.members[0].id) return
+            if(src !== source){
+                src = source
+                video.load()
+            }
             if (this.user.id != this.members[0].id) {
                 let playerState = video.paused
-
-                if (playerStateData.playerState === false && playerState === true) {
+                
+                if (paused == false && playerState == true) {
                     video.play()
+                    return
                 }
-                if (playerStateData.playerState === true && playerState === false) {
+                if (paused == true && playerState == false) {
                     video.pause()
+                    return
                 }
 
             }

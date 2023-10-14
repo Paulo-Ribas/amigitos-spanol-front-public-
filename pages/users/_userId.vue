@@ -205,6 +205,7 @@ export default {
                 await this.setAmount()
                 this.sendNotification()
             }).catch(err => {
+                    console.log('erro aqui?', err)
                     this.errRequest = `Leia o nome ou API crashou`
             })
         },

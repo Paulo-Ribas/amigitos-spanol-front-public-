@@ -1,6 +1,6 @@
 <template>
-  <div class="controls" @keydown="keysEvents">
-    <div class="progress" @click="setFalse(), aprenderMatematica($event)"  @mousedown="teste($event)" @mousemove="ultimoTeste($event)" @mouseleave="clicado = false" draggable="false">
+  <div class="controls" @keydown="keysEvents" @mouseleave="setDraggingFalse(), removeEventListener()" @mouseup="dragging = false">
+    <div class="progress" @click="setFalse(), aprenderMatematica($event)"  @mousedown="dragging = true" @mousemove="draggingBar($event)" draggable="false">
       <div class="progress-bar"  draggable="false"></div>
     </div>
     <div class="container-btns">
@@ -60,7 +60,7 @@ export default {
         return {
             currentTime: this.$props.time,
             duration: this.$props.durationProps,
-            clicado: false,
+            dragging: false,
         }
     },
     props: {
@@ -105,12 +105,20 @@ export default {
             this.$emit('setVolume', volume)
 
         },
+        setDraggingFalse() {
+            this.dragging = false
+        },
         removeMovimentListener(){
             let volumeContainer = document.querySelector('.volume')
             volumeContainer.removeEventListener('mousemove', this.moveVolumeBar)
         },
         aprenderMatematica($event){
             this.$emit('aprenderMatematica', $event)
+        },
+        draggingBar($event){
+            if(this.dragging){
+                this.$emit('aprenderMatematica', $event)
+            }
         },
         keysEvents($event){
             this.$emit('keysEvents', $event)
@@ -124,14 +132,6 @@ export default {
         emitTheaterMode() {
             this.$emit('theaterMode')
             this.fullScreamToggle()
-        },
-        teste($event){
-            if ($event.type === 'mousedown') {
-                this.clicado = true
-            }
-            else {
-                this.clicado = false
-            }
         },
         ultimoTeste($event){
             if (this.clicado === true) {

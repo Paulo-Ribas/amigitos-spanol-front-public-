@@ -1,5 +1,5 @@
 <template>
-    <div class="mobile-controls-container" @click="toggleControll">
+    <div class="mobile-controls-container" @click="toggleControll" @touchend="dragging = false" @mouseleave="removeEventListener()">
         <div class="controls-container" v-show="displayBlock">
             <div class="skip-container" @click.stop="removeDisplayBlock">
                 <img src="/svg/adiantar_o_video_.svg" @click.stop="skip()" class="skip-icon">
@@ -10,7 +10,7 @@
             </div>
         </div>
         <div class="controls" @keydown="keysEvents">
-                    <div class="progress" @click="setFalse(), aprenderMatematica($event)"  @mousedown="teste($event)" @mousemove="ultimoTeste($event)" @mouseleave="clicado = false" draggable="false">
+                    <div class="progress" @click="setFalse(), aprenderMatematica($event)"  @touchstart="dragging = true" @touchmove="draggingBar($event)" @mouseleave="clicado = false" draggable="false">
                     <div class="progress-bar" draggable="false"></div>
             </div>
             <div class="container-btns">
@@ -18,7 +18,7 @@
                     <div class="timer">{{ currentTime }} / {{ duration }}</div>
                     <div class="volume-container">
                 <img src="/svg/com_som.svg" @click="emitMuteUnmute()" class="volume-icon">
-                <div class="volume" @mousedown="setVolume($event), addMovimentListener()" @mouseup="removeMovimentListener()">
+                <div class="volume" @mousedown="setVolume($event), addMovimentListener()" @mouseup="removeMovimentListener()" @touchstart="setVolume($event)" @touchmove="moveVolumeBar($event)" @touchend="removeEventListener()" >
                     <div id="volume-bar">
                         <div class="ball"></div>
                     </div>
@@ -71,7 +71,8 @@ export default {
             currentTime: this.$props.time,
             duration: this.$props.durationProps,
             displayBlock: false,
-            showControls: 0
+            showControls: 0,
+            dragging: false,
         }
     },
     props: {
@@ -108,7 +109,7 @@ export default {
         },
         moveVolumeBar(element) {
             let volumeBar = document.getElementById('volume-bar')
-            let width = element.offsetX
+            let width = element.offsetX || element.touches[0].offsetX
             volumeBar.style.width = `${width}%`
                 let volume = width / 100
 
@@ -118,6 +119,11 @@ export default {
         removeMovimentListener() {
             let volumeContainer = document.querySelector('.volume')
             volumeContainer.removeEventListener('mousemove', this.moveVolumeBar)
+        },
+        draggingBar($event){
+            if(this.dragging) {
+                this.$emit('aprenderMatemativa', $event)
+            }
         },
         aprenderMatematica($event) {
             this.$emit('aprenderMatematica', $event)
