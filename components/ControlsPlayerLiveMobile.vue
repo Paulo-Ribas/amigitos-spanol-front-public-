@@ -122,7 +122,7 @@ export default {
         },
         draggingBar($event){
             if(this.dragging) {
-                this.$emit('aprenderMatemativa', $event)
+                this.$emit('aprenderMatematica', $event)
             }
         },
         aprenderMatematica($event) {
