@@ -124,8 +124,8 @@ export default {
         flex-wrap: wrap;
         justify-content: center;
         align-items: center;
-        height: calc(100% - 39px);
-        overflow-y: scroll;
+        height: calc(100% - 55px);
+        overflow-y: auto;
     }
     .box-room {
         width: 100%;
