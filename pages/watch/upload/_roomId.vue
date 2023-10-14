@@ -541,7 +541,10 @@ export default {
             let {paused, source} = playerStateData
 
             if(this.userId === this.members[0].id) return
-            src !== source ? src = source : src = src
+            if(src !== source){
+                src = source
+                video.load()
+            }
             if (this.user.id != this.members[0].id) {
                 let playerState = video.paused
                 
