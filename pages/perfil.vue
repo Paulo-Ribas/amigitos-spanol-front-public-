@@ -336,14 +336,14 @@ https://www.amigitos-espanol-api.com.br/user/' + id).then(response => {
                         this.newUserName = undefined
                         
                     }).catch(err => {
-                         
+                            throw err
                     })
                 }).catch(err => {
-                     
-                    this.errName = err
+                    this.errName = err.err
+                    throw err
                 })
-            }).catch(erro => {
-
+            }).catch(err => {
+                throw err
             })
             
         },
@@ -361,14 +361,14 @@ https://www.amigitos-espanol-api.com.br/user/' + id).then(response => {
                         this.SET_USER_INFO(user)
                         this.newEmail = undefined
                     }).catch(err => {
-                         
+                        throw err
                     })
                 }).catch(err => {
-                     
-                    this.errName = err
+                    this.errName = err.err
+                    throw err
                 })
-            }).catch(erro => {
-
+            }).catch(err => {
+                throw err
             })
         },
         editPassword(){
@@ -392,13 +392,13 @@ https://www.amigitos-espanol-api.com.br/user/' + id).then(response => {
                 }).catch(err => {
                       
 
-                    this.errName = err
+                    this.errName = err.err
                     throw err
                 })
-            }).catch(erro => {
+            }).catch(err => {
                  
 
-                throw erro
+                throw err
             })
         },
         async signOut(){

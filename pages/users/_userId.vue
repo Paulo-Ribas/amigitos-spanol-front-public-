@@ -198,7 +198,7 @@ export default {
                 }
             }
              
-            axios.post('https://www.amigitos-espanol-api.com.br/request',{friendId}, axiosConfig).then(async result => {
+            axios.post('https://www.amigitos-espanol-api.com.br/request',{friendId}, axiosConfig).then(async (result) => {
                 await this.setIsPeding(friendId, axiosConfig)
                 await this.setShowBtnAddToRequestedUser(friendId, axiosConfig)
                 await this.setIsFriend()
