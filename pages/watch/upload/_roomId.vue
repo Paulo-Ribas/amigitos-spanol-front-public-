@@ -540,7 +540,7 @@ export default {
             let  src = document.querySelector('source').src
             let {paused, source} = playerStateData
 
-            if(this.userId === this.members[0].id) return
+            if(this.user.id === this.members[0].id) return
             if(src !== source){
                 src = source
                 video.load()
