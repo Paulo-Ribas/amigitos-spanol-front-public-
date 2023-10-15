@@ -320,7 +320,7 @@ export default {
         setScroll() {
             let scroll = document.querySelector('.chat-mobile-screen') ||  document.querySelector('.chat-screen')
             let lastMsg = this.msgs[(this.msgs.length - 1)]
-            if ((scroll.scrollHeight - scroll.scrollTop) <= 400 && lastMsg.id != this.user.id) {
+            if ((scroll.scrollHeight - scroll.scrollTop) <= 300) {
                 setTimeout(() => {
                     scroll.scrollTop = scroll.scrollHeight
                 }, 333);
@@ -562,14 +562,14 @@ export default {
         transform: translate(-50%, -50%);
         z-index: 2;
         object-fit: cover;
-        opacity: 0.6;
+        opacity: 0.4;
     }
     .user-name-chat {
         color: var(--cor6);
         font-family: cursive;
         font-size: 1.1em;
         margin-left: 11px;
-        opacity: 0.8;
+        opacity: 0.6;
     }
     .msg-text {
         font-family: cursive;
@@ -584,7 +584,7 @@ export default {
         
     }
     .msg-text  p{
-        opacity: 0.8;
+        opacity: 0.6;
     }
 
 </style>
