@@ -25,7 +25,7 @@
                 </div>
             </div>
             </div>
-                <div class="btn-fudno">
+                <div class="btn-fundo">
                     <fa icon ='masks-theater' @click="emitTheaterMode()" class="theater-icon"></fa>
                     <img src="/svg/tela_cheia.svg" class="fullScreem-icon" @click="fullScreamToggle">
                 </div>
@@ -258,7 +258,11 @@ export default {
     margin-left: 6px;
 
 }
-
+.btn-fundo {
+        height: 100%;
+        display: flex;
+        align-items: center;
+    }
 .btn-primary img {
     margin: 0px 2px;
 }
@@ -321,5 +325,10 @@ img {
         position: absolute;
         background-color: var(--cor4);
         pointer-events: none;
+    }
+    .theater-icon {
+        font-size: 1.3em;
+        margin-right: 5px;
+        cursor: pointer;
     }
 </style>

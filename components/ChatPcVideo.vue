@@ -511,14 +511,14 @@ export default {
             this.msgSent++
 
             return new Promise((resolve, reject) => {
-                if (this.msgSent <= 11) {
+                if (this.msgSent < 11) {
                     return resolve()
                 }
-                if (this.msgSent === 7) {
+                if (this.msgSent === 11) {
                     setTimeout(() => {
                         this.msgSent = 0
                         this.msgErr = ''
-                    }, 4000);
+                    }, 2000);
                     return resolve()
                 }
                 if (this.msgSent > 11) {

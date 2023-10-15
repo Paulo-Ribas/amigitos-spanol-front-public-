@@ -48,7 +48,7 @@
             <ControlsPlayerLiveMobile :time="currentTime" :durationProps="duration" @PlayPauseVideo="emitPlayPause($event)"
                 @mouseSegura="mouseSegura" @setVolume="setVolume" @aprenderMatematica="emitAprenderMatematica($event)"
                 @keysEvents="emitKeysEvents($event)" @fullScreamToggle="fullScreamToggle($event)"
-                @muteUnmute="muteUnmute()" />
+                @muteUnmute="muteUnmute()" @theaterMode="fullScreamToggle($event), theaterModeToggle()" />
             <ChatFullScreen :chatProps="msgsForProps" v-if="theater"></ChatFullScreen>
         </div>
         <ChatPcVideo :chatProps="msgsForProps" v-if="joined && !mobile" @clicked="showVideos = !showVideos"></ChatPcVideo>
