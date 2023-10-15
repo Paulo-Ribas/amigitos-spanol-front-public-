@@ -318,8 +318,8 @@ export default {
           
         },
         setScroll() {
-            let scroll = document.querySelector('.chat-mobile-screen') ||  document.querySelector('.chat-screen')
-            let lastMsg = this.msgs[(this.msgs.length - 1)]
+            let scroll = document.querySelector('.chat-full-screen')
+            let lastMsg = this.msgs[(this.msgs.length - 1)] 
             if ((scroll.scrollHeight - scroll.scrollTop) <= 300) {
                 setTimeout(() => {
                     scroll.scrollTop = scroll.scrollHeight
