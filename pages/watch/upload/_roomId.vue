@@ -49,6 +49,7 @@
                 @mouseSegura="mouseSegura" @setVolume="setVolume" @aprenderMatematica="emitAprenderMatematica($event)"
                 @keysEvents="emitKeysEvents($event)" @fullScreamToggle="fullScreamToggle($event)"
                 @muteUnmute="muteUnmute()" />
+            <ChatFullScreen :chatProps="msgsForProps" v-if="theater"></ChatFullScreen>
         </div>
         <ChatPcVideo :chatProps="msgsForProps" v-if="joined && !mobile" @clicked="showVideos = !showVideos"></ChatPcVideo>
         <ChatMobileVideo :chatProps="msgsForProps" v-if="joined && mobile" @clicked="showVideos = !showVideos"></ChatMobileVideo>

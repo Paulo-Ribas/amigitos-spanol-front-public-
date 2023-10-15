@@ -511,7 +511,7 @@ export default {
             this.msgSent++
 
             return new Promise((resolve, reject) => {
-                if (this.msgSent < 7) {
+                if (this.msgSent <= 11) {
                     return resolve()
                 }
                 if (this.msgSent === 7) {
@@ -521,7 +521,7 @@ export default {
                     }, 4000);
                     return resolve()
                 }
-                if (this.msgSent > 9) {
+                if (this.msgSent > 11) {
                     this.msgErr = 'está enviando mensagens em um intervalo muito curto'
                     return reject()
                 }

@@ -323,7 +323,7 @@ export default {
             if ((scroll.scrollHeight - scroll.scrollTop) <= 400 && lastMsg.id != this.user.id) {
                 setTimeout(() => {
                     scroll.scrollTop = scroll.scrollHeight
-                }, 200);
+                }, 333);
 
             }
 
@@ -444,7 +444,7 @@ export default {
     .video-menu-container{
         max-width: 350px;
         min-width: 210px;
-        width: 100%;
+        width: 80%;
         height: 100%;
         display: flex;
         flex-direction: column;

@@ -26,6 +26,7 @@
             </div>
             </div>
                 <div class="btn-fudno">
+                    <fa icon ='masks-theater' @click="emitTheaterMode()" class="theater-icon"></fa>
                     <img src="/svg/tela_cheia.svg" class="fullScreem-icon" @click="fullScreamToggle">
                 </div>
             </div>
@@ -144,6 +145,10 @@ export default {
         },
         emitMuteUnmute() {
             this.$emit('muteUnmute')
+        },
+        emitTheaterMode() {
+            this.$emit('theaterMode')
+            this.fullScreamToggle()
         },
         toggleControll() {
             this.displayBlock = true
