@@ -1,6 +1,5 @@
 export default {
     async attFriendsInfoState(context, payload){
-         
         let userId = payload
         try {
             let friends = await context.dispatch('getUserFriends', userId)

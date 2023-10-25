@@ -1,11 +1,11 @@
 <template>
-  <div class="serie-container">
+  <div class="serie-container" @click.stop="">
                 <img src="/tardis.png" alt="tardis" id="tardis" v-if="showTardis">
                 <div class="filter">
                     <div class="temp">
                         <label for="temp">temporada</label>
                         <div id="temp">
-                            <div value="0" @click="selected = true" class="selecionar">{{select}}</div>
+                            <div value="0" @click.stop="selected = true" class="selecionar">{{select}}</div>
                             <div class="option-container">
                                 <div class="option" v-for="temps, index in temps" :key="index" :value="index + 1" v-show="selected" @click="seasonSelected(index + 1)">{{index + 1}}</div>
                             </div>
@@ -14,8 +14,10 @@
                 </div>
                 <div class="list-container">
                     <div class="ep-list-container">
-                        <div class="ep-container" v-for="season, index in seasonList" :key="index">
-                            <NuxtLink :class="{'ep': 'ep', 'pink': index + 1 == selectedEp}" :data-ep="index +1" :to="'/watch/Doctor-Who/' + season.temp +'/' + season.ep">EP {{season.ep}}</NuxtLink>
+                        <div class="ep-container" v-for="season, index in seasonEpisodeList" :key="index">
+                            <NuxtLink v-if ="season.SpecialEpisode == 0" :class="{'ep': 'ep', 'pink': index + 1 == selectedEp}" :data-ep="index +1" :to="'/watch/Doctor-Who/' + season.Season +'/' + season.Episode + '?s=' + index">EP {{season.Episode}} - {{season.EpisodeName }} <span v-if="season.SpecialEpisode == 0">(Especial Natal)</span></NuxtLink>
+                            <NuxtLink v-else :class="{'ep': 'ep', 'pink': index + 1 == selectedEp}" :data-ep="index +1" :to="'/watch/Doctor-Who/' + season.Season +'/' + season.Episode">EP {{season.Episode}} - {{season.EpisodeName }} <span v-if="season.SpecialEpisode == 0">(Especial Natal)</span></NuxtLink>
+
                         </div>
                     </div>
                 </div>
@@ -30,7 +32,7 @@ export default {
          
         let eps = await this.$store.dispatch('series/getTemps')
          
-        this.temps = eps.Dw
+        this.temps = eps.data
     },
     beforeMount(){
         this.setTemp()
@@ -45,7 +47,7 @@ export default {
         return {
             selectedTemp: this.$props.selectedTempProps,
             selectedEp: this.$props.selectedEpProps,
-            seasonList: [],
+            seasonEpisodeList: [],
             loaded: false,
             showTardis: true,
             temps: [],
@@ -67,7 +69,7 @@ export default {
              
             season === 0? this.showTardis = true : this.showTardis = false
             this.selectedTemp = season
-            this.seasonList = selectedTemp.data
+            this.seasonEpisodeList = selectedTemp.data
             this.select = season
             this.closeSelect()
 
@@ -165,6 +167,9 @@ export default {
         width: 140px;
         position: relative;
         height: 26px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
         
     }
     .selecionar {

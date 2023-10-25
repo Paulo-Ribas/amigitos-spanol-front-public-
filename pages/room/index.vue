@@ -44,16 +44,24 @@ export default {
         }
     },
     layout: 'default',
-    middleware:['auth',],
+    middleware:['auth'],
     async asyncData(context){
-       let rooms = await context.$axios.$get(`roomsRenderizated`)
-       let err = undefined
-       if (context.error.message) err = context.error.message
-        
-       
-       return {
-        rooms: rooms.rooms,
-       }
+        console.log(context.error)
+        try {
+            let err = ''
+            let rooms = await context.$axios.$get(`roomsRenderizated`)
+            if (context.error.message) err = context.error.message
+            
+            return {
+             rooms: rooms.rooms,
+             err
+            }
+
+        }
+        catch(error) {
+            console.log('muitos erros', error)
+            throw error
+        }
 
     },
     fetch(){
@@ -65,11 +73,10 @@ export default {
     },
     beforeMount(){
         this.checkRooms()
+        window.addEventListener('beforeunload', this.removeQuery())
     },
     data(){
         return {
-            socket: null,
-            err: ''
         }
     },
     computed:{ 
@@ -86,7 +93,7 @@ export default {
     },
     methods: {
         connectionServer(){
-            this.socket = io.connect('https://www.amigitos-espanol-api.com.br/', { rememberTransport: false, transports: ['websocket', 'polling', 'Flash Socket', 'AJAX long-polling'] })
+            this.socket = io.connect('http://localhost:3333/', { rememberTransport: false, transports: ['websocket', 'polling', 'Flash Socket', 'AJAX long-polling'] })
 
             this.socket.on('roomRefresh', data => {
                 this.socket.emit('deleteRoomsWith0Members')
@@ -99,7 +106,10 @@ export default {
         checkRooms(){
             this.socket.emit('startVerify')
             this.socket.emit('deleteRoomsWith0Members')
-        }
+        },
+        removeQuery(){
+            this.$route.query.q = ''
+        },
     }
 }
 </script>

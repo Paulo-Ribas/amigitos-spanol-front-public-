@@ -21,7 +21,7 @@
                     </span>
                 </div>
             </Transition>
-            <video @loadedmetadata="setDuration" @loadeddata="setDuration" @timeupdate="GaloFilhoDaPuta()" tabindex="1"
+            <video @loadedmetadata="setDuration" @loadeddata="setDuration" @timeupdate="setProgressBarByTimeVideo()" tabindex="1"
                 @dblclick="fullScreamToggle()" @click="showObject(), emitPlayPause()" @keydown="emitKeysEvents($event)"
                 id="video">
                 <source src="/videoplayback.mp4" type="video/mp4">
@@ -29,7 +29,7 @@
             <ControlsPlayerLive :time="currentTime" :durationProps="duration" @PlayPauseVideo="emitPlayPause($event)"
                 @mouseSegura="mouseSegura" @setVolume="setVolume" @aprenderMatematica="emitAprenderMatematica($event)"
                 @keysEvents="emitKeysEvents($event)" @fullScreamToggle="fullScreamToggle($event)" @muteUnmute="muteUnmute()"
-                @theaterMode="fullScreamToggle($event), theaterModeToggle()" />
+                @theaterMode="fullScreamToggle($event), theaterModeToggle()" @setProgressBarWidth="setProgressBarWidth($event)" />
             <ChatFullScreen :chatProps="msgsForProps" v-if="theater"></ChatFullScreen>
         </div>
         <div class="video-container-mobile" v-if="joined && mobile">
@@ -40,7 +40,7 @@
                     </span>
                 </div>
             </Transition>
-            <video @timeupdate="GaloFilhoDaPuta()" tabindex="1" @dblclick="fullScreamToggle()"
+            <video @timeupdate="setProgressBarByTimeVideo()" tabindex="1" @dblclick="fullScreamToggle()"
                 @click="showObject(), emitPlayPause()" @keydown="emitKeysEvents($event)" @loadedmetadata="setDuration"
                 @loadeddata="setDuration" id="video">
                 <source src="/videoplayback.mp4" type="video/mp4">
@@ -198,8 +198,13 @@ export default {
                 return []
             }
         },
-        membersReactive() {
-            return this.members
+        membersReactive: {
+            get(){
+                return this.members
+            },
+            set(value) {
+                this.members = value
+            }
 
         },
         mediaQuery() {
@@ -209,7 +214,7 @@ export default {
     middleware: ['auth', 'roomPass', 'roomBanned'],
     methods: {
         connectionServer() {
-            this.socket = io.connect('https://amigitos-espanol-api.com.br/', { rememberTransport: false, transports: ['websocket', 'polling', 'Flash Socket', 'AJAX long-polling'] })
+            this.socket = io.connect('http://localhost:3333/', { rememberTransport: false, transports: ['websocket', 'polling', 'Flash Socket', 'AJAX long-polling'] })
             this.socket.on('sendRequestForSynchronization', data => {
                 this.sendVideoUrl(data)
             })
@@ -232,7 +237,7 @@ export default {
                 this.setVideoUrl(data)
             })
             this.socket.on('synchronize', data => {
-                this.setVideoStatus(data)
+                this.verifyVideoState(data)
             })
             this.socket.on('PlayPause', data => {
                 this.PlayPauseVideo()
@@ -255,6 +260,7 @@ export default {
             })
             this.socket.on('userAskingForSyncronization', data => {
                 this.sendCurrentTime(data.user)
+                
             })
             this.socket.on('currentTimeRecived', data => {
                 this.setCurrentTime(data)
@@ -303,6 +309,9 @@ export default {
             this.socket.on('requestAllowed', data => {
 
                 this.requestAccepted(data)
+            })
+            this.socket.on('requestRefused', data => {
+                this.refuseRequest(data)
             })
             this.socket.on('userVideoRequest', data => {
 
@@ -356,29 +365,28 @@ export default {
             let room = this.room
             let chat = this.msgsForProps
             let chatEmpty = false
-            let newUserThatSendTheChat = undefined 
+            let newUserThatSendTheChat = undefined
             if (chat.length === 0) {
                 chatEmpty = true
             }
-            if (this.members[0].id != this.user.id && this.members[0].id != userRequest) return
-            if (this.members[0].id === userRequest && this.members.length === 1) return
+            if (this.members[0].id === userRequest && this.members.length < 2) return
             if (this.members[0].id === userRequest && this.members.length >= 2) {
                 newUserThatSendTheChat = this.members[1].id
             }
             if (chatEmpty && this.members.length >= 2) {
                 newUserThatSendTheChat = this.members[1].id
             }
-
+            if (this.members[0].id != this.user.id && !newUserThatSendTheChat) return
             if (!newUserThatSendTheChat) return this.socket.emit('chatSent', { userRequest, room, chat, empty: false })
             if (newUserThatSendTheChat) return this.socket.emit('chatSecondChance', { userRequest, room, chat, newUserThatSendTheChat })
         },
         chatAttemptTwo(data) {
             let userRequest = data.userRequest
-            let whoSentChat = data.newUserThatSendTheChat
+            let whoSendChat = data.newUserThatSendTheChat
             let room = this.room
             let chat = this.msgsForProps
             let chatEmpty = false
-            if (this.user.id != whoSentChat) return
+            if (this.user.id != whoSendChat) return
             if (chat.length === 0) {
                 chatEmpty = true
             }
@@ -432,6 +440,7 @@ export default {
             if (this.members[0].id === id.id && this.members.length > 1 && this.members[1].id === this.user.id) return this.socket.emit('UrlSent', dates)
         },
         async setVideoUrl(data) {
+            console.log('recebi issoo para sincronia', data)
             let source = document.querySelector('source')
             let video = document.getElementById('video')
             let dates = {
@@ -440,7 +449,9 @@ export default {
             }
             if (data.userId === this.user.id && this.members[0].id != this.user.id) {
                 source.setAttribute('src', data.Url)
-                video.load()
+                setTimeout(() => {
+                    video.load()
+                }, 100);
                 setTimeout(async () => {
                     try {
 
@@ -531,19 +542,19 @@ export default {
             if (this.user.id === this.members[0].id) {
                 let playerState = {
                     paused: video.paused,
-                    source: src
+                    url: src
                 }
                 this.socket.emit('playerState', { room: this.room, userId: this.user.id, playerState })
             }
         },
         verifyVideoState(playerStateData) {
             const video = document.querySelector('video')
-            let  src = document.querySelector('source').src
-            let {paused, source} = playerStateData
+            let  source = document.querySelector('source')
+            let {paused, url} = playerStateData
 
             if(this.user.id === this.members[0].id) return
-            if(src !== source){
-                src = source
+            if(source.src !== url){
+                source.setAttribute('src', url)
                 video.load()
             }
             if (this.user.id != this.members[0].id) {
@@ -564,6 +575,10 @@ export default {
         },
         requestAccepted(data) {
 
+            if(this.adm || this.user.id === this.owner) {
+                this.removeWarn(data)
+                this.showRequestInfo = false
+            }
             if (data.requestInfo.userId != this.user.id) return
 
 
@@ -582,7 +597,7 @@ export default {
         },
         addRequest(data) {
 
-            if (this.user.id != this.owner) return
+            if (this.user.id != this.owner && !this.adm) return
 
             let newRequest = data
             this.requestWarnList.push(newRequest)
@@ -601,6 +616,11 @@ export default {
         },
         rejectedRequest(data) {
             this.showRequestInfo = false
+            this.removeWarn(data)
+            this.socket.emit('requestRejected', data)
+        },
+        refuseRequest(data){
+            if(!this.adm && this.user.id !== this.owner) return
             this.removeWarn(data)
         },
         removeWarn(warn) {
@@ -677,11 +697,11 @@ export default {
         showObject(event) {
 
         },
-        choiced(video, canSend = undefined) {
+        async choiced(video, canSend = undefined) {
 
             this.showVideos = false
             let hasPermision = undefined
-            canSend === undefined ? hasPermision = this.verifyPermissions(video) : hasPermision = canSend
+            canSend === undefined ? hasPermision = await this.verifyPermissions(video) : hasPermision = canSend
             canSend === undefined ? canSend = hasPermision : canSend = canSend
             if (!hasPermision) {
 
@@ -694,10 +714,38 @@ export default {
 
             this.socket.emit('changeVideoToAll', { video: video, room: this.room, actions })
         },
-        verifyPermissions(video) {
-            console.log(this.roomInfo.rulesType, this.adm || this.choice || this.owner === this.user.id )
+        verifyIfOwnerIsPresent(){
+            return new Promise((resolve, reject) => {
+                let isPresent = this.membersReactive.find(member => {
+                    return member.id === this.owner
+                })
+                return resolve(isPresent)
+            })
+        },
+        verifyIfAdmIsPresent(){
+            return new Promise((resolve, reject) => {
+                let promises = this.membersReactive.map(member => {
+                    return new Promise((resolve, reject) => {
+                        let adm = this.roomInfo.adms.find(adms => {
+                            return adms.id === member.id
+                        })
+                        resolve(adm)
+                    })
+                })
+                Promise.all(promises).then(adms => {
+                    console.log(adms)
+                    let adm = adms.find(userAdm => userAdm !== undefined)
+                    return resolve(adm)
+                })                
+            })
+        },
+        async verifyPermissions(video) {
+            let isAdmPresent = await this.verifyIfAdmIsPresent()
+            let isOwnerPresent = await this.verifyIfOwnerIsPresent()
+            console.log(isAdmPresent, isOwnerPresent)
             if (this.roomInfo.rulesType === 2) {
 
+                if(!isAdmPresent && !isOwnerPresent) return true
                 if (this.adm || this.choice || this.owner === this.user.id) return true
                 else {
                     let videoId = this.saveRequestForVideo(video)
@@ -707,7 +755,8 @@ export default {
             }
             if (this.roomInfo.rulesType === 3) {
 
-                if (!this.adm || !this.choice || this.owner === this.user.id) return false
+                if(!isOwnerPresent && !isAdmPresent) return true
+                if (!this.adm && !this.choice && this.owner !== this.user.id) return false
                 return true
             }
             return true
@@ -731,7 +780,15 @@ export default {
             document.querySelector('source').src = data.cloudFront
             video.load()
         },
-        GaloFilhoDaPuta() {
+        setProgressBarWidth($event) {
+            const barra = document.querySelector('.progress-bar-drag')
+            let clientX = $event.offsetX || $event.touches[0].clientX
+            let barrWidth = $event.target.offsetWidth
+            let result = 100 - ((barrWidth - clientX) / barrWidth ) * 100
+            console.log(result)
+            barra.style.width = `${result}%`
+        },
+        setProgressBarByTimeVideo() {
             const video = document.getElementById('video')
             const barra = document.querySelector('.progress-bar')
             if (barra) {
@@ -832,12 +889,17 @@ export default {
             }
             this.socket.emit('aprenderMatematica', { room: this.room, event: eventEmit })
         },
-        aprenderMatematica($event) {
+        aprenderMatematica($event){
             const video = document.getElementById('video')
-
+            if($event.touches) {
+                console.log($event)
+                let position = ($event.touches[0].clientX / $event.touches[0].target.offsetWidth) * video.duration
+                video.currentTime = position
+                return
+            } 
             let position = ($event.offsetX / $event.target.offsetWidth) * video.duration
             video.currentTime = position
-
+            
 
         },
         mouseSegura() {
@@ -919,13 +981,11 @@ export default {
     flex-direction: column;
     max-width: 853px;
     min-width: 400px;
-    height: 480px;
     outline: none;
     overflow: hidden;
 }
 
 video {
-    position: absolute;
     width: 100%;
     height: 100%;
     outline: none;
@@ -939,13 +999,11 @@ svg {
 }
 
 .video-container-mobile {
-    flex: 2;
+    flex: 1.5;
     position: relative;
     display: flex;
     flex-direction: column;
     max-width: 853px;
-    min-width: 400px;
-    height: 480px;
     max-height: 480px;
     overflow: hidden;
 }
@@ -1003,25 +1061,6 @@ svg {
     -webkit-text-stroke: .2em transparent;
     z-index: 4;
 }
-
-@media screen and (max-width: 870px) {
-    .video-container-mobile {
-        width: 100%;
-        min-height: 200px;
-        position: relative;
-        height: 97vh;
-        flex: 1.5;
-    }
-
-    #video {
-        width: 100%;
-        left: 50%;
-        transform: translateX(-50%);
-        background-color: var(--chatOpacity);
-
-    }
-}
-
 @media screen and (max-width: 500px) {
     .container-app {
         flex: 1;
@@ -1048,4 +1087,28 @@ svg {
     }
 
 }
+
+@media screen and (max-width: 870px) {
+    .container-app {
+        gap: 5px;
+    }
+    .video-container-mobile {
+        width: 100%;
+        min-height: 200px;
+        position: relative;
+        flex: 3.5;
+    }
+
+    #video {
+        width: 100%;
+        left: 50%;
+        background-color: var(--chatOpacity);
+
+    }
+    .video-menu-container {
+        height: 96%;
+        min-width: 180px;
+    }
+}
+
 </style>

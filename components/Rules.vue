@@ -3,9 +3,9 @@
     <div class="rules-info">
         <p>{{ruleSelectedInfo}}</p>
         <ul>
-            <li class="rulesTypes" @click="selected(1)">1</li>
-            <li class="rulesTypes" @click="selected(2)">2</li>
-            <li class="rulesTypes" @click="selected(3)">3</li>
+            <li :class="{'selected': ruleSelected === 1, 'rulesTypes': true}" @click="selected(1)">1</li>
+            <li :class="{'selected': ruleSelected === 2, 'rulesTypes': true}" @click="selected(2)">2</li>
+            <li :class="{'selected': ruleSelected === 3, 'rulesTypes': true}" @click="selected(3)">3</li>
         </ul>
     </div>
     <BtnSpecial btnProps="Selecionar" @clicked="btnClicked"/>
@@ -14,11 +14,17 @@
 
 <script>
 export default {
+    props: {
+        rulesProps: Number,
+    },
     data(){
         return {
             ruleSelectedInfo: '',
-            ruleSelected: 0,
+            ruleSelected: this.$props.rulesProps,
         }
+    },
+    mounted(){
+        this.selected(this.ruleSelected)
     },
     methods: {
         selected($event){
@@ -115,6 +121,22 @@ export default {
         justify-content: center;
         align-items: center;
         background-color: var(--cor2);
+        cursor: pointer;
+        transform: scale(1.080);
+    }
+    .selected {
+        font-family: cursive;
+        font-size: 1.6em;
+        color: var(--cor7) !important;
+        width: 100%;
+        text-align: center;
+        border: 3px solid var(--cor7) !important;
+        display: flex;
+        height: 33%;
+        border-radius: 7px;
+        justify-content: center;
+        align-items: center;
+        background-color: var(--cor2) !important;
         cursor: pointer;
         transform: scale(1.080);
     }

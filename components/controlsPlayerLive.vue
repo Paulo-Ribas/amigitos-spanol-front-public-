@@ -1,7 +1,8 @@
 <template>
-  <div class="controls" @keydown="keysEvents" @mouseleave="setDraggingFalse(), removeEventListener()" @mouseup="dragging = false">
-    <div class="progress" @click="setFalse(), aprenderMatematica($event)"  @mousedown="dragging = true" @mousemove="draggingBar($event)" draggable="false">
+  <div class="controls" @keydown="keysEvents" @mouseup="stopAllDraggings" @mousemove="draggingBar($event), draggingVolume($event)">
+    <div class="progress" @click.stop="aprenderMatematica($event)"  @mousedown="setDragging($event,'bar')" draggable="false">
       <div class="progress-bar"  draggable="false"></div>
+      <div class="progress-bar-drag" v-show="IsDraggingBar" draggable="false"></div>
     </div>
     <div class="container-btns">
       <div class="btn-primary">
@@ -9,7 +10,7 @@
         <div class="timer">{{currentTime}} / {{duration}}</div>
         <div class="volume-container">
             <img src="/svg/com_som.svg" @click="emitMuteUnmute()" class="volume-icon">
-            <div class="volume" @mousedown="setVolume($event), addMovimentListener()" @mouseup="removeMovimentListener()">
+            <div class="volume"  @mousedown="setDragging($event, 'volume')" @click="setVolume($event)" @mousemove="draggingVolume($event)">
                 <div id="volume-bar">
                     <div class="ball"></div>
                 </div>
@@ -60,7 +61,8 @@ export default {
         return {
             currentTime: this.$props.time,
             duration: this.$props.durationProps,
-            dragging: false,
+            IsDraggingBar: false,
+            isDraggingVolume: false,
         }
     },
     props: {
@@ -85,8 +87,9 @@ export default {
             this.$emit('mouseSegura', $event)
         },
         setVolume($event){
-             
-            let width = $event.offsetX
+            console.log($event)
+            if($event.offsetX === 0) return this.$emit('setVolume', 0)
+            let width = $event.offsetX || $event.touches[0].offsetX
             let volumeBar = document.getElementById('volume-bar')
             volumeBar.style.width = `${width}%`
             let volume = width / 100
@@ -105,8 +108,15 @@ export default {
             this.$emit('setVolume', volume)
 
         },
-        setDraggingFalse() {
-            this.dragging = false
+        setDragging(event, drag) {
+            if(drag === 'bar') {
+                this.IsDraggingBar = true
+                this.draggingBar(event)
+            }
+            if(drag === 'volume') {
+                this.isDraggingVolume = true
+                this.draggingVolume(event)
+            }
         },
         removeMovimentListener(){
             let volumeContainer = document.querySelector('.volume')
@@ -116,9 +126,37 @@ export default {
             this.$emit('aprenderMatematica', $event)
         },
         draggingBar($event){
-            if(this.dragging){
-                this.$emit('aprenderMatematica', $event)
+            if(this.IsDraggingBar){
+                this.stopUserSelect()
+                this.$emit('setProgressBarWidth', $event)
             }
+        },
+        draggingVolume($event){
+            if(this.isDraggingVolume) {
+                this.setVolume($event)
+            }
+        },
+        stopUserSelect(){
+            let timer = document.querySelector('.timer')
+            let imgs = document.querySelectorAll('img')
+            let svgs = document.querySelectorAll('svg')
+            if(timer) timer.style.userSelect = 'none'
+            imgs.forEach(img => {
+                if(!img) return
+                img.style.userSelect = 'none'
+            })
+            svgs.forEach(svg => {
+                if(!svg) return 
+                svg.style.userSelect = 'none'
+            })
+        },
+        stopAllDraggings($event){
+            this.isDraggingVolume = false
+            this.IsDraggingBar = false
+            let timer = document.querySelector('.timer')
+            timer.style.userSelect = 'auto'
+
+
         },
         keysEvents($event){
             this.$emit('keysEvents', $event)
@@ -154,7 +192,7 @@ export default {
     .controls {
         width: 100%;
         height: 44px;
-        z-index: 2;
+        z-index: 4;
         color: white;
         position: absolute;
         bottom: 0;
@@ -175,6 +213,16 @@ export default {
         width: 1%;
         background-color: var(--cor4);
         z-index: 2;
+        transition: 0.3s;
+        pointer-events: none;
+        cursor: pointer;
+    }
+    .progress-bar-drag {
+        height: 100%;
+        position: absolute;
+        width: 0%;
+        background-color: var(--cor5);
+        z-index: 3;
         pointer-events: none;
         cursor: pointer;
     }

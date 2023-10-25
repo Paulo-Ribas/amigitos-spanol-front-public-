@@ -125,7 +125,7 @@ export default {
       })
     },
     async uploadVideo(){
-      //let ConvertProgress = new EventSource('https://www.amigitos-espanol-api.com.br/convertVideo')
+      //let ConvertProgress = new EventSource('http://localhost:3333/convertVideo')
      /*  ConvertProgress.onmessage = function (data){
          
       } */

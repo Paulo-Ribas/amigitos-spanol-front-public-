@@ -1,32 +1,36 @@
 <template>
 <section id="ep-doctor-who">
-<div class="container">
+<div class="ep-container">
   <div class="video-container" tabindex="1" @keydown="keysEvents($event)"> 
-    <video :src="episodeLink" id="video" @timeupdate="GaloFilhoDaPuta()" @click="PlayPauseVideo()" @dblclick="fullScreamToggle($event)"></video>
+    <video :src="episodeLink" id="video" @timeupdate="setTimeVideo(), setProgressBarByTimeVideo()" @click="PlayPauseVideo(true)" @dblclick="fullScreamToggle($event)" @loadeddata="setDuration()" @loadedmetadata="setDuration()"></video>
     <ControlsPlayer v-if="!mobile"
         :time="currentTime"
-        @PlayPauseVideo="PlayPauseVideo($event)"
+        :durationProps="duration"
+        @PlayPauseVideo="PlayPauseVideo()"
         @mouseSegura="mouseSegura"
-        @setVolume="setVolume"
+        @setVolume="setVolume($event)"
         @aprenderMatematica="aprenderMatematica($event)"
         @keysEvents="keysEvents($event)"
         @fullScreamToggle="fullScreamToggle($event)"
         @muteUnmute="muteUnmute()"
+        @setProgressBarWidth="setProgressBarWidth($event)"
     />
     <ControlsPlayerMobile v-if="mobile"
         :time="currentTime"
-        @PlayPauseVideo="PlayPauseVideo($event)"
+        :durationProps="duration"
+        @PlayPauseVideo="PlayPauseVideo()"
         @mouseSegura="mouseSegura"
-        @setVolume="setVolume"
+        @setVolume="setVolume($event)"
         @aprenderMatematica="aprenderMatematica($event)"
         @keysEvents="keysEvents($event)"
         @fullScreamToggle="fullScreamToggle($event)"
         @muteUnmute="muteUnmute()"
+        @setProgressBarWidth="setProgressBarWidth($event)"
     />
-  </div>
-  <div class="eps-list-container" v-show="mobile">
-    <SerieSeasonList :selectedTempProps="tempProps" :selectedEpProps="epProps"></SerieSeasonList>
-  </div>
+</div>
+</div>
+<div class="eps-list-container" @click.stop="" v-show="mobile">
+  <SerieSeasonList :selectedTempProps="tempProps" :selectedEpProps="epProps"></SerieSeasonList>
 </div>
 </section>
 </template>
@@ -34,9 +38,10 @@
 <script>
 export default {
     async asyncData(context){
-        let episodeLink = await context.app.store.dispatch('series/getEp', {temp:context.route.params.temp,ep:context.route.params.ep})
+        let special = context.route.query.s
+        let episodeLink = await context.app.store.dispatch('series/getEp', {temp:context.route.params.temp,ep:context.route.params.ep, special})
         return{
-            episodeLink: episodeLink.amazonFront
+            episodeLink: episodeLink.Url
         }
         
     },
@@ -44,6 +49,7 @@ export default {
     mounted(){
         this.loaded = true
         this.responsive()
+       
     },
     head(){
         return {
@@ -65,7 +71,16 @@ export default {
             oldVolume: 1,
             mobile: false,
             temp: this.$route.params.temp,
-            ep: this.$route.params.ep
+            ep: this.$route.params.ep,
+            duration: '00:00'
+        }
+    },
+    watch:{
+        duration(value, payload) {
+            console.log(value, 'está vindo aqui?')
+            let NaNSplit = value.split('N')
+            if (NaNSplit.length > 1) this.duration = '00:00'
+
         }
     },
     computed: {
@@ -85,10 +100,10 @@ export default {
         }
     },
     methods: {
-        PlayPauseVideo(){
+        PlayPauseVideo(clickedByContainer){
             const video = document.getElementById('video')
-             
             const play = document.querySelector('.play-pause-icon')
+            if(this.mobile && clickedByContainer) return
              
             if (video.paused) {
                 video.play()
@@ -107,27 +122,46 @@ export default {
                 this.mobile = false
             }
         },
-        GaloFilhoDaPuta(){
+        setProgressBarByTimeVideo(){
             const video = document.getElementById('video')
             const barra = document.querySelector('.progress-bar')
             if(barra){
                 barra.style.width = `${video.currentTime / video.duration * 100}%`
             }
-            this.setTimeVideo()
         },
-        setTimeVideo(){
+        setDuration() {
             let video = document.getElementById('video')
-            if(video === null) return
-            let tempVideo = Math.floor(video.currentTime)
-            let minutos = Math.floor(tempVideo / 60)
+            let tempVideo = Math.floor(video.duration)
+            let horas = Math.floor(tempVideo / 3600)
+            let minutos = Math.floor((tempVideo % 3600) / 60)
             let segundos = Math.floor(tempVideo % 60)
-            let horas = Math.floor(minutos / 60)
-            minutos >= 60 ? minutos -= minutos : minutos
-            let time
-            if (horas <= 0){
-                time = `${String(minutos).padStart(2, '0')}:${String(segundos).padStart(2, '0')}`
-            }else{
+            let time = '00:00'
+            if (horas > 0) {
                 time = `${String(horas).padStart(2, '0')}:${String(minutos).padStart(2, '0')}:${String(segundos).padStart(2, '0')}`
+            }
+            else {
+                time = `${String(minutos).padStart(2, '0')}:${String(segundos).padStart(2, '0')}`
+            }
+            this.duration = time
+            console.log(this.duration)
+        },
+        setTimeVideo() {
+            let video = document.getElementById('video')
+            if (video === null) return
+            let tempVideo = Math.floor(video.currentTime)
+            let horas = Math.floor(tempVideo / 3600)
+            let minutos = Math.floor((tempVideo % 3600) / 60)
+            let segundos = Math.floor(tempVideo % 60)
+            let time = '00:00'
+            if (isNaN(tempVideo)) {
+                this.duration = time
+                return
+            }
+            if (horas > 0) {
+                time = `${String(horas).padStart(2, '0')}:${String(minutos).padStart(2, '0')}:${String(segundos).padStart(2, '0')}`
+            }
+            else {
+                time = `${String(minutos).padStart(2, '0')}:${String(segundos).padStart(2, '0')}`
             }
             this.currentTime = time
         },
@@ -145,11 +179,10 @@ export default {
                 this.return5Seconds()
             }
         },
-        setVolume(){
+        setVolume(volume){
             const video = document.getElementById('video')
-            const volumeValue = parseInt(document.querySelector('.volume').value)
-            video.volume = (volumeValue / 100)
-            this.oldVolume = (volumeValue / 100)
+            video.volume = volume
+            this.oldVolume = volume
         },
         skip5Seconds(){
             const video = document.getElementById('video')
@@ -163,12 +196,27 @@ export default {
         },
         aprenderMatematica($event){
             const video = document.getElementById('video')
-             
+            if($event.touches) {
+                console.log($event)
+                let position = ($event.touches[0].clientX / $event.touches[0].target.offsetWidth) * video.duration
+                video.currentTime = position
+                return
+            } 
             let position = ($event.offsetX / $event.target.offsetWidth) * video.duration
             video.currentTime = position
             
 
         },
+        setProgressBarWidth($event){
+            const barra = document.querySelector('.progress-bar-drag')
+            let clientX = $event.offsetX || $event.touches[0].clientX
+            let barrWidth = $event.target.offsetWidth
+            let result = 100 - ((barrWidth - clientX) / barrWidth ) * 100
+            console.log(result)
+            barra.style.width = `${result}%`
+
+        },
+
         mouseSegura(){
             const progress = document.querySelector('.progress')
             progress.classList.add('focus')
@@ -222,10 +270,14 @@ export default {
         flex: 1;
         height: 100vh;
         overflow-y: auto;
+        display: flex;
+        justify-content: center;
+        align-items: center;
     }
-    .container {
+    .ep-container {
         flex: 1;
-        height: 100%;
+        width: 100%;
+        max-width: 80%;
 
     }
     .video-container {
@@ -237,21 +289,54 @@ export default {
     video {
         width: 100%;
         height: 100%;
-        position: absolute;
         outline: none;
     }
     .eps-list-container {
         width: 100%;
+        height: auto;
         flex: 1;
         padding: 1%;
         display: flex;
         justify-content: center;
         align-items: center;
     }
-    @media screen and (max-width: 760px) {
-        .container {
-            height: 46%;
-            min-height: 268px;
+    @media screen and (max-width: 740px) {
+        .ep-container {
+            display: flex;
+            flex: 3;
+            max-width: unset;
+        }
+        .video-container {
+            height: 100%;
+            flex: 3;
+        }
+        .eps-list-container {
+            width: 100%;
+            min-width: 170px;
+            height: 90%;
+            max-height: 340px
+
+        }
+        
+    }
+    
+    @media screen and (max-width: 500px) {
+        #ep-doctor-who {
+            flex-direction: column;
+        }
+        .ep-container {
+            display: flex;
+            flex-direction: column;
+            flex: 0;
+            max-width: unset;
+        }
+        .video-container {
+            height: 100%;
+        }
+        .eps-list-container {
+            flex: 1;
+            max-height: unset;
+            height: 100%;
         }
     }
     

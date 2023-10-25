@@ -154,7 +154,7 @@ export default {
     .controls {
         width: 100%;
         height: 44px;
-        z-index: 2;
+        z-index: 4;
         color: white;
         position: absolute;
         bottom: 0;

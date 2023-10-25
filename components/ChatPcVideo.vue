@@ -176,8 +176,6 @@ export default {
         await this.JoinRoom()
         this.chatAttempts = 0
         this.msgsDesktop.length === 0 && this.$props.chatProps.length === 0 ? this.askChat() : this.msgsDesktop = this.$props.chatProps
-        this.verifyEmptyMembers()
-
     },
 
     props: {
@@ -212,8 +210,13 @@ export default {
     },
     computed: {
         ...mapState({ user: state => state.user }),
-        membersReactive() {
-            return this.members
+        membersReactive: {
+            get(){
+                return this.members
+            },
+            set(value){
+                this.members = value
+            }
 
         },
         removeFromRoom() {
@@ -318,7 +321,8 @@ export default {
             await this.attMemberChoiced()
         },
         chatProps(value, payload){
-            this.msgsDesktop = value
+            console.log(value, 'o valor aqui lole ')
+            this.msgsDesktop = this.$props.chatProps
             this.setScroll()
         }
     },
@@ -327,7 +331,7 @@ export default {
     },
     methods: {
         connectionServer() {
-            this.socket = io.connect('https://amigitos-espanol-api.com.br/', { rememberTransport: false, transports: ['websocket', 'polling', 'Flash Socket', 'AJAX long-polling'] })
+            this.socket = io.connect('http://localhost:3333/', { rememberTransport: false, transports: ['websocket', 'polling', 'Flash Socket', 'AJAX long-polling'] })
             this.socket.on('listMembersUpdate', async data => {
                 await this.attRoom()
                 this.updateMember(data)
@@ -335,6 +339,9 @@ export default {
             this.socket.on('attRoomInfo', data => {
                 this.attRoom()
             });
+            this.socket.on('chatRecived', data =>{
+                this.attChat(data)
+            }) 
             this.socket.on('kickApply', data => {
                 this.kickApply(data)
             })
@@ -368,7 +375,11 @@ export default {
                 let room = this.room
                 this.connectionServer()
                 this.socket.emit('joinRoom', { user: this.user, room })
-                await this.awaitUserJoinConfirm()
+                let id = await this.awaitUserJoinConfirm()
+                if(id === this.user.id) {
+                    await this.attRoom()
+                    this.verifyEmptyMembers()
+                }
 
                 return
             }
@@ -388,7 +399,7 @@ export default {
             return new Promise((resolve, reject) => {
                 this.socket.on('userJoinConfirmed', data => {
 
-                    return resolve()
+                    return resolve(data.user.id)
                 })
             })
         },
@@ -422,7 +433,6 @@ export default {
             return true
         },
         askChat() {
-
             if (!this.socket) return
             this.socket.emit('requestForChatMsgs', { user: this.user.id, room: this.room })
         },
@@ -568,13 +578,19 @@ export default {
         setScroll(msg) {
             let scroll = document.querySelector('.chat-screen')
             let lastMsg = this.msgsDesktop[(this.msgsDesktop.length - 1)]
-            if ((scroll.scrollHeight - scroll.scrollTop) <= 300 && lastMsg.id != this.user.id) {
-                setTimeout(() => {
-                    scroll.scrollTop = scroll.scrollHeight
-                }, 333);
+            console.log(lastMsg, this.msgsDesktop)
+            try {
+                if ((scroll.scrollHeight - scroll.scrollTop) <= 300 && lastMsg.id != this.user.id) {
+                    setTimeout(() => {
+                        scroll.scrollTop = scroll.scrollHeight
+                    }, 333);
+                }
+            
+            }
+            catch(error) {
 
             }
-
+        
         },
         attChat(data) {
             this.verifyEmptyMembers()
@@ -716,7 +732,7 @@ export default {
     flex: 0.229;
     max-width: 300px;
     min-width: 210px;
-    height: 75vh;
+    height: 65vh;
     max-height: 480px;
     margin: 10px 20px;
     display: flex;

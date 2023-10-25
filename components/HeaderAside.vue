@@ -212,12 +212,15 @@ export default {
             this.checkHorizontalMobile()
             
         },
+        requests(value, payload){
+            this.amount = requests.length
+        }
     },
     computed: {
         mediaQuery(){
             return this.$mq
         },
-        ...mapState({friends: state => state.friends, user: state => state.user})
+        ...mapState({friends: state => state.friends, user: state => state.user, requests: state => state.requests})
 
     },
     methods:{
@@ -275,10 +278,9 @@ export default {
         },
         connectionServer(){
              
-             this.socket = this.socket = io.connect('https://www.amigitos-espanol-api.com.br/', { rememberTransport: false, transports: ['websocket', 'polling', 'Flash Socket', 'AJAX long-polling'] })
+             this.socket = this.socket = io.connect('http://localhost:3333/', { rememberTransport: false, transports: ['websocket', 'polling', 'Flash Socket', 'AJAX long-polling'] })
              this.socket.emit('joinFriendRequestsRoom', `${this.userId}`)
              this.socket.on('notification', async data => {
-                 
                 await this.attFriendsInfoState()
              })
              this.socket.on('roomNotification', data => {

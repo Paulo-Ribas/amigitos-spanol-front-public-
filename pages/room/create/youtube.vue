@@ -2,7 +2,7 @@
   <div id="creating">
     <Erro :erroProps="erro" v-if="erro != ''"></Erro>
     <div class="container" v-show="!showAlgo">
-        <Rules @ruleSelected="changeRulesType($event)" @error="erro = $event.err" v-if="changeRules"/>
+        <Rules @ruleSelected="changeRulesType($event)" :rulesProps="rulesType" @error="erro = $event.err" v-if="changeRules"/>
         <fa icon="gears" class="icon-gear" @click="changeRules = true" v-if="!changeRules"></fa>
         <form @submit="preventSubmit($event), sendRoomData()">
             <div class="container-1">

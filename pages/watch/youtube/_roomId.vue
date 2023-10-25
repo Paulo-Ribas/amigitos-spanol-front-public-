@@ -18,7 +18,7 @@
                 </div>
             </Transition>
             <div class="wall" @click="emitPlayPause(), setFocus()" @keydown="emitKeysEvents($event)"></div>
-            <playerYT class="teste" @error="showError($event)" @cued="AskForSyncronization(), setDuration()" @ready="ready($event), setDuration()" @playing="playing($event)" :player-vars="{autoplay:0, controls: 0, rel: 0, modestbranding: 1}" player-rel="0" player-width="100%" player-height="100%" :video-id="videoId"></playerYT>
+            <playerYT class="teste" @error="showError($event)" @cued="AskForSyncronization(), setDuration()" @ready="ready($event), setDuration()" @playing="playing($event)" :player-vars="{autoplay:0, controls: 0, rel:0, showinfo: 0}"  player-width="100%" player-height="100%" :video-id="videoId"></playerYT>
             <ControlsPlayerLiveYT
             @click="setFocus()" 
             @PlayPauseVideo="emitPlayPause()"
@@ -96,7 +96,7 @@ export default {
         this.responsive()
     },
     mounted(){
-        this.videoId = this.$youtube.getIdFromURL('https://www.youtube.com/embed/hNGrGGbFX2s')
+        this.videoId = this.$youtube.getIdFromURL('https://www.youtube.com/embed/hNGrGGbFX2s&showinfo=0')
         window.addEventListener('beforeunload', this.emitUserDisconected)
         window.addEventListener('message', event => {
             this.timeUpdateSimulation(event)
@@ -115,6 +115,7 @@ export default {
                 this.checkIfMemberIsMember()
             }
         }, 12000);
+        this.askChat()
     },
     beforeDestroy(){
         this.emitUserDisconected()
@@ -214,8 +215,13 @@ export default {
                 return []
             }
         },
-        membersReactive() {
-            return this.members
+        membersReactive: {
+            get(){
+                return this.members
+            },
+            set(value) {
+                this.members = value
+            }
 
         },
         mediaQuery(){
@@ -225,7 +231,7 @@ export default {
     middleware: ['auth', 'roomPass', 'roomBanned'],
     methods: {
         connectionServer(){
-           this.socket = io.connect('https://amigitos-espanol-api.com.br/',{ rememberTransport: false, transports: ['websocket', 'polling', 'Flash Socket', 'AJAX long-polling']})
+           this.socket = io.connect('http://localhost:3333/',{ rememberTransport: false, transports: ['websocket', 'polling', 'Flash Socket', 'AJAX long-polling']})
            this.socket.on('sendRequestForSynchronization', data => {
             this.sendVideoUrl(data)
            })
@@ -333,12 +339,11 @@ export default {
             }
         },
         async attRoom(){
-             
-            let room = await this.getRoom(this.room)
-             
-            this.roomInfo = room.room
-            this.members = room.room.members
-            this.membersReactive = room.room.members
+            let roomInfo = await this.getRoom(this.room)
+
+            this.roomInfo = roomInfo.room
+            this.members = roomInfo.room.members
+            this.membersReactive = roomInfo.room.members
         },
         checkAdm(){
              
@@ -355,8 +360,8 @@ export default {
             
             canChoice ? this.choice = true : this.choice = false
         },
-        updateMemberRoom(member){
-            this.attRoom()
+        async updateMemberRoom(member){
+            await this.attRoom()
         },
          async checkIfMemberIsMember() {
             let user = this.membersReactive.find(member => {
@@ -365,6 +370,11 @@ export default {
             })
             if (user) return
             this.$router.push('/room')
+        },
+        askChat() {
+            if (!this.socket) return
+            this.socket.emit('requestForChatMsgs', { user: this.user.id, room: this.room })
+            console.log('pedi pelo chat')
         },
         sendChat(data) {
             let userRequest = data.user
@@ -375,7 +385,6 @@ export default {
             if (chat.length === 0) {
                 chatEmpty = true
             }
-            if (this.members[0].id != this.user.id) return
             if (this.members[0].id === userRequest && this.members.length < 2) return
             if (this.members[0].id === userRequest && this.members.length >= 2) {
                 newUserThatSendTheChat = this.members[1].id
@@ -383,7 +392,7 @@ export default {
             if (chatEmpty && this.members.length >= 2) {
                 newUserThatSendTheChat = this.members[1].id
             }
-
+            if (this.members[0].id != this.user.id && !newUserThatSendTheChat) return
             if (!newUserThatSendTheChat) return this.socket.emit('chatSent', { userRequest, room, chat, empty: false })
             if (newUserThatSendTheChat) return this.socket.emit('chatSecondChance', { userRequest, room, chat, newUserThatSendTheChat })
         },
@@ -403,6 +412,9 @@ export default {
 
         },
         attChat(data) {
+            console.log(data, ' é isso ou o que?')
+            if(data.userRequest === this.user.id)
+            console.log('vou att o meu chat', data.chat)
             this.msgsForProps = data.chat
         },
         addMsg(msg) {
@@ -471,7 +483,7 @@ export default {
             }
             if(this.roomInfo.rulesType === 3){
                  
-                if(!this.adm || !this.choice || this.owner === this.user.id) return false
+                if(!this.adm && !this.choice && this.owner !== this.user.id && this.members[0].id !== this.user.id) return false
                 return true
             }
             return true
@@ -685,7 +697,7 @@ export default {
             // 
             if(this.user.id === this.members[0].id){
                // 
-                let playerState = this.player.getPlayerState()
+                let playerState = {paused: this.player.getPlayerState(), url: this.ytUrl}
                 this.socket.emit('playerState', {room: this.room, playerState})
             }
         },
@@ -705,22 +717,29 @@ export default {
             if (this.user.id === data.userId) {
                 let timeCalc = parseFloat((this.player.getCurrentTime() - data.currentTime).toFixed(3)) * 1000
                  
-                if (timeCalc >= 600 || timeCalc <= -600) {
+                if (timeCalc >= 400 || timeCalc <= -400) {
                     this.player.seekTo(data.currentTime)
                 }
             }
         },
         verifyVideoState(playerStateData){
-            // 
+            let {url, paused} = playerStateData
+            let playerState = this.player.getPlayerState()
+            console.log(paused)
             if (this.user.id != this.members[0].id) {
-                let playerState = this.player.getPlayerState()
-                // 
-                if (playerStateData.playerState === 1 && playerState === 2) {
+                if(this.ytUrl != url) {
+                    this.changeSrc(url)
+                }
+                if (paused === 1 && playerState != 1) {
                     this.player.playVideo()
                 }
-                if(playerStateData.playerState === 2){
+                if(paused === 2 && platerState == 1){
                     this.player.pauseVideo()
-                }     
+                    return
+                }
+                if(paused != 1 && playerState == 1){
+                    this.player.pauseVideo()     
+                }
                 
             }
             
@@ -750,7 +769,6 @@ export default {
             this.showVideos = false
             let videoEmbed = video.embed || video
             videoEmbed === '' ? video = "https://www.youtube.com/embed/hNGrGGbFX2s" : video
-            this.ytUrl = video.embed
             let hasPermision = undefined
             canSend === undefined ? hasPermision = this.verifyPermissions(video.original) : hasPermision = canSend
             canSend === undefined ? canSend = hasPermision : canSend = canSend
@@ -760,15 +778,16 @@ export default {
             }
             let actions = {
                 name: this.user.userName,
-                    action: 'play'
+                action: 'play'
             }
-             
-            this.socket.emit('changeVideoToAll', {video: video.embed || video, room: this.room, actions})
+            
+            this.ytUrl = video.embed
+            this.socket.emit('changeVideoToAll', {video: this.ytUrl || video, room: this.room, actions})
         },
         changeSrc(data){
              
-            this.videoId = this.$youtube.getIdFromURL(data)
-            this.ytUrl = data
+            this.videoId = this.$youtube.getIdFromURL(data + '&rel=0')
+            this.ytUrl = data + '&rel=0'
         },
         GaloFilhoDaPuta(){
             const barra = document.querySelector('.progress-bar')

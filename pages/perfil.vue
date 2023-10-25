@@ -36,7 +36,7 @@
                 <input type="text" disabled :placeholder="user.userName" id="userName" v-model="newUserName">
                 <div class="confirm-container">
                     <fa class="icon" icon="check" v-if="saveUserName" @click="editName()"></fa>
-                    <fa class="icon" icon="xmark" v-if="saveUserName"></fa>
+                    <fa class="icon" icon="xmark" v-if="saveUserName" @click="cancelEditInput('userName')"></fa>
                 </div>
             </div>
             <div class="email">
@@ -50,7 +50,7 @@
                 <input type="email" disabled v-model="newEmail" :placeholder="user.email" id="email">
                  <div class="confirm-container">
                     <fa class="icon" icon="check" v-if="saveEmail" @click="editEmail()"></fa>
-                    <fa class="icon" icon="xmark" v-if="saveEmail"></fa>
+                    <fa class="icon" icon="xmark" v-if="saveEmail" @click="cancelEditInput('email')"></fa>
                  </div>
             </div>
             <div class="password">
@@ -64,7 +64,7 @@
                 <input type="password" disabled v-model="newPassword" :placeholder="password" id="password">
                  <div class="confirm-container">
                     <fa class="icon" icon="check" v-if="savePassword" @click="editPassword()"></fa>
-                    <fa class="icon" icon="xmark" v-if="savePassword"></fa>
+                    <fa class="icon" icon="xmark" v-if="savePassword" @click="cancelEditInput('password')"></fa>
                  </div>
             </div>
         </div>
@@ -95,57 +95,9 @@ import {mapState, mapActions, mapMutations} from 'vuex'
 export default {
     fetch(){
         this.setState()
-        /*  
-         this.$store.dispatch('user/validateUser', this.$cookies.get('token')).then(res => {
-             
-            this.$store.commit('user/SET_USER_INFO', res)             
-             
-         }).catch(err => {
-             
-         }) *//*-------------------------------------- isso é interessante, por alguma razão, eu não conseguia setar os headers caso
-     ey recarregasse a pagina, usando esse código que é o mesmo que está no action, se eu tentar setar o header, seja pelo auth
-     ou por asyncData ou até mesmo fetch, ele não irá ser setado, a menos que eu navegue de forma spa, nesse caso o header é setado
-     sem nenhum problema de qualquer forma, mas se eu recarregar a pagina, não funciona.
-     bueno, missão para você meu eu do futuro
-
-
-     ---- seu eu do futuro de 30 minutos falando, https://nuxtjs.org/docs/features/data-fetching
-     depois de um tempo eu percebia que o axios fazia 2 requests, mas apenas quando eu recarregava a pagina, a primeira não setava
-     o headers, mas a segunda sim, então fiquei testando vendo se estava multiplicado em algum lugar o código, e não, depois de pesquisar
-     vi essa opção "fetchOnServer", que ao meu entender, faria o fetch apenas funcionar no lado do cliente quando setado falso lol,
-     fiz essa suposição pelo nome e a descrição, mas mais pelo nome
-     
-     --- porém ainda não entendo o porque quando tento setar headers pelo lado do servidor, não funciona
-     */
     },
     fetchOnServer: false,
     name:'',
-    /* beforeMount(){
-         
-        let token = localStorage.getItem('token')
-        this.token = token
-        axios.post(' 
-https://www.amigitos-espanol-api.com.br/validate', {}, {headers:{authorization: 'bearer ' + token}}).then(response => {
-            const id = response.data.dates.id
-            this.id = id
-             
-            axios.get(' 
-https://www.amigitos-espanol-api.com.br/user/' + id).then(response => {
-                 
-                const {username, email, profileimg} = response.data.user[0]
-                this.userName = username,
-                this.email = email
-                this.SrcImg = profileimg
-
-            }).catch(response => {
-                this.err = response.data.response.err
-            })
-            this.loanding = false
-
-        }).catch(response => { 
-
-        })
-    }, */
     beforeMount(){
         this.verifyMobile()
 
@@ -318,8 +270,29 @@ https://www.amigitos-espanol-api.com.br/user/' + id).then(response => {
 
             input === 'password' ? inputTargeted = document.getElementById('password') : inputTargeted 
 
-            inputTargeted.removeAttribute('disabled')
+            inputTargeted.toggleAttribute('disabled')
             inputTargeted.focus()       
+        },
+        cancelEditInput(input){
+            switch (input) {
+                case 'userName':
+                    document.getElementById('userName').value = null
+                    this.saveUserName = false
+                    this.errName = ''
+                    break;
+                case 'email':
+                    document.getElementById('email').value = null
+                    this.saveEmail = false
+                    this.errEmail = ''
+                    break;
+            
+                case 'password':
+                    document.getElementById('password').value = '************'
+                    this.savePassword = false
+                    this.errPassword = ''
+                    break;
+            }
+            this.editInput(input)
         },
         editName(){
             this.validateUser(this.$cookies.get('token')).then(res => {
@@ -333,7 +306,10 @@ https://www.amigitos-espanol-api.com.br/user/' + id).then(response => {
                     this.SET_TOKEN('bearer ' + token)
                     this.validateUser(this.$cookies.get('token')).then(user => {
                         this.SET_USER_INFO(user)
-                        this.newUserName = undefined
+                        this.errName = ''
+                        this.newUserName = ''
+                        this.saveUserName = false
+                        this.editInput('userName')
                         
                     }).catch(err => {
                             throw err
@@ -359,15 +335,21 @@ https://www.amigitos-espanol-api.com.br/user/' + id).then(response => {
                     this.SET_TOKEN('bearer ' + token)
                     this.validateUser(this.$cookies.get('token')).then(user => {
                         this.SET_USER_INFO(user)
-                        this.newEmail = undefined
+                        this.errEmail = ''
+                        this.newEmail = ''
+                        this.saveEmail = false
+                        this.editInput('email')
+
                     }).catch(err => {
+                        this.errEmail = err
                         throw err
                     })
                 }).catch(err => {
-                    this.errName = err.err
+                    this.errEmail = err.err
                     throw err
                 })
             }).catch(err => {
+                this.errEmail = err
                 throw err
             })
         },
@@ -379,35 +361,29 @@ https://www.amigitos-espanol-api.com.br/user/' + id).then(response => {
                 password: this.newPassword,
             }
                 this.editUserPassword(axiosInfos).then(token => {
-                     
                     this.SET_TOKEN('bearer ' + token)
                     this.validateUser(this.$cookies.get('token')).then(user => {
                         this.SET_USER_INFO(user)
-                        this.newPassword = undefined
+                        this.errPassword = ''
+                        this.newPassword = ''
+                        this.savePassword = false
+                        this.editInput('password')
                     }).catch(err => {
-                          
-
-                         throw err
+                        this.errPassword = err
+                        throw err
                     })
                 }).catch(err => {
-                      
-
-                    this.errName = err.err
+                    this.errPassword = err.err
                     throw err
                 })
             }).catch(err => {
-                 
-
+                this.errPassword = err
                 throw err
             })
         },
         async signOut(){
             this.REMOVE_TOKEN()
             this.$router.push('/')
-        },
-        GoToPublicProfile(){
-            
-            
         },
         sendQuestion($event){
             this.showAlgo = true
@@ -487,7 +463,7 @@ https://www.amigitos-espanol-api.com.br/user/' + id).then(response => {
     }
     .edit span {
         position: absolute;
-        top: -10px;
+        top: -6px;
         color: var(--cor9);
         white-space: nowrap;
     }

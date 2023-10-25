@@ -54,7 +54,7 @@ export default {
                 axios.get(`https://www.youtube.com/oembed?url=${this.url}&format=json`).then(video=> {
                     let embedSplit = video.data.html.split(' ')[3]
                     let embedUrl = embedSplit.split('"')[1]
-                    this.videoPicked = embedUrl
+                    this.videoPicked = embedUrl 
                     this.thumb = video.data.thumbnail_url
                     this.title = video.data.title
                     this.dataSet = true
@@ -94,7 +94,7 @@ export default {
         align-items: center;
         flex-direction: column;
         position: absolute;
-        z-index: 3;
+        z-index: 6;
 
     }
     .input-container{

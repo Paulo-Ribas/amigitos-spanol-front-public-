@@ -1,6 +1,6 @@
 <template>
         <section id="serie">
-            <Erro erroProps="api de episódio ainda não está no ar"></Erro>
+            <Erro :erroProps="err" v-if="err != ''"></Erro>
             <TardisLoadBig v-if="!loaded"></TardisLoadBig>
             <SerieSeasonList v-if="loaded" :selectedTempProps="0"></SerieSeasonList>
             <div class="background-img">
@@ -36,6 +36,7 @@ export default {
             seasonList: [],
             loaded: false,
             showTardis: true,
+            err: '',
         }
     },
     methods: {
@@ -43,15 +44,20 @@ export default {
             selectSeasom: 'series/getTemp'
         }),
         async seasonSelected(season){
+            try {
+                let select = document.getElementById('temp').selectedIndex
+                const temp = select
+                let selectedTemp = await this.selectSeasom({temp})
+                select === 0? this.showTardis = true : this.showTardis = false
+                this.selectedTemp = temp
+                this.seasonList = selectedTemp.data
+            }
+            catch(err) {
+                this.err = err.err || err
+                throw err
+            }
              
-            let select = document.getElementById('temp').selectedIndex
-            const temp = select
-            let selectedTemp = await this.selectSeasom({temp})
              
-             
-            select === 0? this.showTardis = true : this.showTardis = false
-            this.selectedTemp = temp
-            this.seasonList = selectedTemp.data
             
 
         }

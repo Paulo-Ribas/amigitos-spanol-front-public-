@@ -132,7 +132,7 @@ export default {
     img {
         width: 99%;
         height: 80%;
-        object-fit: contain;
+        object-fit: cover;
     }
     .name{
         font-size: 1.3em;

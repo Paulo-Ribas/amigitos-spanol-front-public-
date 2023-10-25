@@ -17,7 +17,7 @@
     </div>
     <TardisLoadBig v-if="loading"></TardisLoadBig>
     <div class="container" v-if="!loading" v-show="!showAlgo">
-        <Rules @ruleSelected="changeRulesType($event)" @error="erro = $event.err" v-if="changeRules"/>
+        <Rules @ruleSelected="changeRulesType($event)" @error="erro = $event.err" :rulesProps="rulesType" v-if="changeRules"/>
         <fa icon="gears" class="icon-gear" @click="changeRules = !changeRules" v-if="!changeRules"></fa>
         <form @submit="preventSubmit($event), sendRoomData()">
             <div class="container-1">
@@ -153,7 +153,7 @@ export default {
                 this.videosAdded = this.videos
                 let selecteds = document.querySelectorAll('tr')
                 selecteds.forEach(selected => {
-                    selected.lastElementChild.innerHTML === "Cancelar" ? selected.lastElementChild.innerHTML = 'Selecionar' : selected.lastElementChild.innerHTML = 'Cancelar'
+                    selected.lastElementChild.innerHTML = 'Cancelar'
                     selected.lastElementChild.classList.add('selected')
                     selected.lastElementChild.previousElementSibling.classList.add('selected')
                 })
@@ -166,7 +166,7 @@ export default {
         removeAll(){
             let selecteds = document.querySelectorAll('tr')
             selecteds.forEach(selected => {
-                selected.lastElementChild.innerHTML === "Cancelar" ? selected.lastElementChild.innerHTML = 'Selecionar' : selected.lastElementChild.innerHTML = 'Cancelar'
+                selected.lastElementChild.innerHTML = 'Selecionar'
                 selected.lastElementChild.classList.remove('selected')
                 selected.lastElementChild.previousElementSibling.classList.remove('selected')
             })

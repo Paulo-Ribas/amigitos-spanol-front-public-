@@ -1,32 +1,33 @@
 <template>
-<div class="controls-container" @click="PlayPauseVideo">
-    <div class="show-eps" v-if="askQuestion" @click="showList">
-        <h3>Lista De Episódios</h3>
+<div class="controls-container" @click="PlayPauseVideo" @dblclick="fullScreamToggle" @mouseup="stopAllDraggings" @mousemove="draggingBar($event), draggingVolume($event)">
+    <div class="show-eps" v-if="askQuestion" @click.stop="showList">
+        <h3 draggable="false">Lista De Episódios</h3>
     </div>
     <div class="serie-ep-list-container" v-show="list">
         <div class="close" v-show="close">
-            <fa icon="xmark" @click="heigth0"></fa>
+            <fa icon="xmark" @click.stop="heigth0"></fa>
         </div>
             <SerieSeasonList :selectedTempProps="tempProps" :selectedEpProps="epProps"></SerieSeasonList>
     </div>
-  <div class="controls" @keydown="keysEvents">
-    <div class="progress" @click="setFalse(), aprenderMatematica($event)"  @mousedown="teste($event)" @mousemove="ultimoTeste($event)" @mouseleave="clicado = false" draggable="false">
-      <div class="progress-bar"  draggable="false"></div>
+    <div class="controls" @keydown="keysEvents" @click.stop="">
+    <div class="progress" @click.stop="setFalse(), aprenderMatematica($event)"  @mousedown="setDragging($event,'bar')" draggable="false">
+      <div class="progress-bar" draggable="false"></div>
+      <div class="progress-bar-drag" v-show="IsDraggingBar" draggable="false"></div>
     </div>
     <div class="container-btns">
       <div class="btn-primary">
         <img src="/svg/botao_play_.svg" class="play-pause-icon" @click="PlayPauseVideo">
-        <div class="timer">{{currentTime}}</div>
+        <div class="timer">{{currentTime}} / {{duration}}</div>
         <div class="volume-container">
             <img src="/svg/com_som.svg" @click="emitMuteUnmute()" class="volume-icon">
-            <div class="volume" @mousedown="setVolume($event), addMovimentListener()" @mouseup="removeMovimentListener()">
+            <div class="volume" @mousedown="setDragging($event, 'volume')" @click="setVolume($event)" @mousemove="draggingVolume($event)">
                 <div id="volume-bar">
                     <div class="ball"></div>
                 </div>
             </div>
         </div>
       </div>
-      <div class="btn-fudno">
+      <div class="btn-fundo">
         <img src="/svg/tela_cheia.svg" class="fullScreem-icon" @click="fullScreamToggle">
       </div>
     </div>
@@ -68,12 +69,14 @@ export default {
             }.bind(self))
             window.addEventListener('beforeunload', ()=> {
             return clearInterval(interval)
-         })
+         }) 
     },
     data(){
         return {
             currentTime: this.$props.time,
-            clicado: false,
+            duration: this.$props.durationProps,
+            IsDraggingBar: false,
+            isDraggingVolume: false,
             askQuestion: true,
             temp: this.$route.params.temp,
             ep: this.$route.params.ep,
@@ -82,12 +85,16 @@ export default {
         }
     },
     props: {
-        time: String
+        time: String,
+        durationProps: String,
     },
     watch:{
         time(value, payload){
             if(value === null) return
             this.currentTime = value
+        },
+        durationProps(value, payload) {
+            this.duration = value
         }
     },
      computed: {
@@ -109,36 +116,77 @@ export default {
         mouseSegura($event){
             this.$emit('mouseSegura', $event)
         },
-         setVolume($event) {
-             
-            let width = $event.offsetX
+        setVolume($event){
+            console.log($event)
+            if($event.offsetX === 0) return this.$emit('setVolume', 0)
+            let width = $event.offsetX || $event.touches[0].offsetX
             let volumeBar = document.getElementById('volume-bar')
             volumeBar.style.width = `${width}%`
             let volume = width / 100
-            volume > 1 ? volume = 1 : volume < 0 ? volume = 0 : volume = volume
-            
             this.$emit('setVolume', volume)
         },
-        addMovimentListener() {
+        addMovimentListener(){
             let volumeContainer = document.querySelector('.volume')
             volumeContainer.addEventListener('mousemove', this.moveVolumeBar)
         },
-        moveVolumeBar(element) {
+        moveVolumeBar(element){
             let volumeBar = document.getElementById('volume-bar')
             let width = element.offsetX
             volumeBar.style.width = `${width}%`
             let volume = width / 100
-            volume > 1 ? volume = 1 : volume < 0 ? volume = 0 : volume = volume
 
             this.$emit('setVolume', volume)
 
         },
-        removeMovimentListener() {
+        setDragging(event, drag) {
+            if(drag === 'bar') {
+                this.IsDraggingBar = true
+                this.draggingBar(event)
+            }
+            if(drag === 'volume') {
+                this.isDraggingVolume = true
+                this.draggingVolume(event)
+            }
+        },
+        removeMovimentListener(){
             let volumeContainer = document.querySelector('.volume')
             volumeContainer.removeEventListener('mousemove', this.moveVolumeBar)
         },
         aprenderMatematica($event){
             this.$emit('aprenderMatematica', $event)
+        },
+        draggingBar($event){
+            if(this.IsDraggingBar){
+                this.stopUserSelect()
+                this.$emit('setProgressBarWidth', $event)
+            }
+        },
+        draggingVolume($event){
+            if(this.isDraggingVolume) {
+                this.setVolume($event)
+            }
+        },
+        stopUserSelect(){
+            let timer = document.querySelector('.timer')
+            let imgs = document.querySelectorAll('img')
+            let svgs = document.querySelectorAll('svg')
+            if(timer) timer.style.userSelect = 'none'
+            imgs.forEach(img => {
+                if(!img) return
+                img.style.userSelect = 'none'
+            })
+            svgs.forEach(svg => {
+                if(!svg) return 
+                svg.style.userSelect = 'none'
+            })
+        },
+        stopAllDraggings($event){
+            this.isDraggingVolume = false
+            this.IsDraggingBar = false
+            let timer = document.querySelector('.timer')
+            timer.style.userSelect = 'auto'
+
+
         },
         keysEvents($event){
             this.$emit('keysEvents', $event)
@@ -148,20 +196,6 @@ export default {
         },
         emitMuteUnmute(){
             this.$emit('muteUnmute')
-        },
-        teste($event){
-            if ($event.type === 'mousedown') {
-                this.clicado = true
-            }
-            else {
-                this.clicado = false
-            }
-        },
-        ultimoTeste($event){
-            if (this.clicado === true) {
-                this.aprenderMatematica($event)
-            }
-             
         },
         setFalse(){
             this.clicado = false
@@ -198,7 +232,6 @@ export default {
 .controls-container {
     width: 100%;
     height: 100%;
-    position: relative;
 }
     .controls {
         width: 100%;
@@ -224,6 +257,16 @@ export default {
         width: 1%;
         background-color: var(--cor4);
         z-index: 2;
+        transition: 0.3s;
+        pointer-events: none;
+        cursor: pointer;
+    }
+    .progress-bar-drag {
+        height: 100%;
+        position: absolute;
+        width: 1%;
+        background-color: var(--cor5);
+        z-index: 3;
         pointer-events: none;
         cursor: pointer;
     }
@@ -242,6 +285,7 @@ export default {
         justify-content: center;
         align-items: center;
         cursor: pointer;
+        user-select: none;
     }
     .container-btns {
         width: 100%;
@@ -314,7 +358,10 @@ export default {
         max-width: 500px;
         height: 100%;
         margin: auto;
-        position: relative;
+        position: absolute;
+        left: 50%;
+        top: 0;
+        transform: translateX(-50%);
         z-index: 5;
         display: flex;
         transition: 1s;
@@ -323,8 +370,8 @@ export default {
         font-size: 1.8em;
         color: white;
         position: absolute;
-        top: 0%;
-        right: -1%;
+        top: 0.5%;
+        right: 2%;
         cursor: pointer;
         z-index: 5;
     }

@@ -1,5 +1,5 @@
 <template>
-    <div class="mobile-controls-container" @click="toggleControll" @touchend="dragging = false" @mouseleave="removeEventListener()">
+    <div class="mobile-controls-container" @click="toggleControll" @touchend="dragging = false" @mouseleave="removeMovimentListener()">
         <div class="controls-container" v-show="displayBlock">
             <div class="skip-container" @click.stop="removeDisplayBlock">
                 <img src="/svg/adiantar_o_video_.svg" @click.stop="skip()" class="skip-icon">
@@ -18,7 +18,7 @@
                     <div class="timer">{{ currentTime }} / {{ duration }}</div>
                     <div class="volume-container">
                 <img src="/svg/com_som.svg" @click="emitMuteUnmute()" class="volume-icon">
-                <div class="volume" @mousedown="setVolume($event), addMovimentListener()" @mouseup="removeMovimentListener()" @touchstart="setVolume($event)" @touchmove="moveVolumeBar($event)" @touchend="removeEventListener()" >
+                <div class="volume" @mousedown="setVolume($event), addMovimentListener()" @mouseup="removeMovimentListener()" @touchstart="setVolume($event)" @touchmove="moveVolumeBar($event)" @touchend="removeMovimentListener()" >
                     <div id="volume-bar">
                         <div class="ball"></div>
                     </div>
@@ -217,7 +217,7 @@ export default {
 .controls {
     width: 100%;
     height: 44px;
-    z-index: 2;
+    z-index: 5;
     color: white;
     position: absolute;
     bottom: 0;

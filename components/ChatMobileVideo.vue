@@ -204,8 +204,13 @@ export default {
     },
     computed: {
         ...mapState({ user: state => state.user }),
-        membersReactive() {
-            return this.members
+        membersReactive: {
+            get(){
+                return this.members
+            },
+            set(value) {
+                this.members = value
+            }
 
         },
         removeFromRoom() {
@@ -318,15 +323,19 @@ export default {
         }
     },
     beforeDestroy() {
+        if(!this.socket) return
         this.socket.disconnect()
     },
     methods: {
         connectionServer() {
-            this.socket = io.connect('https://amigitos-espanol-api.com.br/', { rememberTransport: false, transports: ['websocket', 'polling', 'Flash Socket', 'AJAX long-polling'] })
+            this.socket = io.connect('http://localhost:3333/', { rememberTransport: false, transports: ['websocket', 'polling', 'Flash Socket', 'AJAX long-polling'] })
             this.socket.on('listMembersUpdate',async data => {
                 await this.attRoom()
                 this.updateMember(data)
             })
+            this.socket.on('chatRecived', data =>{
+                this.attChat(data)
+            }) 
             this.socket.on('attRoomInfo', data => {
                 this.attRoom()
             });
@@ -561,13 +570,18 @@ export default {
 
         },
         setScroll(msg) {
-            let scroll = document.querySelector('.chat-mobile-screen')
-            let lastMsg = this.msgsMobile[(this.msgsMobile.length - 1)]
-            if ((scroll.scrollHeight - scroll.scrollTop) <= 440 && lastMsg.id != this.user.id) {
-                setTimeout(() => {
-                    scroll.scrollTop = scroll.scrollHeight
-                }, 333);
-
+            try{
+                let scroll = document.querySelector('.chat-mobile-screen')
+                let lastMsg = this.msgsMobile[(this.msgsMobile.length - 1)]
+                if ((scroll.scrollHeight - scroll.scrollTop) <= 440 && lastMsg.id != this.user.id) {
+                    setTimeout(() => {
+                        scroll.scrollTop = scroll.scrollHeight
+                    }, 333);
+    
+                }
+            }
+            catch(Err) {
+                return
             }
 
         },

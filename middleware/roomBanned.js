@@ -1,7 +1,9 @@
 export default async function (context) {
     try {
         let {room} = await context.$axios.$get('room/' + context.route.params.roomId)
-        let token = await context.$cookies.get('token')
+        let token =  context.app.$cookies.get('token')
+        console.log(token, 'o meu token au au')
+
         let user = await context.$axios.$post('validate',{}, {headers: {authorization: token}})
         
         let isBanned = room.banneds.find(member => {
@@ -13,7 +15,9 @@ export default async function (context) {
 
         
     } catch (error) {
+        console.log('espera ai, é aqui o erro???', error)
         let err = error.message
+        if(error.response) err = error.response.data.err
         context.redirect(`/room?q=${err}`)
     }
 

@@ -104,7 +104,7 @@ export default {
         }
         catch(error) {
              
-            throw new Error(error.response.data); //20/08/2022, try/catch, then.catch/ throw error, tudo dominado agora.
+            throw {err:error.response.data};
         }
     },
     async editImg(context, payload) {
@@ -126,8 +126,6 @@ export default {
 
         }
         catch (error) {
-              
-
             throw error.response.data; //20/08/2022, try/catch, then.catch/ throw error, tudo dominado agora.
         }
     },
@@ -148,7 +146,7 @@ export default {
         }
         catch (error) {
              
-            throw new Error(error.response.data); //20/08/2022, try/catch, then.catch/ throw error, tudo dominado agora.
+            throw {err:error.response.data}; //20/08/2022, try/catch, then.catch/ throw error, tudo dominado agora.
         }
     },
     async editUserPassword(context, payload) {
@@ -169,9 +167,8 @@ export default {
 
         }
         catch (error) {
-              
 
-            throw error.response.data; //20/08/2022, try/catch, then.catch/ throw error, tudo dominado agora.
+            throw {err: error.response.data}; //20/08/2022, try/catch, then.catch/ throw error, tudo dominado agora.
         }
     },
     async postRoom(context, payload){

@@ -60,6 +60,7 @@ export default {
     }
     .room-container {
         width: 100%;
+        height: calc(100% - 39px);
         display: flex;
         justify-content: space-around;
         align-items: center;
@@ -70,6 +71,7 @@ export default {
         width: 100%;
         max-width: 300px;
         height: 260px;
+        max-height: 260px;
         display: flex;
         justify-content: space-around;
         align-items: center;
@@ -112,6 +114,10 @@ export default {
       flex-direction: column;
       height: 100%;
     }
+    .room-box1, .room-box2 {
+        height: 50%;
+
+    } 
     
   }
 </style>

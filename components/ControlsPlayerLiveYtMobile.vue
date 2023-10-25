@@ -1,31 +1,32 @@
 <template>
-    <div class="mobile-controls-container" @click="toggleControll">
+    <div class="mobile-controls-container" @click="toggleControll" @touchend="dragging = false" @mouseleave="removeMovimentListener()">
         <div class="controls-container" v-show="displayBlock">
-            <div class="skip-container" @click.stop="removeDisplayBlock()">
-                <img src="/svg/adiantar_o_video_.svg" @click.stop="skip" class="skip-icon">
+            <div class="skip-container" @click.stop="removeDisplayBlock">
+                <img src="/svg/adiantar_o_video_.svg" @click.stop="skip()" class="skip-icon">
             </div>
             <img src="/svg/botao_play_.svg" class="play-pause-icon" @click="PlayPauseVideo">
-            <div class="return-container" @click.stop="removeDisplayBlock()">
-                <img src="/svg/regressar_o_video_.svg" @click.stop="Return" class="return-icon">
+            <div class="return-container" @click.stop="removeDisplayBlock">
+                <img src="/svg/regressar_o_video_.svg" class="return-icon" @click.stop="Return()">
             </div>
         </div>
         <div class="controls" @keydown="keysEvents">
-            <div class="progress" @mousedown="aprenderMatematica" draggable="false">
-                <div class="progress-bar" @mousedown="aprenderMatematica" draggable="false"></div>
+                    <div class="progress" @click="setFalse(), aprenderMatematica($event)"  @touchstart="dragging = true" @touchmove="draggingBar($event)" @mouseleave="clicado = false" draggable="false">
+                    <div class="progress-bar" draggable="false"></div>
             </div>
             <div class="container-btns">
                 <div class="btn-primary">
                     <div class="timer">{{ currentTime }} / {{ duration }}</div>
                     <div class="volume-container">
                 <img src="/svg/com_som.svg" @click="emitMuteUnmute()" class="volume-icon">
-                <div class="volume" @mousedown="setVolume($event), addMovimentListener()" @mouseup="removeMovimentListener()">
+                <div class="volume" @mousedown="setVolume($event), addMovimentListener()" @mouseup="removeMovimentListener()" @touchstart="setVolume($event)" @touchmove="moveVolumeBar($event)" @touchend="removeMovimentListener()" >
                     <div id="volume-bar">
                         <div class="ball"></div>
                     </div>
                 </div>
             </div>
-                </div>
-                <div class="btn-fudno">
+            </div>
+                <div class="btn-fundo">
+                    <fa icon ='masks-theater' @click="emitTheaterMode()" class="theater-icon"></fa>
                     <img src="/svg/tela_cheia.svg" class="fullScreem-icon" @click="fullScreamToggle">
                 </div>
             </div>
@@ -71,7 +72,8 @@ export default {
             currentTime: this.$props.time,
             duration: this.$props.durationProps,
             displayBlock: false,
-            showControls: 0
+            showControls: 0,
+            dragging: false,
         }
     },
     props: {
@@ -96,18 +98,10 @@ export default {
             this.$emit('mouseSegura', $event)
         },
         setVolume($event) {
-
             let width = $event.offsetX
             let volumeBar = document.getElementById('volume-bar')
             volumeBar.style.width = `${width}%`
-            let volume = width / 100
-            this.$emit('setVolume', volume)
-        },
-        setVolume($event) {
-            let width = $event.offsetX
-            let volumeBar = document.getElementById('volume-bar')
-            volumeBar.style.width = `${width}%`
-            let volume = width / 100
+                let volume = width / 100
             this.$emit('setVolume', volume)
         },
         addMovimentListener() {
@@ -116,9 +110,9 @@ export default {
         },
         moveVolumeBar(element) {
             let volumeBar = document.getElementById('volume-bar')
-            let width = element.offsetX
+            let width = element.offsetX || element.touches[0].offsetX
             volumeBar.style.width = `${width}%`
-            let volume = width / 100
+                let volume = width / 100
 
             this.$emit('setVolume', volume)
 
@@ -127,18 +121,22 @@ export default {
             let volumeContainer = document.querySelector('.volume')
             volumeContainer.removeEventListener('mousemove', this.moveVolumeBar)
         },
+        draggingBar($event){
+            if(this.dragging) {
+                this.$emit('aprenderMatematica', $event)
+            }
+        },
         aprenderMatematica($event) {
-            
             this.$emit('aprenderMatematica', $event)
         },
-        skip() {
+        skip(){
             this.keysEvents('ArrowRight')
         },
-        Return() {
+        Return(){
             this.keysEvents('ArrowLeft')
         },
         keysEvents($event) {
-            let event = { code: $event, key: { code: $event } }
+            let event = { code: $event, key:{code: $event} }
 
             this.$emit('keysEvents', event)
         },
@@ -147,6 +145,10 @@ export default {
         },
         emitMuteUnmute() {
             this.$emit('muteUnmute')
+        },
+        emitTheaterMode() {
+            this.$emit('theaterMode')
+            this.fullScreamToggle()
         },
         toggleControll() {
             this.displayBlock = true
@@ -192,7 +194,7 @@ export default {
     position: absolute;
     width: 100%;
     height: 100%;
-    z-index: 2;
+    z-index: 3;
     background-color: var(--corMenu);
 }
 
@@ -215,7 +217,7 @@ export default {
 .controls {
     width: 100%;
     height: 44px;
-    z-index: 2;
+    z-index: 5;
     color: white;
     position: absolute;
     bottom: 0;
@@ -256,7 +258,11 @@ export default {
     margin-left: 6px;
 
 }
-
+.btn-fundo {
+        height: 100%;
+        display: flex;
+        align-items: center;
+    }
 .btn-primary img {
     margin: 0px 2px;
 }
@@ -267,6 +273,24 @@ img {
     cursor: pointer;
     position: relative;
     z-index: 3;
+}
+
+
+.play-pause-icon,
+.skip-icon,
+.return-icon {
+    height: 42px;
+    width: 42px;
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 3;
+}
+
+.fullScreem-icon {
+    width: 43px;
+    height: 43px;
 }
 
 .volume-container {
@@ -302,24 +326,9 @@ img {
         background-color: var(--cor4);
         pointer-events: none;
     }
-
-.play-pause-icon,
-.skip-icon,
-.return-icon {
-    height: 42px;
-    width: 42px;
-    position: absolute;
-    left: 50%;
-    top: 50%;
-    transform: translate(-50%, -50%);
-    z-index: 3;
-}
-
-.fullScreem-icon {
-    width: 43px;
-    height: 43px;
-}
-
-.volume-container input {
-    width: 75px;
-}</style>
+    .theater-icon {
+        font-size: 1.3em;
+        margin-right: 5px;
+        cursor: pointer;
+    }
+</style>

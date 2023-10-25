@@ -114,7 +114,7 @@ export default {
     },
     methods:{
         connectionServer(){
-           this.socket = io.connect('https://www.amigitos-espanol-api.com.br/', { rememberTransport: false, transports: ['websocket', 'polling', 'Flash Socket', 'AJAX long-polling'] })
+           this.socket = io.connect('http://localhost:3333/', { rememberTransport: false, transports: ['websocket', 'polling', 'Flash Socket', 'AJAX long-polling'] })
            this.socket.on('listMembersUpdate', data => {
              
             this.updateMember(data)
@@ -320,7 +320,8 @@ export default {
         setScroll() {
             let scroll = document.querySelector('.chat-full-screen')
             let lastMsg = this.msgs[(this.msgs.length - 1)] 
-            if ((scroll.scrollHeight - scroll.scrollTop) <= 300) {
+            console.log(scroll.scrollHeight, scroll.scrollTop)
+            if ((scroll.scrollHeight - scroll.scrollTop) <= 600) {
                 setTimeout(() => {
                     scroll.scrollTop = scroll.scrollHeight
                 }, 333);
@@ -451,6 +452,7 @@ export default {
         justify-content: space-between;
         position: absolute;
         right: 0;
+        z-index: 1;
     }
     .info-users {
         flex: 1;
