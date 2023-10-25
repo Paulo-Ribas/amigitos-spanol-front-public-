@@ -278,7 +278,7 @@ export default {
         },
         connectionServer(){
              
-             this.socket = this.socket = io.connect('http://localhost:3333/', { rememberTransport: false, transports: ['websocket', 'polling', 'Flash Socket', 'AJAX long-polling'] })
+             this.socket = this.socket = io.connect('https://amigitos-espanol-api.com.br/', { rememberTransport: false, transports: ['websocket', 'polling', 'Flash Socket', 'AJAX long-polling'] })
              this.socket.emit('joinFriendRequestsRoom', `${this.userId}`)
              this.socket.on('notification', async data => {
                 await this.attFriendsInfoState()

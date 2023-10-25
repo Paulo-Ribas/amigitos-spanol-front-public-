@@ -32,13 +32,16 @@ export default {
 
 <style scoped>
     .roomForm {
-        width: 100%;
+        width: 99%;
         max-width: 600px;
         display: flex;
         flex-direction: column;
         justify-content: center;
         align-items: center;
-        position: relative;
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
     }
     label {
         font-family: cursive;

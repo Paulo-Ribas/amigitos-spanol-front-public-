@@ -73,7 +73,7 @@ export default {
     }
   },
   axios: {
-    baseURL: 'http://localhost:3333/'
+    baseURL: 'https://amigitos-espanol-api.com.br/'
 
   }, 
 

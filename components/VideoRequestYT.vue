@@ -1,6 +1,7 @@
 <template>
     <div class="box-container-yt-request">
         <div class="youtube-video-dates">
+            <fa class="icon" icon="xmark" @click="hiddenRequest()"></fa>
             <div class="videoImg">
                 <img :src="videoImg">
             </div>
@@ -68,6 +69,9 @@ export default {
                 id: this.id
             }
             this.$emit('rejected', videoInfo)
+        },
+        hiddenRequest(){
+            this.$emit('hiddenRequest')
         }
 
     }
@@ -75,8 +79,18 @@ export default {
 </script>
 
 <style scoped>
-    .box-container-yt-request {
-    width: 100%;
+
+.icon {
+    font-size: 2rem;
+    color: white;
+    cursor: pointer;
+    transition: 0.2s;
+}
+.icon:hover {
+    color: var(--cor6) !important;
+}
+.box-container-yt-request {
+    width: -webkit-fill-available;
     height: 100%;
     position: absolute;
     z-index: 7;
@@ -84,7 +98,7 @@ export default {
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    background-color: var(--chatOpacity);
+    background-color: var(--corMenu);
 }
 .youtube-video-dates{
     width: 90%;
@@ -126,14 +140,14 @@ export default {
 }
 .user-request-info{    
     width: 100%;
-    max-width: 800px;
+    max-width: 480px;
 }
 .btn-container {
     width: 100%;
     display: flex;
     justify-content: center;
     max-width: 800px;
-    margin: 2px 0px;
+    margin: 10px 0px;
 }
 .btn-container .accept {
     background-color: var(--corMenu);

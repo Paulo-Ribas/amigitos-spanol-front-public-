@@ -114,7 +114,7 @@ export default {
     },
     methods:{
         connectionServer(){
-           this.socket = io.connect('http://localhost:3333/', { rememberTransport: false, transports: ['websocket', 'polling', 'Flash Socket', 'AJAX long-polling'] })
+           this.socket = io.connect('https://amigitos-espanol-api.com.br/', { rememberTransport: false, transports: ['websocket', 'polling', 'Flash Socket', 'AJAX long-polling'] })
            this.socket.on('listMembersUpdate', data => {
              
             this.updateMember(data)
@@ -443,16 +443,16 @@ export default {
 
 <style scoped>
     .video-menu-container{
+        min-width: 300px;
         max-width: 350px;
-        min-width: 210px;
-        width: 80%;
-        height: 100%;
+        width: 25%;
+        height: calc(100% - 50px);
         display: flex;
         flex-direction: column;
         justify-content: space-between;
         position: absolute;
         right: 0;
-        z-index: 1;
+        z-index: 2;
     }
     .info-users {
         flex: 1;
@@ -535,11 +535,11 @@ export default {
         height: 45px;
     }
     .chat-container {
-        height: calc(100% - 50px);
+        height: calc(100% - 63px);
     }
     .chat-full-screen {
         width: 100%;
-        height: calc(100% - 58px);
+        height: 100%;
         overflow-y: auto;
     }
     .name-img-container {

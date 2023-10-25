@@ -1,7 +1,8 @@
 <template>
-  <div class="controls" @keydown="keysEvents">
-    <div class="progress" @click="setFalse(), aprenderMatematica($event)"  @mousedown="teste($event)" @mousemove="ultimoTeste($event)" @mouseleave="clicado = false" draggable="false">
+  <div class="controls" @keydown="keysEvents" @mouseup="stopAllDraggings" @mousemove="draggingBar($event), draggingVolume($event)">
+    <div class="progress" @click.stop="aprenderMatematica($event)"  @mousedown="setDragging($event,'bar')" draggable="false">
       <div class="progress-bar"  draggable="false"></div>
+      <div class="progress-bar-drag" v-show="IsDraggingBar" draggable="false"></div>
     </div>
     <div class="container-btns">
       <div class="btn-primary">
@@ -9,7 +10,7 @@
         <div class="timer">{{currentTime}} / {{duration}}</div>
         <div class="volume-container">
             <img src="/svg/com_som.svg" @click="emitMuteUnmute()" class="volume-icon">
-           <div class="volume" @mousedown="setVolume($event), addMovimentListener()" @mouseup="removeMovimentListener()">
+           <div class="volume" @mousedown="setDragging($event, 'volume')" @click="setVolume($event)" @mousemove="draggingVolume($event)">
                 <div id="volume-bar">
                     <div class="ball"></div>
                 </div>
@@ -61,6 +62,8 @@ export default {
             currentTime: this.$props.time,
             duration: this.durationProps,
             clicado: false,
+            IsDraggingBar: false,
+            isDraggingVolume: false,
         }
     },
     props: {
@@ -85,24 +88,58 @@ export default {
             this.$emit('mouseSegura', $event)
         },
         setVolume($event) {
-             
-            let width = $event.offsetX
+            if($event.offsetX === 0) return this.$emit('setVolume', 0)
+            let width = $event.offsetX || $event.touches[0].offsetX
             let volumeBar = document.getElementById('volume-bar')
             volumeBar.style.width = `${width}%`
             let volume = width / 100
             this.$emit('setVolume', volume)
+        },
+        setDragging(event, drag) {
+            if(drag === 'bar') {
+                this.IsDraggingBar = true
+                this.draggingBar(event)
+            }
+            if(drag === 'volume') {
+                this.isDraggingVolume = true
+                this.draggingVolume(event)
+            }
         },
         addMovimentListener() {
             let volumeContainer = document.querySelector('.volume')
             volumeContainer.addEventListener('mousemove', this.moveVolumeBar)
         },
-        moveVolumeBar(element) {
-            let volumeBar = document.getElementById('volume-bar')
-            let width = element.offsetX
-            volumeBar.style.width = `${width}%`
-            let volume = width / 100
+        draggingBar($event){
+            if(this.IsDraggingBar){
+                this.stopUserSelect()
+                this.$emit('setProgressBarWidth', $event)
+            }
+        },
+        draggingVolume($event){
+            if(this.isDraggingVolume) {
+                this.setVolume($event)
+            }
+        },
+        stopUserSelect(){
+            let timer = document.querySelector('.timer')
+            let imgs = document.querySelectorAll('img')
+            let svgs = document.querySelectorAll('svg')
+            if(timer) timer.style.userSelect = 'none'
+            imgs.forEach(img => {
+                if(!img) return
+                img.style.userSelect = 'none'
+            })
+            svgs.forEach(svg => {
+                if(!svg) return 
+                svg.style.userSelect = 'none'
+            })
+        },
+        stopAllDraggings($event){
+            this.isDraggingVolume = false
+            this.IsDraggingBar = false
+            let timer = document.querySelector('.timer')
+            timer.style.userSelect = 'auto'
 
-            this.$emit('setVolume', volume)
 
         },
         removeMovimentListener() {
@@ -174,7 +211,17 @@ export default {
         position: absolute;
         width: 1%;
         background-color: var(--cor4);
-        z-index: 2;
+        z-index: 3;
+        transition: 0.3s;
+        pointer-events: none;
+        cursor: pointer;
+    }
+    .progress-bar-drag {
+        height: 100%;
+        position: absolute;
+        width: 0%;
+        background-color: var(--cor5);
+        z-index: 4;
         pointer-events: none;
         cursor: pointer;
     }

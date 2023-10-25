@@ -10,7 +10,7 @@
         <PickVideo :videosProps="filesVideos" v-show="showVideos" @ChangeVideo="choiced($event)"
             @cancel="showVideos = false" />
         <VideoRequest :requestInfoProps="requestInfo" v-if="showRequestInfo" @accepted="acceptedRequest($event)"
-            @rejected="rejectedRequest($event)"></VideoRequest>
+            @rejected="rejectedRequest($event)" @hiddenRequest="hiddenRequest"></VideoRequest>
         <RequestList :requestArrayProps="requestWarnList" v-if="requestWarning" @requestSelected="showRequest($event)">
         </RequestList>
         <div class="video-container" v-if="joined && !mobile">
@@ -48,7 +48,7 @@
             <ControlsPlayerLiveMobile :time="currentTime" :durationProps="duration" @PlayPauseVideo="emitPlayPause($event)"
                 @mouseSegura="mouseSegura" @setVolume="setVolume" @aprenderMatematica="emitAprenderMatematica($event)"
                 @keysEvents="emitKeysEvents($event)" @fullScreamToggle="fullScreamToggle($event)"
-                @muteUnmute="muteUnmute()" @theaterMode="fullScreamToggle($event), theaterModeToggle()" />
+                @muteUnmute="muteUnmute()" @theaterMode="fullScreamToggle($event), theaterModeToggle()" @setProgressBarWidth="setProgressBarWidth($event)" />
             <ChatFullScreen :chatProps="msgsForProps" v-if="theater"></ChatFullScreen>
         </div>
         <ChatPcVideo :chatProps="msgsForProps" v-if="joined && !mobile" @clicked="showVideos = !showVideos"></ChatPcVideo>
@@ -214,7 +214,7 @@ export default {
     middleware: ['auth', 'roomPass', 'roomBanned'],
     methods: {
         connectionServer() {
-            this.socket = io.connect('http://localhost:3333/', { rememberTransport: false, transports: ['websocket', 'polling', 'Flash Socket', 'AJAX long-polling'] })
+            this.socket = io.connect('https://amigitos-espanol-api.com.br/', { rememberTransport: false, transports: ['websocket', 'polling', 'Flash Socket', 'AJAX long-polling'] })
             this.socket.on('sendRequestForSynchronization', data => {
                 this.sendVideoUrl(data)
             })
@@ -320,11 +320,15 @@ export default {
         },
         ...mapActions({ joinByPass: 'user/joinRoomByPassword', getRoom: 'user/getRoom', setState: 'user/setState' }),
         async attRoom() {
-
-            let roomInfo = await this.getRoom(this.room)
-            this.roomInfo = roomInfo.room
-            this.members = roomInfo.room.members
-            this.membersReactive = roomInfo.room.members
+            try {
+                let roomInfo = await this.getRoom(this.room)
+                this.roomInfo = roomInfo.room
+                this.members = roomInfo.room.members
+                this.membersReactive = roomInfo.room.members
+            } 
+            catch(err){
+                this.$route.push('/room')
+            }
         },
         JoinRoom() {
             if (!this.joined) {
@@ -368,13 +372,6 @@ export default {
             let newUserThatSendTheChat = undefined
             if (chat.length === 0) {
                 chatEmpty = true
-            }
-            if (this.members[0].id === userRequest && this.members.length < 2) return
-            if (this.members[0].id === userRequest && this.members.length >= 2) {
-                newUserThatSendTheChat = this.members[1].id
-            }
-            if (chatEmpty && this.members.length >= 2) {
-                newUserThatSendTheChat = this.members[1].id
             }
             if (this.members[0].id != this.user.id && !newUserThatSendTheChat) return
             if (!newUserThatSendTheChat) return this.socket.emit('chatSent', { userRequest, room, chat, empty: false })
@@ -609,6 +606,10 @@ export default {
             this.showRequestInfo = true
             this.requestInfo = $event
         },
+        hiddenRequest(){
+            this.showRequestInfo = false
+            this.requestInfo = {}
+        },
         acceptedRequest(data) {
             this.socket.emit('requestAccepted', data)
             this.showRequestInfo = false
@@ -754,8 +755,6 @@ export default {
                 }
             }
             if (this.roomInfo.rulesType === 3) {
-
-                if(!isOwnerPresent && !isAdmPresent) return true
                 if (!this.adm && !this.choice && this.owner !== this.user.id) return false
                 return true
             }
@@ -876,7 +875,8 @@ export default {
             video.currentTime = video.currentTime - 5
         },
         emitAprenderMatematica($event) {
-            const eventEmit = {
+            console.log('o evento', $event)
+            let eventEmit = {
                 offsetX: $event.offsetX,
                 target: {
                     offsetWidth: $event.target.offsetWidth
@@ -885,14 +885,18 @@ export default {
                     name: this.user.userName,
                     action: 'setTime'
                 }
-
+                
             }
+        if($event.touches){
+            eventEmit.offsetX = $event.touches[0].clientX
+            eventEmit.target.offsetWidth = $event.touches[0].target.offsetWidth
+        } 
             this.socket.emit('aprenderMatematica', { room: this.room, event: eventEmit })
         },
         aprenderMatematica($event){
             const video = document.getElementById('video')
+            console.log($event, 'evento que recebi')
             if($event.touches) {
-                console.log($event)
                 let position = ($event.touches[0].clientX / $event.touches[0].target.offsetWidth) * video.duration
                 video.currentTime = position
                 return
@@ -988,6 +992,7 @@ export default {
 video {
     width: 100%;
     height: 100%;
+    max-height: 480px;
     outline: none;
     background-color: var(--chatOpacity);
 
@@ -1067,7 +1072,7 @@ svg {
         height: 100vh;
         display: flex;
         flex-direction: column;
-        justify-content: center;
+        justify-content: flex-end;
         align-items: center;
         flex-wrap: nowrap;
         overflow: auto;
@@ -1075,7 +1080,7 @@ svg {
     }
 
     .video-container-mobile {
-        flex: 2;
+        flex: 0 !important;
         min-width: 360px;
         width: 100%;
     }

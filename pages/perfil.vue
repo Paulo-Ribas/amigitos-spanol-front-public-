@@ -312,13 +312,15 @@ export default {
                         this.editInput('userName')
                         
                     }).catch(err => {
-                            throw err
+                        this.errName = err.err
+                        throw err
                     })
                 }).catch(err => {
                     this.errName = err.err
                     throw err
                 })
             }).catch(err => {
+                this.errName = err.err
                 throw err
             })
             
@@ -349,7 +351,7 @@ export default {
                     throw err
                 })
             }).catch(err => {
-                this.errEmail = err
+                this.errEmail = err.err
                 throw err
             })
         },
@@ -369,7 +371,7 @@ export default {
                         this.savePassword = false
                         this.editInput('password')
                     }).catch(err => {
-                        this.errPassword = err
+                        this.errPassword = err.err
                         throw err
                     })
                 }).catch(err => {
@@ -377,7 +379,7 @@ export default {
                     throw err
                 })
             }).catch(err => {
-                this.errPassword = err
+                this.errPassword = err.err
                 throw err
             })
         },

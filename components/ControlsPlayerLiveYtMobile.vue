@@ -1,5 +1,5 @@
 <template>
-    <div class="mobile-controls-container" @click="toggleControll" @touchend="dragging = false" @mouseleave="removeMovimentListener()">
+    <div class="mobile-controls-container" @click="toggleControll" @touchend="stopAllDraggings()" @mouseup.stop="stopAllDraggings" @mousemove.stop="draggingVolume($event), draggingBar($event)" @touchmove.stop="draggingVolume($event), draggingBar($event)">
         <div class="controls-container" v-show="displayBlock">
             <div class="skip-container" @click.stop="removeDisplayBlock">
                 <img src="/svg/adiantar_o_video_.svg" @click.stop="skip()" class="skip-icon">
@@ -10,15 +10,16 @@
             </div>
         </div>
         <div class="controls" @keydown="keysEvents">
-                    <div class="progress" @click="setFalse(), aprenderMatematica($event)"  @touchstart="dragging = true" @touchmove="draggingBar($event)" @mouseleave="clicado = false" draggable="false">
+                    <div class="progress" @click="setFalse(), aprenderMatematica($event)"  @mousedown="setDragging($event,'bar')" @touchstart="setDragging($event,'bar')" @touchmove="draggingBar($event)" draggable="false">
                     <div class="progress-bar" draggable="false"></div>
+                    <div class="progress-bar-drag" v-show="IsDraggingBar" draggable="false"></div>
             </div>
             <div class="container-btns">
                 <div class="btn-primary">
                     <div class="timer">{{ currentTime }} / {{ duration }}</div>
                     <div class="volume-container">
                 <img src="/svg/com_som.svg" @click="emitMuteUnmute()" class="volume-icon">
-                <div class="volume" @mousedown="setVolume($event), addMovimentListener()" @mouseup="removeMovimentListener()" @touchstart="setVolume($event)" @touchmove="moveVolumeBar($event)" @touchend="removeMovimentListener()" >
+                <div class="volume" @mousedown="setDragging($event, 'volume')" @click="setVolume($event)" @mousemove="draggingVolume($event)" @touchstart="setDragging($event, 'volume')" @touchmove="draggingVolume($event)" >
                     <div id="volume-bar">
                         <div class="ball"></div>
                     </div>
@@ -38,12 +39,14 @@
 export default {
     mounted() {
         let controls = document.querySelector('.controls')
+        let container = document.querySelector('.mobile-controls-container')
         let self = this
         let MouseVerify = function VerifyMouse() {
             let timeOut = setTimeout(function () {
                 try {
                     controls.classList.add('opacity0')
                     this.removeDisplayBlock()
+                    container.style.zIndex = '2'
                 } catch (error) {
                     throw error
                 }
@@ -58,6 +61,7 @@ export default {
             try {
                 controls.classList.remove('opacity0')
                 this.toggleControll()
+                container.style.zIndex = '3'
             } catch (error) {
                 throw error
             }
@@ -73,7 +77,9 @@ export default {
             duration: this.$props.durationProps,
             displayBlock: false,
             showControls: 0,
-            dragging: false,
+            IsDraggingBar: false,
+            isDraggingVolume: false,
+            lastTouch: 0,
         }
     },
     props: {
@@ -98,33 +104,72 @@ export default {
             this.$emit('mouseSegura', $event)
         },
         setVolume($event) {
-            let width = $event.offsetX
+            let volume2 = document.querySelector('.volume')
+            let width
+            if($event.touches) width = ($event.touches[0].clientX - volume2.offsetLeft)
+            if(!$event.touches) width = $event.offsetX
+            console.log(width)
+            if(width / 100 <= 0) return this.$emit('setVolume', 0)
+            if(width / 100 >= 1) return this.$emit('setVolume', 1)
             let volumeBar = document.getElementById('volume-bar')
             volumeBar.style.width = `${width}%`
-                let volume = width / 100
+            let volume = width / 100
             this.$emit('setVolume', volume)
         },
-        addMovimentListener() {
-            let volumeContainer = document.querySelector('.volume')
-            volumeContainer.addEventListener('mousemove', this.moveVolumeBar)
-        },
-        moveVolumeBar(element) {
-            let volumeBar = document.getElementById('volume-bar')
-            let width = element.offsetX || element.touches[0].offsetX
-            volumeBar.style.width = `${width}%`
-                let volume = width / 100
-
-            this.$emit('setVolume', volume)
-
-        },
-        removeMovimentListener() {
-            let volumeContainer = document.querySelector('.volume')
-            volumeContainer.removeEventListener('mousemove', this.moveVolumeBar)
-        },
-        draggingBar($event){
-            if(this.dragging) {
-                this.$emit('aprenderMatematica', $event)
+        
+        setDragging(event, drag) {
+            if(drag === 'bar') {
+                this.IsDraggingBar = true
+                this.draggingBar(event)
             }
+            if(drag === 'volume') {
+                this.isDraggingVolume = true
+                this.draggingVolume(event)
+            }
+        },
+       
+        draggingBar($event){
+            if(this.IsDraggingBar){
+                this.stopUserSelect()
+                this.lastTouch = $event
+                this.$emit('setProgressBarWidth', $event)
+            }
+        },
+        draggingVolume($event){
+            if(!this.isDraggingVolume) return
+            if($event.touches){
+                console.log('is dragging', $event)
+            }
+            if(this.isDraggingVolume) {
+                this.setVolume($event)
+            }
+        },
+        stopUserSelect(){
+            let timer = document.querySelector('.timer')
+            let imgs = document.querySelectorAll('img')
+            let svgs = document.querySelectorAll('svg')
+            if(timer) timer.style.userSelect = 'none'
+            imgs.forEach(img => {
+                if(!img) return
+                img.style.userSelect = 'none'
+            })
+            svgs.forEach(svg => {
+                if(!svg) return 
+                svg.style.userSelect = 'none'
+            })
+        },
+        stopAllDraggings($event){
+            console.log(this.lastTouch,' ultimo toque')
+            if(this.IsDraggingBar) {
+                this.aprenderMatematica(this.lastTouch)
+            }
+            if(!this.isDraggingVolume && !this.IsDraggingBar) return
+            this.isDraggingVolume = false
+            this.IsDraggingBar = false
+            let timer = document.querySelector('.timer')
+            timer.style.userSelect = 'auto'
+
+
         },
         aprenderMatematica($event) {
             this.$emit('aprenderMatematica', $event)
@@ -216,13 +261,14 @@ export default {
 
 .controls {
     width: 100%;
-    height: 44px;
+    height: 50px;
     z-index: 5;
     color: white;
     position: absolute;
     bottom: 0;
     display: flex;
     flex-direction: column;
+    justify-content: space-between;
     background-color: rgba(0, 0, 0, 0.342);
 }
 
@@ -239,14 +285,24 @@ export default {
     position: absolute;
     width: 1%;
     background-color: var(--cor4);
-    z-index: 2;
+    z-index: 3;
+    transition: 0.3s;
     pointer-events: none;
     cursor: pointer;
 }
+.progress-bar-drag {
+    height: 100%;
+    position: absolute;
+    width: 1%;
+    background-color: var(--cor5);
+    z-index: 3;
+    pointer-events: none;
+    cursor: pointer;
+    } 
 
 .container-btns {
     width: 100%;
-    height: calc(100% - 8px);
+    height: calc(100% - 11px);
     display: flex;
     justify-content: space-between;
     align-items: center;

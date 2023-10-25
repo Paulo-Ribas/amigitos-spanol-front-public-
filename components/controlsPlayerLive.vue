@@ -87,7 +87,6 @@ export default {
             this.$emit('mouseSegura', $event)
         },
         setVolume($event){
-            console.log($event)
             if($event.offsetX === 0) return this.$emit('setVolume', 0)
             let width = $event.offsetX || $event.touches[0].offsetX
             let volumeBar = document.getElementById('volume-bar')
@@ -191,7 +190,7 @@ export default {
 }
     .controls {
         width: 100%;
-        height: 44px;
+        height: 50px;
         z-index: 4;
         color: white;
         position: absolute;
@@ -212,7 +211,7 @@ export default {
         position: absolute;
         width: 1%;
         background-color: var(--cor4);
-        z-index: 2;
+        z-index: 3;
         transition: 0.3s;
         pointer-events: none;
         cursor: pointer;
@@ -222,13 +221,13 @@ export default {
         position: absolute;
         width: 0%;
         background-color: var(--cor5);
-        z-index: 3;
+        z-index: 4;
         pointer-events: none;
         cursor: pointer;
     }
     .container-btns {
         width: 100%;
-        height: calc(100% - 8px);
+        height: calc(100% - 11px);
         display: flex;
         justify-content: space-between;
         align-items: center;

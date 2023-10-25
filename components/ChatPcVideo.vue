@@ -331,7 +331,7 @@ export default {
     },
     methods: {
         connectionServer() {
-            this.socket = io.connect('http://localhost:3333/', { rememberTransport: false, transports: ['websocket', 'polling', 'Flash Socket', 'AJAX long-polling'] })
+            this.socket = io.connect('https://amigitos-espanol-api.com.br/', { rememberTransport: false, transports: ['websocket', 'polling', 'Flash Socket', 'AJAX long-polling'] })
             this.socket.on('listMembersUpdate', async data => {
                 await this.attRoom()
                 this.updateMember(data)
@@ -405,9 +405,14 @@ export default {
         },
         verifyEmptyMembers() {
             setTimeout(async () => {
-                if (!this.roomInfo.members || this.roomInfo.members.length === 0) {
-                    let room = await this.getRoom(this.room)
-                    this.roomInfo = room.room
+                try{
+                    if (!this.roomInfo.members || this.roomInfo.members.length === 0) {
+                        let room = await this.getRoom(this.room)
+                        this.roomInfo = room.room
+                    }
+                }
+                catch(err){
+                    this.$route.push('/room')
                 }
 
             }, 1000);
@@ -732,7 +737,7 @@ export default {
     flex: 0.229;
     max-width: 300px;
     min-width: 210px;
-    height: 65vh;
+    height: 90vh;
     max-height: 480px;
     margin: 10px 20px;
     display: flex;

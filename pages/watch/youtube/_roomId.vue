@@ -7,7 +7,7 @@
             v-if="!joined && pass && owner != user.id" @submitEmited="roomPassVerify($event)"
         />
         <PickVideoYT v-if="showVideos" @ChangeVideo="choiced($event)" @cancel="showVideos = false" />
-        <VideoRequestYT :requestInfoProps="requestInfo" v-if="showRequestInfo" @accepted="acceptedRequest($event)" @rejected="rejectedRequest($event)"></VideoRequestYT>
+        <VideoRequestYT :requestInfoProps="requestInfo" v-if="showRequestInfo" @accepted="acceptedRequest($event)" @rejected="rejectedRequest($event)" @hiddenRequest="hiddenRequest"></VideoRequestYT>
         <RequestList :requestArrayProps="requestWarnList" v-if="requestWarning" @requestSelected="showRequest($event)" ></RequestList>
         <div class="youtube-VideoPlayer" @click="setFocus()" tabindex="1" @keydown="emitKeysEvents($event)" v-if="joined && !mobile" id="video">
             <Transition name="actions">
@@ -29,6 +29,7 @@
             @fullScreamToggle="fullScreamToggle($event)"
             @theaterMode="fullScreamToggle($event), theaterModeToggle()"
             @muteUnmute="muteUnmute()"
+            @setProgressBarWidth="setProgressBarWidth($event)"
             :time="currentTime"
             :durationProps="duration"></ControlsPlayerLiveYT>
             <ChatFullScreen :chatProps="msgsForProps" v-if="theater"></ChatFullScreen>
@@ -52,8 +53,11 @@
             @keysEvents="emitKeysEvents($event)"
             @fullScreamToggle="fullScreamToggle($event)"
             @muteUnmute="muteUnmute()"
+            @setProgressBarWidth="setProgressBarWidth($event)"
             :time="currentTime"
+            @theaterMode="fullScreamToggle($event), theaterModeToggle()"
             :durationProps="duration"></ControlsPlayerLiveYtMobile>
+            <ChatFullScreen :chatProps="msgsForProps" v-if="theater"></ChatFullScreen>
         </div>
         <ChatPcVideo :chatProps="msgsForProps" v-if="joined && !mobile && !theater" @clicked="showVideos = !showVideos"></ChatPcVideo>
         <ChatMobileVideo :chatProps="msgsForProps" v-show="!showVideos" v-if="joined && mobile" @clicked="showVideos = !showVideos"></ChatMobileVideo>
@@ -231,7 +235,7 @@ export default {
     middleware: ['auth', 'roomPass', 'roomBanned'],
     methods: {
         connectionServer(){
-           this.socket = io.connect('http://localhost:3333/',{ rememberTransport: false, transports: ['websocket', 'polling', 'Flash Socket', 'AJAX long-polling']})
+           this.socket = io.connect('https://amigitos-espanol-api.com.br/',{ rememberTransport: false, transports: ['websocket', 'polling', 'Flash Socket', 'AJAX long-polling']})
            this.socket.on('sendRequestForSynchronization', data => {
             this.sendVideoUrl(data)
            })
@@ -326,6 +330,9 @@ export default {
              
             this.requestAccepted(data)
            })
+           this.socket.on('requestRefused', data => {
+                this.refuseRequest(data)
+            })
            this.socket.on('userVideoRequest', data => {
              
             this.addRequest(data)
@@ -339,11 +346,15 @@ export default {
             }
         },
         async attRoom(){
-            let roomInfo = await this.getRoom(this.room)
-
-            this.roomInfo = roomInfo.room
-            this.members = roomInfo.room.members
-            this.membersReactive = roomInfo.room.members
+            try {
+                let roomInfo = await this.getRoom(this.room)
+                this.roomInfo = roomInfo.room
+                this.members = roomInfo.room.members
+                this.membersReactive = roomInfo.room.members
+            }
+            catch(err){
+                this.$route.push('/room')
+            }
         },
         checkAdm(){
              
@@ -384,13 +395,6 @@ export default {
             let newUserThatSendTheChat = undefined
             if (chat.length === 0) {
                 chatEmpty = true
-            }
-            if (this.members[0].id === userRequest && this.members.length < 2) return
-            if (this.members[0].id === userRequest && this.members.length >= 2) {
-                newUserThatSendTheChat = this.members[1].id
-            }
-            if (chatEmpty && this.members.length >= 2) {
-                newUserThatSendTheChat = this.members[1].id
             }
             if (this.members[0].id != this.user.id && !newUserThatSendTheChat) return
             if (!newUserThatSendTheChat) return this.socket.emit('chatSent', { userRequest, room, chat, empty: false })
@@ -467,30 +471,55 @@ export default {
             let video = document.getElementById('video')
             video.focus()
         },
-        showError(event){
-             
+        verifyIfOwnerIsPresent(){
+            return new Promise((resolve, reject) => {
+                let isPresent = this.membersReactive.find(member => {
+                    return member.id === this.owner
+                })
+                return resolve(isPresent)
+            })
         },
-        verifyPermissions(video){
+        verifyIfAdmIsPresent(){
+            return new Promise((resolve, reject) => {
+                let promises = this.membersReactive.map(member => {
+                    return new Promise((resolve, reject) => {
+                        let adm = this.roomInfo.adms.find(adms => {
+                            return adms.id === member.id
+                        })
+                        resolve(adm)
+                    })
+                })
+                Promise.all(promises).then(adms => {
+                    console.log(adms)
+                    let adm = adms.find(userAdm => userAdm !== undefined)
+                    return resolve(adm)
+                })                
+            })
+        },
+        async verifyPermissions(video){
+            let isAdmPresent = await this.verifyIfAdmIsPresent()
+            let isOwnerPresent = await this.verifyIfOwnerIsPresent()
+            console.log(isAdmPresent, isOwnerPresent)
              
             if(this.roomInfo.rulesType === 2) {
-                 
+                if(!isAdmPresent && !isOwnerPresent) return true
                 if(this.adm || this.choice || this.owner === this.user.id) return true
                 else {
-                    let videoId = this.saveRequestForVideo(this.ytUrl)
+                    let videoId = this.saveRequestForVideo(video)
                     this.socket.emit('videoRequest', {userId: this.user.id, userName: this.user.userName, video, room: this.room, id: videoId})
                     return false
                 }
             }
             if(this.roomInfo.rulesType === 3){
+                if (!this.adm && !this.choice && this.owner !== this.user.id) return false
                  
-                if(!this.adm && !this.choice && this.owner !== this.user.id && this.members[0].id !== this.user.id) return false
                 return true
             }
             return true
         },
         addRequest(data){
              
-            if(this.user.id != this.owner) return
+            if(this.user.id != this.owner && !this.adm) return
              
             let newRequest = data
             this.requestWarnList.push(newRequest)
@@ -502,6 +531,10 @@ export default {
             this.showRequestInfo = true
             this.requestInfo = $event
         },
+        hiddenRequest(){
+            this.showRequestInfo = false
+            this.requestInfo = {}
+        },
         acceptedRequest(data){
             this.socket.emit('requestAccepted', data)
             this.showRequestInfo = false
@@ -509,6 +542,11 @@ export default {
         },
         rejectedRequest(data){
             this.showRequestInfo = false
+            this.removeWarn(data)
+            this.socket.emit('requestRejected', data)
+        },
+        refuseRequest(data){
+            if(!this.adm && this.user.id !== this.owner) return
             this.removeWarn(data)
         },
         removeWarn(warn){
@@ -567,19 +605,22 @@ export default {
             return id
         },
         requestAccepted(data){
-             
+            console.log('aceitado', data)
+            if(this.adm || this.user.id === this.owner) {
+                this.removeWarn(data)
+                this.showRequestInfo = false
+            }
             if(data.requestInfo.userId != this.user.id) return
-             
              
             this.videoInfo.forEach(video => {
                  
                 if(video.id != data.id) return 
                  
                 video.promise.then(result => {
-                     
+                     console.log('promessa', result)
                     result.choiced(result.video, true)
                 }).catch(err => {
-                     
+                     throw err
                 })
 
             })
@@ -763,14 +804,14 @@ export default {
         showObject(event){
              
         },
-        choiced(video, canSend = undefined){
+        async choiced(video, canSend = undefined){
              
               
             this.showVideos = false
             let videoEmbed = video.embed || video
             videoEmbed === '' ? video = "https://www.youtube.com/embed/hNGrGGbFX2s" : video
             let hasPermision = undefined
-            canSend === undefined ? hasPermision = this.verifyPermissions(video.original) : hasPermision = canSend
+            canSend === undefined ? hasPermision = await this.verifyPermissions(video.original) : hasPermision = canSend
             canSend === undefined ? canSend = hasPermision : canSend = canSend
             if (!hasPermision){
                  
@@ -788,6 +829,14 @@ export default {
              
             this.videoId = this.$youtube.getIdFromURL(data + '&rel=0')
             this.ytUrl = data + '&rel=0'
+        },
+        setProgressBarWidth($event) {
+            const barra = document.querySelector('.progress-bar-drag')
+            let clientX = $event.offsetX || $event.touches[0].clientX
+            let barrWidth = $event.target.offsetWidth
+            let result = 100 - ((barrWidth - clientX) / barrWidth ) * 100
+            console.log(result)
+            barra.style.width = `${result}%`
         },
         GaloFilhoDaPuta(){
             const barra = document.querySelector('.progress-bar')
@@ -870,7 +919,7 @@ export default {
             this.player.seekTo(this.player.getCurrentTime() - 5)
         },
         emitAprenderMatematica($event){
-            const eventEmit = {
+            let eventEmit = {
                 offsetX: $event.offsetX,
                 target: {
                     offsetWidth: $event.target.offsetWidth
@@ -880,9 +929,19 @@ export default {
                     action: 'play'
                 }
             }
+            if($event.touches){
+            eventEmit.offsetX = $event.touches[0].clientX
+            eventEmit.target.offsetWidth = $event.touches[0].target.offsetWidth
+            } 
             this.socket.emit('aprenderMatematica', {room: this.room, event: eventEmit})
         },
         aprenderMatematica($event){
+            if($event.touches) {
+                console.log($event)
+                let position = ($event.touches[0].clientX / $event.touches[0].target.offsetWidth) * video.duration
+                this.player.seekTo(position)
+                return
+            } 
              
             let position = ($event.offsetX / $event.target.offsetWidth) * this.player.getDuration()
             this.player.seekTo(position)

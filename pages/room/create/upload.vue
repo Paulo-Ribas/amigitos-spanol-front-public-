@@ -4,7 +4,7 @@
     <div class="container-box-poop" v-show="showAlgo">
       <div class="warn-container">
         <h2>Selecione Os Videos</h2>
-        <div>
+        <div class="tabbleVideo-container">
             <BtnSpecial v-if="selectAll" btnProps="Selecionar Tudo" @clicked="addAll()"></BtnSpecial>
             <BtnSpecial v-if="!selectAll" btnProps="Desselecionar Tudo" @clicked="removeAll()"></BtnSpecial>
             <TabbleVideosList class="tableWarn" btnProps="Selecionar" :selectAllProps="true" :videosProps="videos" @selected="addOrRemoveVideo($event)"/>
@@ -241,6 +241,9 @@ export default {
         justify-content: center;
         align-items: center;
         padding: 12px;
+    }
+    .tabbleVideo-container {
+        width: 90%;
     }
     .name {
         width: 50%;
