@@ -20,7 +20,7 @@
    import {mapActions} from 'vuex'
 export default {
    asyncData(context) {
-      let seasonsLength = this.getTemps()
+      let seasonsLength = this.selectSeasom()
       return {
          seasons: seasonsLength.data.length
       }

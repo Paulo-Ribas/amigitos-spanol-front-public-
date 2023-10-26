@@ -118,7 +118,7 @@ export default {
         },
         setVolume($event){
             console.log($event)
-            if($event.offsetX === 0) return this.$emit('setVolume', 0)
+            if($event.offsetX <= 0) return this.$emit('setVolume', 0)
             let width = $event.offsetX || $event.touches[0].offsetX
             let volumeBar = document.getElementById('volume-bar')
             volumeBar.style.width = `${width}%`
