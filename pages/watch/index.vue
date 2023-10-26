@@ -19,8 +19,8 @@
 <script>
    import {mapActions} from 'vuex'
 export default {
-   asyncData(context) {
-      let seasonsLength = context.store.dispatch('series/getTemps')
+   async asyncData(context) {
+      let seasonsLength = await context.store.dispatch('series/getTemps')
       console.log(seasonsLength)
       let array = Array.of(seasonsLength.data)
       return {
