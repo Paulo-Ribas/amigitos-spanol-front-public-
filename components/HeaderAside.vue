@@ -83,9 +83,9 @@
     </div>
     <nav>
         <ul>
-            <li class="friend-request" v-if="friends.requests.length > 0">
+            <li class="friend-request" v-if="friends.requests.length > 0" @click="toggleMobileMenu()">
                     <Transition name="friendRequestLink">
-                        <NuxtLink to="/friendsRequest" v-if="show" @click="toggleMobileMenu()">Solicitações</NuxtLink>
+                        <NuxtLink to="/friendsRequest" v-if="show" >Solicitações</NuxtLink>
                     </Transition>
                 </li>
             <li @click="toggleMobileMenu">
