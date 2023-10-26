@@ -27,7 +27,7 @@ export default {
         width: 100px;
         height: fit-content;
         display: flex;
-        z-index: 2;
+        z-index: 4;
         justify-content: center;
         align-items: center;
         text-align: center;
