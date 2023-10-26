@@ -236,7 +236,7 @@ export default {
             }
         },
         loadingVideoToggle($event){
-            if($event) return this.videoLoanding = true
+            if($event) return this.videoLoanding = false
             this.videoLoanding = !this.videoLoanding
         },
         fullScreamToggle() {
