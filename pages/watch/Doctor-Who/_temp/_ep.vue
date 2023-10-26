@@ -1,8 +1,9 @@
 <template>
 <section id="ep-doctor-who">
 <div class="ep-container">
-  <div class="video-container" tabindex="1" @keydown="keysEvents($event)"> 
-    <video :src="episodeLink" id="video" @timeupdate="setTimeVideo(), setProgressBarByTimeVideo()" @click="PlayPauseVideo(true)" @dblclick="fullScreamToggle($event)" @loadeddata="setDuration()" @loadedmetadata="setDuration()"></video>
+  <div class="video-container" tabindex="1" @keydown="keysEvents($event)">
+    <TardisLoadSmall v-if="videoLoanding"></TardisLoadSmall> 
+    <video :src="episodeLink" id="video" @loadstart="videoLoanding = true" @timeupdate="setTimeVideo(), setProgressBarByTimeVideo()" @click="PlayPauseVideo(true)" @dblclick="fullScreamToggle($event)" @loadeddata="setDuration(), loadingVideoToggle" @loadedmetadata="setDuration()"></video>
     <ControlsPlayer v-if="!mobile"
         :time="currentTime"
         :durationProps="duration"
@@ -72,7 +73,8 @@ export default {
             mobile: false,
             temp: this.$route.params.temp,
             ep: this.$route.params.ep,
-            duration: '00:00'
+            duration: '00:00',
+            videoLoanding: true,
         }
     },
     watch:{
@@ -232,6 +234,9 @@ export default {
                 barra.style.width = `${video.currentTime / video.duration * 100}%`
                 
             }
+        },
+        loadingVideoToggle(){
+            this.videoLoanding = !this.videoLoanding
         },
         fullScreamToggle() {
             let video = document.querySelector('.video-container') || document.querySelector('.video-container-mobile')

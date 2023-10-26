@@ -15,8 +15,8 @@
                 <div class="list-container">
                     <div class="ep-list-container">
                         <div class="ep-container" v-for="season, index in seasonEpisodeList" :key="index">
-                            <NuxtLink v-if ="season.SpecialEpisode == 0" :class="{'ep': 'ep', 'pink': season.Episode == selectedEp && season.Season == selectedTemp}" :data-ep="index +1" :to="'/watch/Doctor-Who/' + season.Season +'/' + season.Episode + '?s=' + index">EP {{season.Episode}} - {{season.EpisodeName }} <span v-if="season.SpecialEpisode == 0">(Especial Natal)</span></NuxtLink>
-                            <NuxtLink v-else :class="{'ep': 'ep', 'pink':  season.Episode == selectedEp && season.Season == selectedTemp}" :data-ep="index +1" :to="'/watch/Doctor-Who/' + season.Season +'/' + season.Episode">EP {{season.Episode}} - {{season.EpisodeName }} <span v-if="season.SpecialEpisode == 0">(Especial Natal)</span></NuxtLink>
+                            <NuxtLink v-if ="season.SpecialEpisode == 0" :class="{'ep': 'ep', 'pink': season.Episode == currentSeason && season.Season == selectedTemp}" :data-ep="index +1" :to="'/watch/Doctor-Who/' + season.Season +'/' + season.Episode + '?s=' + index">EP {{season.Episode}} - {{season.EpisodeName }} <span v-if="season.SpecialEpisode == 0">(Especial Natal)</span></NuxtLink>
+                            <NuxtLink v-else :class="{'ep': 'ep', 'pink':  season.Episode == selectedEp && season.Season == currentSeason}" :data-ep="index +1" :to="'/watch/Doctor-Who/' + season.Season +'/' + season.Episode">EP {{season.Episode}} - {{season.EpisodeName }} <span v-if="season.SpecialEpisode == 0">(Especial Natal)</span></NuxtLink>
 
                         </div>
                     </div>
@@ -53,6 +53,7 @@ export default {
             temps: [],
             selected: false,
             select: 'selecionar',
+            currentSeason: this.$route.params.temp
         }
     },
     props: {
