@@ -19,7 +19,7 @@
                     <div class="timer">{{ currentTime }} / {{ duration }}</div>
                     <div class="volume-container">
                 <img src="/svg/com_som.svg" @click="emitMuteUnmute()" class="volume-icon">
-                <div class="volume" @mousedown="setDragging($event, 'volume')" @click="setVolume($event)" @mousemove="draggingVolume($event)" @touchstart="setDragging($event, 'volume')" @touchmove="draggingVolume($event)" >
+                <div class="volume" @mousedown="setDragging($event, 'volume')" @mouseleave="stopDraggingVolume" @click="setVolume($event)" @mousemove="draggingVolume($event)" @touchstart="setDragging($event, 'volume')" @touchend="stopDraggingVolume" @touchmove="draggingVolume($event)" >
                     <div id="volume-bar">
                         <div class="ball"></div>
                     </div>
@@ -170,6 +170,10 @@ export default {
             timer.style.userSelect = 'auto'
 
 
+        },
+        
+        stopDraggingVolume($event){
+            this.isDraggingVolume = false
         },
         aprenderMatematica($event) {
             this.$emit('aprenderMatematica', $event)

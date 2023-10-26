@@ -872,12 +872,6 @@ export default {
             let volumeBar = document.getElementById('volume-bar')
 
             volume > 1 ? volume = 1 : volume < 0 ? volume = 0 : volume = volume
-            if(volume === 1) {
-                volumeBar.style.width = '100%'
-            } 
-            if(volume === 0) {
-                volumeBar.style.width = '100%'
-            }
             video.volume = volume
             this.oldVolume = volume
         },
