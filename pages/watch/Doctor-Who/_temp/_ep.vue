@@ -275,7 +275,7 @@ export default {
         align-items: center;
     }
     .ep-container {
-        flex: 1;
+        flex: 2;
         width: 100%;
         max-width: 80%;
 

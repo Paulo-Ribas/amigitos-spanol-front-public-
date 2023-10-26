@@ -7,7 +7,7 @@
             propsImg='/DW.jpg' 
             propsAlt='imagem do seriado doctor who'
             propsName='Doctor Who'
-            :propsSeasons='8'
+            :propsSeasons='seasons'
             propsDescrition='seriado de ficção cientifica'
             >
             </Serie>
@@ -17,7 +17,14 @@
 </template>
 
 <script>
+   import {mapActions} from 'vuex'
 export default {
+   asyncData(context) {
+      let seasonsLength = this.getTemps()
+      return {
+         seasons: seasonsLength.data.length
+      }
+   },
    head(){
         return {
             title: 'Series',
@@ -31,6 +38,15 @@ export default {
             ]
         }
     },
+    data(){
+      return {
+      }
+    },
+    methods: {
+      ...mapActions({
+            selectSeasom: 'series/getTemps'
+        }),
+    }
 }
 </script>
 
