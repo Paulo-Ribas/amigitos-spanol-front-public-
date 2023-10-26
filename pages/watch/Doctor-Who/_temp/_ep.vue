@@ -3,7 +3,7 @@
 <div class="ep-container">
   <div class="video-container" tabindex="1" @keydown="keysEvents($event)">
     <TardisLoadSmall v-if="videoLoanding"></TardisLoadSmall> 
-    <video :src="episodeLink" id="video" @loadstart="videoLoanding = true" @timeupdate="setTimeVideo(), setProgressBarByTimeVideo()" @click="PlayPauseVideo(true)" @dblclick="fullScreamToggle($event)" @loadeddata="setDuration(), loadingVideoToggle()" @loadedmetadata="setDuration()"></video>
+    <video :src="episodeLink" id="video" @loadstart="videoLoanding = true" @timeupdate="setTimeVideo(), setProgressBarByTimeVideo()" @click="PlayPauseVideo(true)" @dblclick="fullScreamToggle($event)" @loadeddata="setDuration(), loadingVideoToggle()" @loadedmetadata="setDuration()" @waiting="videoLoanding = true"></video>
     <ControlsPlayer v-if="!mobile"
         :time="currentTime"
         :durationProps="duration"
