@@ -75,7 +75,7 @@
     </nav>
   </header>
   <header :class="{mobile:'mobile', width100}" id="header-mobile" v-else>
-    <div :class="{'tardis-icon-menu': 'tardis-icon-menu', move, horizontal}" @click="toogleMobileMenu()">
+    <div :class="{'tardis-icon-menu': 'tardis-icon-menu', move, horizontal}" @click="toggleMobileMenu()">
         <img src="/svg/tardis.svg" :class="{spinTardis , tardisNormal}">
         <div class="icon-container-notification" v-if="friends.requests.length > 0">
             <span class="amount">{{ friends.requests.length }}</span>
@@ -88,21 +88,21 @@
                         <NuxtLink to="/friendsRequest" v-if="show" @click="toggleMobileMenu">Solicitações</NuxtLink>
                     </Transition>
                 </li>
-            <li @click="toogleMobileMenu">
+            <li @click="toggleMobileMenu">
                 <div class="icon-container">
                     <fa class="icon" icon="house"/>
                 </div>
                 <Transition name="inicio"> 
-                    <NuxtLink to="/" v-if="show" @click="toogleMobileMenu">Inicio</NuxtLink>
+                    <NuxtLink to="/" v-if="show" @click="toggleMobileMenu">Inicio</NuxtLink>
                 </Transition>
 
             </li>
-            <li @click="toogleMobileMenu">
+            <li @click="toggleMobileMenu">
                 <div class="icon-container">
                     <fa class="icon" icon="user"/>
                 </div>
                 <Transition name="perfil">
-                    <NuxtLink to="/perfil" v-if="show" @click="toogleMobileMenu">Perfil</NuxtLink>
+                    <NuxtLink to="/perfil" v-if="show" @click="toggleMobileMenu">Perfil</NuxtLink>
                  </Transition>
             </li>
             <!-- <li>
@@ -112,7 +112,7 @@
                 </Transition>
 
             </li> -->
-            <li  @click="toogleMobileMenu">
+            <li  @click="toggleMobileMenu">
                 <div class="icon-container">
                     <fa class="icon" icon="users" />
                 </div>
@@ -121,21 +121,21 @@
                  </Transition>
 
             </li>
-            <li @click="toogleMobileMenu">
+            <li @click="toggleMobileMenu">
                 <div class="icon-container">
                     <img class="icon" src="/svg/tardis.svg" />
                 </div>
                 <Transition name="assistirSolo">
-                    <NuxtLink to="/watch" v-if="show" @click="toogleMobileMenu">Assistir Séries Solo</NuxtLink>
+                    <NuxtLink to="/watch" v-if="show" @click="toggleMobileMenu">Assistir Séries Solo</NuxtLink>
                  </Transition>
 
             </li>
-            <li @click="toogleMobileMenu">
+            <li @click="toggleMobileMenu">
                 <div class="icon-container">
                     <fa class="icon" icon="chalkboard"/>
                 </div>
                 <Transition name="videosEstudando">
-                    <NuxtLink to="/videos-estudando" v-if="show" @click="toogleMobileMenu">Videos Estudando</NuxtLink>
+                    <NuxtLink to="/videos-estudando" v-if="show" @click="toggleMobileMenu">Videos Estudando</NuxtLink>
                  </Transition>
 
             </li>
@@ -239,7 +239,7 @@ export default {
             this.show = false
 
         },
-        toogleMobileMenu(){
+        toggleMobileMenu(){
             !this.width100 ? this.width100 = true : this.width100 = false
             this.toggleShow()
             !this.spinTardis ? this.spinTardis = true : this.spinTardis = false

@@ -854,7 +854,6 @@ export default {
     display: flex;
     flex-direction: column;
     justify-content: space-around;
-    overflow: hidden;
 }
 
 .options h3,
