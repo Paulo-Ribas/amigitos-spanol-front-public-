@@ -86,7 +86,7 @@ export default {
     padding: 10px 30px;
     background-color: var(--cor4);
     font-family: cursive;
-    color: wheat;
+    color: white;
     border-radius: 10px;
     cursor: pointer !important;
 }
