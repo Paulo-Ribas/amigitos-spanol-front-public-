@@ -300,25 +300,6 @@ export default {
         justify-content: center;
         align-items: center;
     }
-    @media screen and (max-width: 500px) {
-        #ep-doctor-who {
-            flex-direction: column;
-        }
-        .ep-container {
-            display: flex;
-            flex-direction: column;
-            flex: 0;
-            max-width: unset;
-        }
-        .video-container {
-            height: 100%;
-        }
-        .eps-list-container {
-            flex: 1;
-            max-height: unset;
-            height: 100%;
-        }
-    }
     @media screen and (max-width: 760px) {
         .ep-container {
             display: flex;
@@ -339,6 +320,26 @@ export default {
         
     }
     
+    @media screen and (max-width: 500px) {
+        #ep-doctor-who {
+            flex-direction: column;
+        }
+        .ep-container {
+            display: flex;
+            flex-direction: column;
+            flex: 0;
+            max-width: unset;
+        }
+        .video-container {
+            height: 100%;
+        }
+        .eps-list-container {
+            flex: 1;
+            max-height: unset;
+            height: 100%;
+        }
+    }
+   
 
     
 </style>

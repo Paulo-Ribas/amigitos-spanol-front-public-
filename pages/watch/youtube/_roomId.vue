@@ -881,7 +881,7 @@ export default {
             }
             this.currentTime = time
         },
-        findKeysToEmit(keyToFound){
+        async findKeysToEmit(keyToFound){
             keys = ["ArrowLeft", "ArrowRight","Space"]
             let found = keys.find(key => {
                 return keyToFound === key
@@ -889,7 +889,7 @@ export default {
             return found
 
         },
-        emitKeysEvents($event) {
+        async emitKeysEvents($event) {
             if ($event.key.code === 'f') return this.fullScreamToggle()
             const eventEmit = {
                 code: $event.code,
@@ -898,7 +898,7 @@ export default {
                     action: 'play'
                 }
             }
-            let found = this.findKeysToEmit($event.key.code || $event.code)
+            let found = await this.findKeysToEmit($event.key.code || $event.code)
             if(!found) return
             this.socket.emit('keysEvents', { event: eventEmit, room: this.room })
 
