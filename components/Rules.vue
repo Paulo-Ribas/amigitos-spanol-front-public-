@@ -31,7 +31,7 @@ export default {
             let explications = {
                 _1: 'todos são livres para enviar videos ou muda-los eles sem aviso com ou sem permissão prévia, sistema de admistração funciona normalmente',
                 _2: 'todos são livres para enviar videos ou muda-los contanto que o dono ou admistradores permitam, ou tenha sido concedida tal permissão, sistema de admistração funciona normalmente',
-                _3: 'apenas o dono, admistrador ou quem tem permissão de enviar ou mudar videos podem executar tal ação ',
+                _3: 'apenas o dono, admistrador ou quem tem permissão de enviar ou mudar videos podem executar tal ação, até mesmo caso a sala fique sem a presença deles.',
             }
             this.ruleSelected = $event
             $event === 1 ? this.ruleSelectedInfo = explications._1 
