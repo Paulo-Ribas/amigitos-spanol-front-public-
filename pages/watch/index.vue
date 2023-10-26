@@ -21,8 +21,10 @@
 export default {
    asyncData(context) {
       let seasonsLength = context.store.dispatch('series/getTemps')
+      console.log(seasonsLength)
+      let array = Array.of(seasonsLength.data)
       return {
-         seasons: seasonsLength.data.length
+         seasons: array.length
       }
    },
    head(){
