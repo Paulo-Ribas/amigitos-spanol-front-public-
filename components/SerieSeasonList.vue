@@ -174,6 +174,7 @@ export default {
     }
     .selecionar {
         cursor: pointer;
+        width: 100%;
     }
 
     .option-container {

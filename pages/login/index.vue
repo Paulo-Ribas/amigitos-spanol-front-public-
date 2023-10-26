@@ -90,7 +90,7 @@ https://amigitos-espanol-api.com.br/login`,{username: name, email, password}).th
         text-decoration-color: var(--corAzul);
     }
     .login form {
-        width: 100%;
+        width: 90%;
         max-width: 600px;
         display: flex;
         flex-direction: column;

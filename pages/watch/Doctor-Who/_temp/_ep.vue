@@ -293,33 +293,13 @@ export default {
     }
     .eps-list-container {
         width: 100%;
-        height: auto;
+        height: 100%;
         flex: 1;
         padding: 1%;
         display: flex;
         justify-content: center;
         align-items: center;
     }
-    @media screen and (max-width: 740px) {
-        .ep-container {
-            display: flex;
-            flex: 3;
-            max-width: unset;
-        }
-        .video-container {
-            height: 100%;
-            flex: 3;
-        }
-        .eps-list-container {
-            width: 100%;
-            min-width: 170px;
-            height: 90%;
-            max-height: 340px
-
-        }
-        
-    }
-    
     @media screen and (max-width: 500px) {
         #ep-doctor-who {
             flex-direction: column;
@@ -339,5 +319,26 @@ export default {
             height: 100%;
         }
     }
+    @media screen and (max-width: 760px) {
+        .ep-container {
+            display: flex;
+            flex: 3;
+            max-width: unset;
+        }
+        .video-container {
+            height: 100%;
+            flex: 3;
+        }
+        .eps-list-container {
+            width: 100%;
+            min-width: 170px;
+            height: 90%;
+            max-height: 340px
+
+        }
+        
+    }
+    
+
     
 </style>

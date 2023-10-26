@@ -88,9 +88,10 @@ export default {
             this.$emit('mouseSegura', $event)
         },
         setVolume($event) {
-            if($event.offsetX === 0) return this.$emit('setVolume', 0)
             let width = $event.offsetX || $event.touches[0].offsetX
             let volumeBar = document.getElementById('volume-bar')
+            if(width / 100 <= 0) return this.$emit('setVolume', 0)
+            if(width / 100 >= 1) return this.$emit('setVolume', 1)
             volumeBar.style.width = `${width}%`
             let volume = width / 100
             this.$emit('setVolume', volume)
