@@ -21,6 +21,7 @@
                     </span>
                 </div>
             </Transition>
+            <TardisLoadSmall v-if="videoLoanding"></TardisLoadSmall> 
             <video @waiting="videoLoanding = true" @loadedmetadata="setDuration" @loadeddata="setDuration(), loadingVideoToggle(true)" @timeupdate="setProgressBarByTimeVideo()" tabindex="1"
                 @dblclick="fullScreamToggle()" @click="showObject(), emitPlayPause()" @keydown="emitKeysEvents($event)"
                 id="video" @canplay="loadingVideoToggle(true)">
@@ -40,6 +41,7 @@
                     </span>
                 </div>
             </Transition>
+            <TardisLoadSmall v-if="videoLoanding"></TardisLoadSmall> 
             <video @waiting="videoLoanding = true" @timeupdate="setProgressBarByTimeVideo()" tabindex="1" @dblclick="fullScreamToggle()"
                 @click="showObject(), emitPlayPause()" @keydown="emitKeysEvents($event)" @loadedmetadata="setDuration"
                 @loadeddata="setDuration(), loadingVideoToggle(true)" @canplay="loadingVideoToggle(true)" id="video">
