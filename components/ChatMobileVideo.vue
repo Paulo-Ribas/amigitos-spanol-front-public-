@@ -1052,6 +1052,7 @@ a {
     .video-menu-container {
         margin-top: 0px;
         max-width: 313px;
+        max-height: 480px;
     }
 }
 
