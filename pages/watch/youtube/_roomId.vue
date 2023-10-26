@@ -353,7 +353,7 @@ export default {
                 this.membersReactive = roomInfo.room.members
             }
             catch(err){
-                this.$route.push('/room')
+                this.$router.push('/room')
             }
         },
         checkAdm(){

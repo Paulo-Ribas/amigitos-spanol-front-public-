@@ -10,7 +10,7 @@ export default {
         this.$store.dispatch('user/validateUser', this.$cookies.get('token')).then(data => {
             this.$router.push(`/users/${data.id}`)
         }).catch(err => {   
-             this.$route.push('/')
+             this.$router.push('/')
         })
     },
     fetchOnServer: false,

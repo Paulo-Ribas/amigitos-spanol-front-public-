@@ -280,7 +280,7 @@ export default {
     padding: 10px 30px;
     background-color: var(--cor5);
     font-family: cursive;
-    color: wheat;
+    color: white;
     border-radius: 10px;
     cursor: pointer;
     pointer-events: all;
@@ -289,7 +289,7 @@ export default {
     padding: 10px 30px;
     background-color: var(--cor4);
     font-family: cursive;
-    color: wheat;
+    color: white;
     border-radius: 10px;
     cursor: pointer;
     pointer-events: all;

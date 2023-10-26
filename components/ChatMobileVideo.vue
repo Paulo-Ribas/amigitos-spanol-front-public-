@@ -405,7 +405,7 @@ export default {
                     }
                 }
                 catch(err) {
-                    this.$route.push('/room')
+                    this.$router.push('/room')
                 }
 
             }, 3000);

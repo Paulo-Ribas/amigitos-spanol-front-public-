@@ -321,12 +321,9 @@ export default {
             let scroll = document.querySelector('.chat-full-screen')
             let lastMsg = this.msgs[(this.msgs.length - 1)] 
             console.log(scroll.scrollHeight, scroll.scrollTop)
-            if ((scroll.scrollHeight - scroll.scrollTop) <= 600) {
-                setTimeout(() => {
-                    scroll.scrollTop = scroll.scrollHeight
-                }, 333);
-
-            }
+            setTimeout(() => {
+                scroll.scrollTop = scroll.scrollHeight
+            }, 333);
 
         },
         attChat(data){
@@ -540,7 +537,7 @@ export default {
     .chat-full-screen {
         width: 100%;
         height: 100%;
-        overflow-y: auto;
+        overflow-y: hidden;
     }
     .name-img-container {
         display: flex;
