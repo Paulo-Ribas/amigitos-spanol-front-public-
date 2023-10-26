@@ -21,9 +21,9 @@
                     </span>
                 </div>
             </Transition>
-            <video @loadedmetadata="setDuration" @loadeddata="setDuration" @timeupdate="setProgressBarByTimeVideo()" tabindex="1"
+            <video @waiting="videoLoanding = true" @loadedmetadata="setDuration" @loadeddata="setDuration(), loadingVideoToggle(true)" @timeupdate="setProgressBarByTimeVideo()" tabindex="1"
                 @dblclick="fullScreamToggle()" @click="showObject(), emitPlayPause()" @keydown="emitKeysEvents($event)"
-                id="video">
+                id="video" @canplay="loadingVideoToggle(true)">
                 <source src="/videoplayback.mp4" type="video/mp4">
             </video>
             <ControlsPlayerLive :time="currentTime" :durationProps="duration" @PlayPauseVideo="emitPlayPause($event)"
@@ -40,9 +40,9 @@
                     </span>
                 </div>
             </Transition>
-            <video @timeupdate="setProgressBarByTimeVideo()" tabindex="1" @dblclick="fullScreamToggle()"
+            <video @waiting="videoLoanding = true" @timeupdate="setProgressBarByTimeVideo()" tabindex="1" @dblclick="fullScreamToggle()"
                 @click="showObject(), emitPlayPause()" @keydown="emitKeysEvents($event)" @loadedmetadata="setDuration"
-                @loadeddata="setDuration" id="video">
+                @loadeddata="setDuration(), loadingVideoToggle(true)" @canplay="loadingVideoToggle(true)" id="video">
                 <source src="/videoplayback.mp4" type="video/mp4">
             </video>
             <ControlsPlayerLiveMobile :time="currentTime" :durationProps="duration" @PlayPauseVideo="emitPlayPause($event)"
@@ -156,6 +156,7 @@ export default {
             memberIsMembersInterval: undefined,
             sendPlayerStateInterval: undefined,
             askForCurrentTimeInterval: undefined,
+            videoLoanding: true
         }
     },
     watch: {
@@ -932,6 +933,10 @@ export default {
                 barra.style.width = `${video.currentTime / video.duration * 100}%`
 
             }
+        },
+        loadingVideoToggle($event){
+            if($event) return this.videoLoanding = true
+            this.videoLoanding = !this.videoLoanding
         },
         fullScreamToggle() {
             let video = document.querySelector('.video-container') || document.querySelector('.video-container-mobile')
