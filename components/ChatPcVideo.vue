@@ -369,7 +369,6 @@ export default {
         },
         async JoinRoom() {
             let validUser = this.validateUserDates()
-            this.verifyEmptyMembers()
             if (validUser) {
                 let room = this.room
                 this.connectionServer()

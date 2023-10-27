@@ -367,12 +367,12 @@ export default {
         },
         async JoinRoom() {
             let validUser = this.validateUserDates()
-            this.verifyEmptyMembers()
             if (validUser) {
                 let room = this.room
                 this.connectionServer()
                 this.socket.emit('joinRoom', { user: this.user, room, chat: true })
                 await this.awaitUserJoinConfirm()
+                this.verifyEmptyMembers()
 
                 return
             }
