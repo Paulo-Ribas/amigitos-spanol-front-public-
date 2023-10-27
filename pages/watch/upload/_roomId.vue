@@ -330,7 +330,7 @@ export default {
                 this.membersReactive = roomInfo.room.members
             } 
             catch(err){
-                console.log(err)
+                console.log(err, 'erro não pode estar vindo daqui')
                 this.$router.push('/room')
             }
         },
