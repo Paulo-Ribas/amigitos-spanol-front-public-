@@ -412,6 +412,7 @@ export default {
                     }
                 }
                 catch(err){
+                    console.log('é daqui?', err)
                     this.$router.push('/room')
                 }
 
