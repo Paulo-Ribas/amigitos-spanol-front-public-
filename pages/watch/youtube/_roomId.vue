@@ -354,6 +354,7 @@ export default {
             }
             catch(err){
                 console.log(err, 'erro não pode estar vindo daqui')
+                
                 this.$router.push('/room')
             }
         },
