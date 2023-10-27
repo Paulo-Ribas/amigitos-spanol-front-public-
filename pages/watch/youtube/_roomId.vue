@@ -354,7 +354,7 @@ export default {
             }
             catch(err){
                 console.log(err, 'erro não pode estar vindo daqui')
-                
+
                 this.$router.push('/room')
             }
         },
@@ -980,12 +980,10 @@ export default {
             const fullscreenIcon = document.querySelector('.fullScreem-icon')
             if (!document.fullscreenElement) {
                 fullscreenIcon.src = '/svg/sair_da_tela_cheia_.svg'
-                document.querySelector('video').style.maxHeight = '100%'
                 video.requestFullscreen()
             }
             else {
                 fullscreenIcon.src = '/svg/tela_cheia.svg'
-                document.querySelector('video').style.maxHeight = '480px'
                 document.exitFullscreen()
                 this.theater = false
             }
