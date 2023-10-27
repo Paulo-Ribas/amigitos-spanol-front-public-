@@ -340,6 +340,7 @@ export default {
                 this.attRoom()
             });
             this.socket.on('chatRecived', data =>{
+                this.attChat(data)
             }) 
             this.socket.on('kickApply', data => {
                 this.kickApply(data)
