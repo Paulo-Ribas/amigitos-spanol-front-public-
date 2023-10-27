@@ -330,6 +330,7 @@ export default {
                 this.membersReactive = roomInfo.room.members
             } 
             catch(err){
+                console.log(err)
                 this.$router.push('/room')
             }
         },
@@ -945,10 +946,12 @@ export default {
             const fullscreenIcon = document.querySelector('.fullScreem-icon')
             if (!document.fullscreenElement) {
                 fullscreenIcon.src = '/svg/sair_da_tela_cheia_.svg'
+                document.querySelector('video').style.maxHeight = '100%'
                 video.requestFullscreen()
             }
             else {
                 fullscreenIcon.src = '/svg/tela_cheia.svg'
+                document.querySelector('video').style.maxHeight = '480px'
                 document.exitFullscreen()
             }
         },
