@@ -951,8 +951,9 @@ export default {
             }
             else {
                 fullscreenIcon.src = '/svg/tela_cheia.svg'
-                document.querySelector('video').style.maxHeight = '480px'
                 document.exitFullscreen()
+                document.querySelector('video').style.maxHeight = '480px'
+                console.log(document.querySelector('video').style.maxHeight)
             }
         },
         theaterModeToggle() {

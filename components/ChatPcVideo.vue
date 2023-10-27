@@ -321,7 +321,6 @@ export default {
             await this.attMemberChoiced()
         },
         chatProps(value, payload){
-            console.log(value, 'o valor aqui lole ')
             this.msgsDesktop = this.$props.chatProps
             this.setScroll()
         }
