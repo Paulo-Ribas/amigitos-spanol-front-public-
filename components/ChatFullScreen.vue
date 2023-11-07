@@ -59,6 +59,7 @@ export default {
         this.chatAttempts = 0
         this.msgs.length === 0 && this.$props.chatProps.length === 0 ? this.askChat() : this.msgs = this.$props.chatProps
         this.verifyEmptyMembers()
+        this.setScroll()
 
        
     },
