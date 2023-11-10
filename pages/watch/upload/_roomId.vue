@@ -945,15 +945,26 @@ export default {
             let video = document.querySelector('.video-container') || document.querySelector('.video-container-mobile')
             const fullscreenIcon = document.querySelector('.fullScreem-icon')
             if (!document.fullscreenElement) {
-                fullscreenIcon.src = '/svg/sair_da_tela_cheia_.svg'
-                document.querySelector('video').style.maxHeight = '100%'
-                video.requestFullscreen()
+                try {
+                    fullscreenIcon.src = '/svg/sair_da_tela_cheia_.svg'
+                    document.querySelector('video').style.maxHeight = '100%'
+                    video.requestFullscreen()
+                    
+                } catch (error) {
+                    document.querySelector('video').style.maxHeight = '480px'
+
+                }
             }
             else {
-                fullscreenIcon.src = '/svg/tela_cheia.svg'
-                document.exitFullscreen()
-                document.querySelector('video').style.maxHeight = '480px'
-                console.log(document.querySelector('video').style.maxHeight)
+                try {
+                    fullscreenIcon.src = '/svg/tela_cheia.svg'
+                    document.exitFullscreen()
+                    document.querySelector('video').style.maxHeight = '480px'
+                    console.log(document.querySelector('video').style.maxHeight)
+                } catch (error) {
+                    document.querySelector('video').style.maxHeight = '480px'
+
+                }
             }
         },
         theaterModeToggle() {

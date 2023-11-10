@@ -2,7 +2,6 @@ export default async function (context) {
     try {
         let {room} = await context.$axios.$get('room/' + context.route.params.roomId)
         let token =  context.app.$cookies.get('token')
-        console.log(token, 'o meu token au au')
 
         let user = await context.$axios.$post('validate',{}, {headers: {authorization: token}})
         
